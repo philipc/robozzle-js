@@ -1,6 +1,42 @@
 var robozzle = { };
 
+robozzle.parseXML = function (node) {
+    if (node.nodeType == 3) {
+        return node.nodeValue.replace(/^\s+/,'').replace(/\s+$/,'');
+    } else if (node.nodeType == 1) {
+        var obj = {};
+        for (var childNode = node.firstChild; childNode; childNode = childNode.nextSibling) {
+            console.log([childNode.nodeName, childNode.nodeType, childNode.namespaceURI]);
+            var childVal = this.parseXML(childNode);
+            if (childNode.nodeType == 3) {
+                return childVal;
+            }
+            var childName = childNode.localName;
+            if (childNode.namespaceURI === 'http://schemas.microsoft.com/2003/10/Serialization/Arrays') {
+                if (!$.isArray(obj)) {
+                    obj = [];
+                }
+                obj.push(childVal);
+            } else if (obj[childName]) {
+                if (!$.isArray(obj[childName])) {
+                    obj[childName] = [ obj[childName] ];
+                }
+                obj[childName].push(childVal);
+            } else {
+                obj[childName] = childVal;
+            };
+        }
+        return obj;
+    } else if (node.nodeType == 9) {
+        var obj = this.parseXML(node.documentElement);
+        return obj;
+    } else {
+        return null;
+    }
+};
+
 robozzle.service = function (method, data, success) {
+    var _inst = this;
     $.soap({
         url: '/RobozzleService.svc',
         appendMethodToURL: false,
@@ -10,7 +46,7 @@ robozzle.service = function (method, data, success) {
         data: data,
         /* wss: */
         success: function (soapResponse) {
-            success(soapResponse.toJSON().Body[method + 'Response']);
+            success(_inst.parseXML(soapResponse.toXML()).Body[method + 'Response']);
         }
     });
 };
@@ -33,13 +69,12 @@ robozzle.topSolversResponse = function (table, solved, names) {
 robozzle.topSolvers = function () {
     var _inst = this;
     this.service('GetTopSolvers2', {}, function (response) {
-        console.log(response.solved);
         _inst.topSolversResponse($('#topsolvers'),
-                response.solved.int,
-                response.names.string);
+                response.solved,
+                response.names);
         _inst.topSolversResponse($('#topsolverstoday'),
-                response.solvedToday.int,
-                response.namesToday.string);
+                response.solvedToday,
+                response.namesToday);
         $('#scoreboard').show();
     });
 };
