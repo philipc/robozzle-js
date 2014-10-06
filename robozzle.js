@@ -1,4 +1,12 @@
-var robozzle = { };
+var robozzle = {
+    sortKind: 1, /* Easy to hard */
+    blockIndex: 0,
+    blockSize: 64,
+    pageIndex: 0,
+    pageSize: 8,
+    levels: null,
+    levelCount: 1
+};
 
 robozzle.parseXML = function (node) {
     if (node.nodeType == 3) {
@@ -6,7 +14,7 @@ robozzle.parseXML = function (node) {
     } else if (node.nodeType == 1) {
         var obj = {};
         for (var childNode = node.firstChild; childNode; childNode = childNode.nextSibling) {
-            console.log([childNode.nodeName, childNode.nodeType, childNode.namespaceURI]);
+            //console.log([childNode.nodeName, childNode.nodeType, childNode.namespaceURI]);
             var childVal = this.parseXML(childNode);
             if (childNode.nodeType == 3) {
                 return childVal;
@@ -79,6 +87,62 @@ robozzle.topSolvers = function () {
     });
 };
 
+robozzle.displayLevel = function (level) {
+    var html = $('#templates .levelitem').clone();
+    html.find('div.title').text(level.Title);
+    html.find('a.difficulty').text(Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 100) / 100);
+    html.find('a.stats').attr('href', 'puzzle.aspx?id=' + level.Id),
+    html.find('a.comments')
+        .text(level.CommentCount + ' comments')
+        .attr('href', 'forums/thread.aspx?puzzle=' + level.Id);
+    html.find('a.author')
+        .text(level.SubmittedBy)
+        .attr('href', 'user.aspx?name=' + level.SubmittedBy);
+    html.find('a.liked').text('+' + level.Liked);
+    html.find('a.disliked').text('-' + level.Disliked);
+    return html;
+};
+
+robozzle.displayLevels = function () {
+    var levellist = $('#levellist');
+    levellist.empty();
+    for (var i = 0; i < this.pageSize; i++) {
+        var index = this.pageIndex + i;
+        if (index < this.levelCount) {
+            var level = this.levels[index - this.blockIndex];
+            console.log(index);
+            console.log(level);
+            levellist.append(this.displayLevel(level));
+        }
+    }
+};
+
+robozzle.getLevels = function () {
+    var _inst = this;
+    if (this.levels && this.pageIndex >= this.blockIndex
+            && this.pageIndex < this.blockIndex + this.blockSize) {
+        this.displayLevels();
+        return;
+    }
+    if (this.pageIndex >= this.levelCount) {
+        this.pageIndex = this.levelCount - 1;
+    }
+    this.blockIndex = this.pageIndex % this.blockSize;
+    var request = {
+        blockIndex: this.blockIndex,
+        blockSize: this.blockSize,
+        sortKind: this.sortKind,
+        unsolvedByUser: 'keba'
+    };
+    this.service('GetLevelsPaged', request, function (response) {
+        _inst.levelCount = response.totalCount;
+        _inst.levels = response.GetLevelsPagedResult.LevelInfo2;
+        console.log(_inst.levels);
+        _inst.displayLevels();
+    });
+};
+
 $(document).ready(function() {
     robozzle.topSolvers();
+    robozzle.getLevels();
 });
