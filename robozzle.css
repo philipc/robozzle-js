@@ -13,7 +13,6 @@ body {
 }
 #border {
     width: 920px;
-    min-height: 655px;
     margin: 0 auto;
     background-color: #b8b8b8;
 }
@@ -62,16 +61,13 @@ ul.menu li.active {
 }
 #content {
     position: relative;
-    padding-top: 10px;
-    min-height: 549px;
+    padding: 10px;
     background-color: #303030;
 }
 #levels {
-    position: absolute;
-    top: 10px;
-    left: 50%;
+    position: relative;
     width: 520px;
-    margin-left: -260px;
+    margin: 0 auto;
 }
 ul.tabbar {
     list-style: none;
@@ -148,10 +144,12 @@ li.levelitem a.disliked {
     color: black;
 }
 #scoreboard {
-    float: right;
     display: none;
+    position: absolute;
+    top: 0px;
+    right: 0px;
     width: 180px;
-    margin: 30px 10px 0px;
+    margin: 50px 10px 0px;
     padding-bottom: 10px;
     background-color: #808080;
     color: white;
