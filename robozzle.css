@@ -73,11 +73,10 @@ ul.tabbar {
     list-style: none;
     margin: 0;
     padding: 0;
-    position: relative;
 }
 ul.tabbar li {
-    float: left;
-    margin: 3px;
+    display: inline-block;
+    margin: 3px 0px 3px 3px;
     padding: 2px 5px;
     background-color: #707070;
     color: white;
@@ -88,7 +87,6 @@ ul.tabbar li {
     list-style: none;
     margin: 0;
     padding: 10px 0 0 0;
-    clear: both;
     min-height: 520px;
     background-color: #808080;
 }
