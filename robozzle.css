@@ -1,6 +1,7 @@
 body {
     background-color: #484848;
     font-family: Verdana, sans-serif;
+    font-size: 12px;
 }
 #horizon {
     position: absolute;
@@ -49,7 +50,6 @@ ul.menu li {
     border-width: 0 1px;
     text-align: center;
     color: #505050;
-    font-size: 12px;
     cursor: pointer;
 }
 ul.menu li:hover {
@@ -80,15 +80,17 @@ ul.tabbar li {
     padding: 2px 5px;
     background-color: #707070;
     color: white;
-    font-size: 12px;
     cursor: pointer;
+}
+#levellist-container {
+    padding: 10px 0 40px 0;
+    min-height: 480px;
+    background-color: #808080;
 }
 #levellist {
     list-style: none;
     margin: 0;
-    padding: 10px 0 0 0;
-    min-height: 520px;
-    background-color: #808080;
+    padding: 0;
 }
 li.levelitem {
     position: relative;
@@ -99,7 +101,6 @@ li.levelitem {
     border-style: solid;
     border-width: 1px;
     background-color: #b0b080;
-    font-size: 12px;
 }
 li.levelitem:hover {
     background-color: #c0c090;
@@ -141,6 +142,25 @@ li.levelitem span.disliked {
 #levellist a:visited {
     color: black;
 }
+#refresh {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+}
+#levelpagecontrol {
+    position: absolute;
+    left: 50%;
+    bottom: 10px;
+}
+#levelpagecontrol > div {
+    width: 100%;
+    margin-left: -50%;
+}
+#hidesolved-container {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
 #scoreboard {
     display: none;
     position: absolute;
@@ -151,7 +171,6 @@ li.levelitem span.disliked {
     padding-bottom: 10px;
     background-color: #808080;
     color: white;
-    font-size: 12px;
     font-weight: normal;
     text-align: center;
 }

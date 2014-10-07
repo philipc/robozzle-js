@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <title>RoboZZle - a social puzzle game</title>
         <link rel='stylesheet' type='text/css' href='robozzle.css' />
-        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script type='text/javascript' src="//code.jquery.com/jquery-1.11.0.min.js"></script>
         <script type='text/javascript' src='jquery.soap.js'></script>
         <script type='text/javascript' src='robozzle.js'></script>
     </head>
@@ -30,15 +30,21 @@
                         <ul class="tabbar" id="levelmenu">
                             <li>Tutorial</li><li>Campaign</li><li>Popular</li><li>All</li>
                         </ul>
-                        <ul id="levellist">
-                        </ul>
-                        <div id="loadingspinner">
-                        </div>
-                        <div id="refresh">
-                        </div>
-                        <div id="pagecontrol">
-                        </div>
-                        <div id="hidesolved">
+                        <div id="levellist-container">
+                            <ul id="levellist">
+                            </ul>
+                            <div id="loadingspinner">
+                            </div>
+                            <button id="refresh">Refresh</button>
+                            <div id="levelpagecontrol"><div>
+                                <button id="first">First</button>
+                                <button id="prev">Previous</button>
+                                <button id="next">Next</button>
+                                <button id="last">Last</button>
+                            </div></div>
+                            <div id="hidesolved-container">
+                                <input type="checkbox" id="hidesolved"><label for="hidesolved">Hide solved</label>
+                            </div>
                         </div>
                     </div>
                     <div id="game">

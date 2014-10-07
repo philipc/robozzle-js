@@ -115,19 +115,27 @@ robozzle.displayLevels = function () {
     }
 };
 
+robozzle.clampPageIndex = function () {
+    if (this.pageIndex < 0) {
+        this.pageIndex = 0;
+    }
+    if (this.pageIndex >= this.levelCount) {
+        this.pageIndex = this.levelCount - 1;
+    }
+    this.pageIndex = this.pageIndex - (this.pageIndex % this.pageSize);
+};
+
 robozzle.getLevels = function () {
     var _inst = this;
+    this.clampPageIndex();
     if (this.levels && this.pageIndex >= this.blockIndex
             && this.pageIndex < this.blockIndex + this.blockSize) {
         this.displayLevels();
         return;
     }
-    if (this.pageIndex >= this.levelCount) {
-        this.pageIndex = this.levelCount - 1;
-    }
-    this.blockIndex = this.pageIndex % this.blockSize;
+    this.blockIndex = this.pageIndex - (this.pageIndex % this.blockSize);
     var request = {
-        blockIndex: this.blockIndex,
+        blockIndex: this.blockIndex / this.blockSize,
         blockSize: this.blockSize,
         sortKind: this.sortKind,
         unsolvedByUser: 'keba'
@@ -135,11 +143,36 @@ robozzle.getLevels = function () {
     this.service('GetLevelsPaged', request, function (response) {
         _inst.levelCount = response.totalCount;
         _inst.levels = response.GetLevelsPagedResult.LevelInfo2;
-        _inst.displayLevels();
+        if (!$.isArray(_inst.levels)) {
+            /* Handle only one level in the block */
+            _inst.levels = [ _inst.levels ];
+        }
+        if (_inst.blockIndex >= _inst.levelCount) {
+            _inst.setPageIndex(_inst.levelCount);
+        } else {
+            _inst.displayLevels();
+        }
     });
+};
+
+robozzle.setPageIndex = function (index) {
+    this.pageIndex = index;
+    this.getLevels();
 };
 
 $(document).ready(function() {
     robozzle.topSolvers();
     robozzle.getLevels();
+    $('#first').click(function () {
+        robozzle.setPageIndex(0);
+    });
+    $('#prev').click(function () {
+        robozzle.setPageIndex(robozzle.pageIndex - robozzle.pageSize);
+    });
+    $('#next').click(function () {
+        robozzle.setPageIndex(robozzle.pageIndex + robozzle.pageSize);
+    });
+    $('#last').click(function () {
+        robozzle.setPageIndex(robozzle.levelCount);
+    });
 });
