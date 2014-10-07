@@ -90,7 +90,11 @@ robozzle.topSolvers = function () {
 robozzle.displayLevel = function (level) {
     var html = $('#templates .levelitem').clone();
     html.find('div.title').text(level.Title);
-    html.find('span.difficulty').text(Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 100) / 100);
+    if (level.DifficultyVoteCount != 0)
+        var difficulty = Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 100) / 100;
+    else
+        var difficulty = '-';
+    html.find('span.difficulty').text(difficulty);
     html.find('a.stats').attr('href', 'puzzle.aspx?id=' + level.Id),
     html.find('a.comments')
         .text(level.CommentCount + ' comments')
