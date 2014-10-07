@@ -110,8 +110,6 @@ robozzle.displayLevels = function () {
         var index = this.pageIndex + i;
         if (index < this.levelCount) {
             var level = this.levels[index - this.blockIndex];
-            console.log(index);
-            console.log(level);
             levellist.append(this.displayLevel(level));
         }
     }
@@ -137,7 +135,6 @@ robozzle.getLevels = function () {
     this.service('GetLevelsPaged', request, function (response) {
         _inst.levelCount = response.totalCount;
         _inst.levels = response.GetLevelsPagedResult.LevelInfo2;
-        console.log(_inst.levels);
         _inst.displayLevels();
     });
 };
