@@ -90,7 +90,7 @@ robozzle.topSolvers = function () {
 robozzle.displayLevel = function (level) {
     var html = $('#templates .levelitem').clone();
     html.find('div.title').text(level.Title);
-    html.find('a.difficulty').text(Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 100) / 100);
+    html.find('span.difficulty').text(Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 100) / 100);
     html.find('a.stats').attr('href', 'puzzle.aspx?id=' + level.Id),
     html.find('a.comments')
         .text(level.CommentCount + ' comments')
@@ -98,8 +98,8 @@ robozzle.displayLevel = function (level) {
     html.find('a.author')
         .text(level.SubmittedBy)
         .attr('href', 'user.aspx?name=' + level.SubmittedBy);
-    html.find('a.liked').text('+' + level.Liked);
-    html.find('a.disliked').text('-' + level.Disliked);
+    html.find('span.liked').text('+' + level.Liked);
+    html.find('span.disliked').text('-' + level.Disliked);
     return html;
 };
 

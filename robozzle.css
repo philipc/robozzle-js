@@ -129,10 +129,10 @@ li.levelitem div.votes {
     bottom: 5px;
     right: 8px;
 }
-li.levelitem a.liked {
+li.levelitem span.liked {
     color: darkgreen;
 }
-li.levelitem a.disliked {
+li.levelitem span.disliked {
     color: darkred;
 }
 #levellist a:link {
