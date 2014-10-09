@@ -147,14 +147,18 @@ li.levelitem span.disliked {
     left: 10px;
     bottom: 10px;
 }
-#levelpagecontrol {
+#pagecontrol {
     position: absolute;
     left: 50%;
     bottom: 10px;
 }
-#levelpagecontrol > div {
+#pagecontrol > div {
     width: 100%;
     margin-left: -50%;
+}
+#pagecurrent {
+    width: 2em;
+    text-align: right;
 }
 #hidesolved-container {
     position: absolute;
