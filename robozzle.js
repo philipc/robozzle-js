@@ -54,7 +54,8 @@ robozzle.service = function (method, data, success) {
         data: data,
         /* wss: */
         success: function (soapResponse) {
-            success(_inst.parseXML(soapResponse.toXML()).Body[method + 'Response']);
+            var response = _inst.parseXML(soapResponse.toXML()).Body[method + 'Response'];
+            success(response[method + 'Result'], response);
         }
     });
 };
@@ -76,7 +77,7 @@ robozzle.topSolversResponse = function (table, solved, names) {
 
 robozzle.topSolvers = function () {
     var _inst = this;
-    this.service('GetTopSolvers2', {}, function (response) {
+    this.service('GetTopSolvers2', {}, function (result, response) {
         _inst.topSolversResponse($('#topsolvers'),
                 response.solved,
                 response.names);
@@ -146,7 +147,7 @@ robozzle.getLevels = function () {
         sortKind: this.sortKind,
         unsolvedByUser: null
     };
-    this.service('GetLevelsPaged', request, function (response) {
+    this.service('GetLevelsPaged', request, function (result, response) {
         _inst.levelCount = parseInt(response.totalCount, 10);
         _inst.levels = response.GetLevelsPagedResult.LevelInfo2;
         if (!$.isArray(_inst.levels)) {
@@ -168,6 +169,41 @@ robozzle.setPageIndex = function (index) {
     }
 };
 
+robozzle.hashPassword = function (password) {
+    var salt = "5A6fKpgSnXoMpxbcHcb7";
+    return CryptoJS.SHA1(password + salt).toString();
+};
+
+robozzle.logIn = function (user, password, callback) {
+    var hash = robozzle.hashPassword(password);
+    var request = {
+        userName: user,
+        password: hash
+    };
+    this.service('LogIn', request, function (result, response) {
+        if (result === 'true') {
+            robozzle.user = user;
+            robozzle.password = hash;
+            $('#menu-signin').hide();
+            $('#menu-register').hide();
+            $('#menu-user').text(robozzle.user).show();
+            $('#menu-signout').show();
+            callback(true);
+        } else {
+            callback(false);
+        }
+    });
+};
+
+robozzle.logOut = function () {
+    delete robozzle.user;
+    delete robozzle.password;
+    $('#menu-signout').hide();
+    $('#menu-user').text("").hide();
+    $('#menu-register').show();
+    $('#menu-signin').show();
+};
+
 $(document).ready(function() {
     $('#pagefirst').click(function () {
         robozzle.setPageIndex(0);
@@ -186,4 +222,29 @@ $(document).ready(function() {
     });
     robozzle.getLevels();
     robozzle.topSolvers();
+    var signin = $("#dialog-signin").dialog({
+        autoOpen: false,
+        modal: true,
+        buttons: {
+            "Sign in": function() {
+                robozzle.logIn(
+                        signin.find('input[name="name"]').val(),
+                        signin.find('input[name="password"]').val(),
+                        function (result) {
+                            if (result) {
+                                signin.dialog("close");
+                            } else {
+                                signin.find('#signin-error').text("Invalid username/password");
+                            }
+                        });
+            },
+            "Cancel": function() {
+                signin.dialog("close");
+            }
+        }
+    });
+    $("#menu-signin").on("click", function() {
+        signin.dialog("open");
+    });
+    $("#menu-signout").on("click", robozzle.logOut);
 });

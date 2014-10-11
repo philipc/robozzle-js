@@ -4,8 +4,11 @@
         <meta charset="UTF-8">
         <title>RoboZZle - a social puzzle game</title>
         <link rel='stylesheet' type='text/css' href='robozzle.css' />
-        <script type='text/javascript' src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <link rel='stylesheet' type='text/css' href='//code.jquery.com/ui/1.11.1/themes/ui-darkness/jquery-ui.css' />
+        <script type='text/javascript' src='//code.jquery.com/jquery-1.11.1.min.js'></script>
+        <script type='text/javascript' src='//code.jquery.com/ui/1.11.1/jquery-ui.min.js'></script>
         <script type='text/javascript' src='jquery.soap.js'></script>
+        <script type='text/javascript' src='sha1.js'></script>
         <script type='text/javascript' src='robozzle.js'></script>
     </head>
     <body>
@@ -16,14 +19,15 @@
                     <h2>a social puzzle game</h2>
                 </header>
                 <ul class="menu">
-                    <li class="active" id="menu_play" style="width: 100px">Puzzles</li>
-                    <li id="menu_makepuzzle" style="width: 100px">Make a Puzzle</li>
-                    <li id="menu_forums" style="width: 70px">Forums</li>
-                    <li id="menu_wiki" style="width: 70px">Wiki</li>
-                    <li id="menu_chat" style="width: 70px">Chat</li>
-                    <li id="menu_signin" style="width: 66px; float: right">Sign In</li>
-                    <li id="menu_signout" style="width: 66px; float: right">Sign Out</li>
-                    <li id="menu_register" style="width: 66px; float: right">Register</li>
+                    <li class="active" id="menu-play" style="width: 100px">Puzzles</li>
+                    <li id="menu-makepuzzle" style="width: 100px">Make a Puzzle</li>
+                    <li id="menu-forums" style="width: 70px">Forums</li>
+                    <li id="menu-wiki" style="width: 70px">Wiki</li>
+                    <li id="menu-chat" style="width: 70px">Chat</li>
+                    <li id="menu-user" style="width: 66px; float: right">name</li>
+                    <li id="menu-register" style="width: 66px; float: right">Register</li>
+                    <li id="menu-signin" style="width: 66px; float: right">Sign In</li>
+                    <li id="menu-signout" style="width: 66px; float: right">Sign Out</li>
                 </ul>
                 <div id="content">
                     <div id="levels">
@@ -71,6 +75,21 @@
                         <a href="scoreboard.aspx">Full scoreboard</a>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div id="dialogs">
+            <div id="dialog-signin" title="Sign In">
+                <form>
+                    <fieldset>
+                        <p id="signin-error"></p>
+                        <label for="name">Name</label>
+                        <input type="text" name="name">
+                        <label for="password">Password</label>
+                        <input type="password" name="password">
+                        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+                        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+                    </fieldset>
+                </form>
             </div>
         </div>
         <div id="templates">

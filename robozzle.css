@@ -201,6 +201,9 @@ li.levelitem span.disliked {
 #scoreboard a:visited {
     color: #d0d0b0;
 }
-#templates {
+#menu-signout, #menu-user {
+    display: none;
+}
+#dialogs, #templates {
     display: none;
 }
