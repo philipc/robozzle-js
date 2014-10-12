@@ -5,7 +5,11 @@ var robozzle = {
     pageIndex: 0,
     pageSize: 8,
     levels: null,
-    levelCount: 1
+    levelCount: 1,
+    userName: null,
+    password: null,
+    solvedLevels: {},
+    votes: {}
 };
 
 robozzle.parseXML = function (node) {
@@ -105,10 +109,16 @@ robozzle.displayLevel = function (level) {
         .attr('href', 'user.aspx?name=' + level.SubmittedBy);
     html.find('span.liked').text('+' + level.Liked);
     html.find('span.disliked').text('-' + level.Disliked);
+    if (robozzle.solvedLevels[level.Id.toString()]) {
+        html.addClass('solved');
+    }
     return html;
 };
 
 robozzle.displayLevels = function () {
+    if (!this.levels) {
+        return;
+    }
     var levellist = $('#levellist');
     levellist.empty();
     for (var i = 0; i < this.pageSize; i++) {
@@ -174,20 +184,29 @@ robozzle.hashPassword = function (password) {
     return CryptoJS.SHA1(password + salt).toString();
 };
 
-robozzle.logIn = function (user, password, callback) {
+robozzle.logIn = function (userName, password, callback) {
     var hash = robozzle.hashPassword(password);
     var request = {
-        userName: user,
+        userName: userName,
         password: hash
     };
     this.service('LogIn', request, function (result, response) {
         if (result === 'true') {
-            robozzle.user = user;
+            robozzle.userName = userName;
             robozzle.password = hash;
+            robozzle.solvedLevels = {};
+            $.each(response.solvedLevels, function (index, value) {
+                robozzle.solvedLevels[value] = true;
+            });
+            robozzle.votes = {};
+            $.each(response.votes, function (index, value) {
+                robozzle.votes[value.Levelid] = value;
+            });
             $('#menu-signin').hide();
             $('#menu-register').hide();
-            $('#menu-user').text(robozzle.user).show();
+            $('#menu-user').text(robozzle.userName).show();
             $('#menu-signout').show();
+            robozzle.displayLevels();
             callback(true);
         } else {
             callback(false);
@@ -196,12 +215,15 @@ robozzle.logIn = function (user, password, callback) {
 };
 
 robozzle.logOut = function () {
-    delete robozzle.user;
-    delete robozzle.password;
+    robozzle.userName = null;
+    robozzle.password = null;
+    robozzle.solvedLevels = {};
+    robozzle.votes = {};
     $('#menu-signout').hide();
     $('#menu-user').text("").hide();
     $('#menu-register').show();
     $('#menu-signin').show();
+    robozzle.displayLevels();
 };
 
 $(document).ready(function() {
