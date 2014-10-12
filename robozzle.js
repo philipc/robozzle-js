@@ -20,7 +20,7 @@ robozzle.parseXML = function (node) {
         var obj = {};
         for (var childNode = node.firstChild; childNode; childNode = childNode.nextSibling) {
             //console.log([childNode.nodeName, childNode.nodeType, childNode.namespaceURI]);
-            var childVal = this.parseXML(childNode);
+            var childVal = robozzle.parseXML(childNode);
             if (childNode.nodeType == 3) {
                 return childVal;
             }
@@ -41,7 +41,7 @@ robozzle.parseXML = function (node) {
         }
         return obj;
     } else if (node.nodeType == 9) {
-        var obj = this.parseXML(node.documentElement);
+        var obj = robozzle.parseXML(node.documentElement);
         return obj;
     } else {
         return null;
@@ -49,7 +49,6 @@ robozzle.parseXML = function (node) {
 };
 
 robozzle.service = function (method, data, success) {
-    var _inst = this;
     $.soap({
         url: '/RobozzleService.svc',
         appendMethodToURL: false,
@@ -59,7 +58,7 @@ robozzle.service = function (method, data, success) {
         data: data,
         /* wss: */
         success: function (soapResponse) {
-            var response = _inst.parseXML(soapResponse.toXML()).Body[method + 'Response'];
+            var response = robozzle.parseXML(soapResponse.toXML()).Body[method + 'Response'];
             success(response[method + 'Result'], response);
         }
     });
@@ -81,12 +80,11 @@ robozzle.topSolversResponse = function (table, solved, names) {
 };
 
 robozzle.topSolvers = function () {
-    var _inst = this;
-    this.service('GetTopSolvers2', {}, function (result, response) {
-        _inst.topSolversResponse($('#topsolvers'),
+    robozzle.service('GetTopSolvers2', {}, function (result, response) {
+        robozzle.topSolversResponse($('#topsolvers'),
                 response.solved,
                 response.names);
-        _inst.topSolversResponse($('#topsolverstoday'),
+        robozzle.topSolversResponse($('#topsolverstoday'),
                 response.solvedToday,
                 response.namesToday);
         $('#scoreboard').show();
@@ -117,63 +115,62 @@ robozzle.displayLevel = function (level) {
 };
 
 robozzle.displayLevels = function () {
-    if (!this.levels) {
+    if (!robozzle.levels) {
         return;
     }
     var levellist = $('#levellist');
     levellist.empty();
-    for (var i = 0; i < this.pageSize; i++) {
-        var index = this.pageIndex + i;
-        if (index < this.levelCount) {
-            var level = this.levels[index - this.blockIndex];
-            levellist.append(this.displayLevel(level));
+    for (var i = 0; i < robozzle.pageSize; i++) {
+        var index = robozzle.pageIndex + i;
+        if (index < robozzle.levelCount) {
+            var level = robozzle.levels[index - robozzle.blockIndex];
+            levellist.append(robozzle.displayLevel(level));
         }
     }
-    $('#pagecurrent').val(this.pageIndex / this.pageSize + 1);
-    $('#pagemax').text(Math.floor((this.levelCount + this.pageSize - 1) / this.pageSize));
+    $('#pagecurrent').val(robozzle.pageIndex / robozzle.pageSize + 1);
+    $('#pagemax').text(Math.floor((robozzle.levelCount + robozzle.pageSize - 1) / robozzle.pageSize));
 };
 
 robozzle.clampPageIndex = function () {
-    if (this.pageIndex < 0) {
-        this.pageIndex = 0;
+    if (robozzle.pageIndex < 0) {
+        robozzle.pageIndex = 0;
     }
-    if (this.pageIndex >= this.levelCount) {
-        this.pageIndex = this.levelCount - 1;
+    if (robozzle.pageIndex >= robozzle.levelCount) {
+        robozzle.pageIndex = robozzle.levelCount - 1;
     }
-    this.pageIndex = this.pageIndex - (this.pageIndex % this.pageSize);
+    robozzle.pageIndex = robozzle.pageIndex - (robozzle.pageIndex % robozzle.pageSize);
 };
 
 robozzle.getLevels = function (force) {
-    var _inst = this;
-    this.clampPageIndex();
-    if (!force && this.levels && this.pageIndex >= this.blockIndex
-            && this.pageIndex < this.blockIndex + this.blockSize) {
-        this.displayLevels();
+    robozzle.clampPageIndex();
+    if (!force && robozzle.levels && robozzle.pageIndex >= robozzle.blockIndex
+            && robozzle.pageIndex < robozzle.blockIndex + robozzle.blockSize) {
+        robozzle.displayLevels();
         return;
     }
     $('#levellist').hide();
     var spinner = new Spinner().spin($('#levellist-spinner')[0]);
-    this.blockIndex = this.pageIndex - (this.pageIndex % this.blockSize);
+    robozzle.blockIndex = robozzle.pageIndex - (robozzle.pageIndex % robozzle.blockSize);
     var request = {
-        blockIndex: this.blockIndex / this.blockSize,
-        blockSize: this.blockSize,
-        sortKind: this.sortKind,
+        blockIndex: robozzle.blockIndex / robozzle.blockSize,
+        blockSize: robozzle.blockSize,
+        sortKind: robozzle.sortKind,
         unsolvedByUser: null
     };
     if (robozzle.userName && robozzle.hideSolved) {
         request.unsolvedByUser = robozzle.userName;
     }
-    this.service('GetLevelsPaged', request, function (result, response) {
-        _inst.levelCount = parseInt(response.totalCount, 10);
-        _inst.levels = response.GetLevelsPagedResult.LevelInfo2;
-        if (!$.isArray(_inst.levels)) {
+    robozzle.service('GetLevelsPaged', request, function (result, response) {
+        robozzle.levelCount = parseInt(response.totalCount, 10);
+        robozzle.levels = response.GetLevelsPagedResult.LevelInfo2;
+        if (!$.isArray(robozzle.levels)) {
             /* Handle only one level in the block */
-            _inst.levels = [ _inst.levels ];
+            robozzle.levels = [ robozzle.levels ];
         }
-        if (_inst.blockIndex >= _inst.levelCount) {
-            _inst.setPageIndex(_inst.levelCount);
+        if (robozzle.blockIndex >= robozzle.levelCount) {
+            robozzle.setPageIndex(robozzle.levelCount);
         } else {
-            _inst.displayLevels();
+            robozzle.displayLevels();
         }
         spinner.stop();
         $('#levellist').show();
@@ -181,9 +178,9 @@ robozzle.getLevels = function (force) {
 };
 
 robozzle.setPageIndex = function (index) {
-    if (this.pageIndex != index) {
-        this.pageIndex = index;
-        this.getLevels();
+    if (robozzle.pageIndex != index) {
+        robozzle.pageIndex = index;
+        robozzle.getLevels();
     }
 };
 
