@@ -151,6 +151,8 @@ robozzle.getLevels = function (force) {
         this.displayLevels();
         return;
     }
+    $('#levellist').hide();
+    var spinner = new Spinner().spin($('#levellist-spinner')[0]);
     this.blockIndex = this.pageIndex - (this.pageIndex % this.blockSize);
     var request = {
         blockIndex: this.blockIndex / this.blockSize,
@@ -173,6 +175,8 @@ robozzle.getLevels = function (force) {
         } else {
             _inst.displayLevels();
         }
+        spinner.stop();
+        $('#levellist').show();
     });
 };
 
