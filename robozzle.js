@@ -220,28 +220,35 @@ $(document).ready(function() {
     $('#pagecurrent').change(function () {
         robozzle.setPageIndex(parseInt($(this).val()) * robozzle.pageSize - 1);
     });
+
     robozzle.getLevels();
     robozzle.topSolvers();
+
+    var signinForm;
     var signin = $("#dialog-signin").dialog({
         autoOpen: false,
         modal: true,
         buttons: {
             "Sign in": function() {
-                robozzle.logIn(
-                        signin.find('input[name="name"]').val(),
-                        signin.find('input[name="password"]').val(),
-                        function (result) {
-                            if (result) {
-                                signin.dialog("close");
-                            } else {
-                                signin.find('#signin-error').text("Invalid username/password");
-                            }
-                        });
+                signinForm.submit();
             },
             "Cancel": function() {
                 signin.dialog("close");
             }
         }
+    });
+    signinForm = signin.find("form").on("submit", function (event) {
+        event.preventDefault();
+        robozzle.logIn(
+                signin.find('input[name="name"]').val(),
+                signin.find('input[name="password"]').val(),
+                function (result) {
+                    if (result) {
+                        signin.dialog("close");
+                    } else {
+                        signin.find('#signin-error').text("Invalid username/password");
+                    }
+                });
     });
     $("#menu-signin").on("click", function() {
         signin.dialog("open");
