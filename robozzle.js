@@ -1,4 +1,7 @@
 var robozzle = {
+    // level list info
+    levelLoading: false,
+    levelReload: false,
     sortKind: 1, /* Easy to hard */
     blockIndex: 0,
     blockSize: 64,
@@ -7,6 +10,8 @@ var robozzle = {
     levels: null,
     levelCount: 1,
     hideSolved: false,
+
+    // user info
     userName: null,
     password: null,
     solvedLevels: {},
@@ -114,7 +119,7 @@ robozzle.displayLevel = function (level) {
 };
 
 robozzle.displayLevels = function () {
-    if (!robozzle.levels) {
+    if (!robozzle.levels || robozzle.levelLoading) {
         return;
     }
     var levellist = $('#levellist');
@@ -141,6 +146,13 @@ robozzle.clampPageIndex = function () {
 };
 
 robozzle.getLevels = function (force) {
+    // Prevent multiple requests
+    if (robozzle.levelLoading) {
+        robozzle.levelReload = true;
+        return;
+    }
+    robozzle.levelReload = false;
+
     // Check if we need to fetch levels
     robozzle.clampPageIndex();
     if (!force && robozzle.levels && robozzle.pageIndex >= robozzle.blockIndex
@@ -150,7 +162,8 @@ robozzle.getLevels = function (force) {
     }
 
     // Hide levels and show spinner
-    $('#levellist').hide();
+    robozzle.levelLoading = true;
+    $('#levellist').empty();
     var spinner = new Spinner().spin($('#levellist-spinner')[0]);
 
     // Build the request
@@ -175,16 +188,18 @@ robozzle.getLevels = function (force) {
             robozzle.levels = [ robozzle.levels ];
         }
 
+        // Hide the spinner
+        spinner.stop();
+        robozzle.levelLoading = false;
+
         // Update the display
-        if (robozzle.blockIndex >= robozzle.levelCount) {
+        if (robozzle.levelReload) {
+            robozzle.getLevels();
+        } else if (robozzle.blockIndex >= robozzle.levelCount) {
             robozzle.setPageIndex(robozzle.levelCount);
         } else {
             robozzle.displayLevels();
         }
-
-        // Show the levels again
-        spinner.stop();
-        $('#levellist').show();
     });
 };
 
