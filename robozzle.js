@@ -190,7 +190,8 @@ robozzle.logIn = function (userName, password, callback) {
         userName: userName,
         password: hash
     };
-    this.service('LogIn', request, function (result, response) {
+    var callbacks = $.Callbacks();
+    callbacks.add(function (result, response) {
         if (result === 'true') {
             robozzle.userName = userName;
             robozzle.password = hash;
@@ -212,6 +213,14 @@ robozzle.logIn = function (userName, password, callback) {
             callback(false);
         }
     });
+    robozzle.service('LogIn', request, function (result, response) {
+        callbacks.fire(result, response).empty();
+    });
+    robozzle.logInCallbacks = callbacks;
+};
+
+robozzle.logInCancel = function () {
+    robozzle.logInCallbacks.empty();
 };
 
 robozzle.logOut = function () {
@@ -250,21 +259,41 @@ $(document).ready(function() {
     var signin = $("#dialog-signin").dialog({
         autoOpen: false,
         modal: true,
-        buttons: {
-            "Sign in": function() {
-                signinForm.submit();
+        buttons: [
+            {
+                id: 'dialog-signin-button',
+                text: 'Sign in',
+                click: function() {
+                    signinForm.submit();
+                }
             },
-            "Cancel": function() {
-                signin.dialog("close");
+            {
+                text: 'Cancel',
+                click: function() {
+                    signin.dialog('close');
+                }
             }
+        ],
+        open: function () {
+            $('#dialog-signin-button').prop('disabled', false);
+            signin.find(':input').prop('disabled', false);
+            signin.find('#signin-error').text("");
+        },
+        close: function () {
+            robozzle.logInCancel();
+            signin.find('input[name="password"]').val('')
         }
     });
     signinForm = signin.find("form").on("submit", function (event) {
         event.preventDefault();
+        $('#dialog-signin-button').prop('disabled', true);
+        signin.find(':input').prop('disabled', true);
         robozzle.logIn(
                 signin.find('input[name="name"]').val(),
                 signin.find('input[name="password"]').val(),
                 function (result) {
+                    $('#dialog-signin-button').prop('disabled', false);
+                    signin.find(':input').prop('disabled', false);
                     if (result) {
                         signin.dialog("close");
                     } else {
