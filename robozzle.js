@@ -8,6 +8,7 @@ var robozzle = {
     levelCount: 1,
     userName: null,
     password: null,
+    hideSolved: false,
     solvedLevels: {},
     votes: {}
 };
@@ -142,10 +143,10 @@ robozzle.clampPageIndex = function () {
     this.pageIndex = this.pageIndex - (this.pageIndex % this.pageSize);
 };
 
-robozzle.getLevels = function () {
+robozzle.getLevels = function (force) {
     var _inst = this;
     this.clampPageIndex();
-    if (this.levels && this.pageIndex >= this.blockIndex
+    if (!force && this.levels && this.pageIndex >= this.blockIndex
             && this.pageIndex < this.blockIndex + this.blockSize) {
         this.displayLevels();
         return;
@@ -157,6 +158,9 @@ robozzle.getLevels = function () {
         sortKind: this.sortKind,
         unsolvedByUser: null
     };
+    if (robozzle.userName && robozzle.hideSolved) {
+        request.unsolvedByUser = robozzle.userName;
+    }
     this.service('GetLevelsPaged', request, function (result, response) {
         _inst.levelCount = parseInt(response.totalCount, 10);
         _inst.levels = response.GetLevelsPagedResult.LevelInfo2;
@@ -250,6 +254,13 @@ $(document).ready(function() {
     });
     $('#pagecurrent').change(function () {
         robozzle.setPageIndex(parseInt($(this).val()) * robozzle.pageSize - 1);
+    });
+    $('#refresh').click(function () {
+        robozzle.getLevels(true);
+    });
+    $('#hidesolved').click(function () {
+        robozzle.hideSolved = $(this).prop('checked');
+        robozzle.getLevels(true);
     });
 
     robozzle.getLevels();
