@@ -6,9 +6,9 @@ var robozzle = {
     pageSize: 8,
     levels: null,
     levelCount: 1,
+    hideSolved: false,
     userName: null,
     password: null,
-    hideSolved: false,
     solvedLevels: {},
     votes: {}
 };
@@ -56,7 +56,6 @@ robozzle.service = function (method, data, success) {
         SOAPAction: 'http://tempuri.org/IRobozzleService/' + method,
         method: method,
         data: data,
-        /* wss: */
         success: function (soapResponse) {
             var response = robozzle.parseXML(soapResponse.toXML()).Body[method + 'Response'];
             success(response[method + 'Result'], response);
@@ -142,14 +141,19 @@ robozzle.clampPageIndex = function () {
 };
 
 robozzle.getLevels = function (force) {
+    // Check if we need to fetch levels
     robozzle.clampPageIndex();
     if (!force && robozzle.levels && robozzle.pageIndex >= robozzle.blockIndex
             && robozzle.pageIndex < robozzle.blockIndex + robozzle.blockSize) {
         robozzle.displayLevels();
         return;
     }
+
+    // Hide levels and show spinner
     $('#levellist').hide();
     var spinner = new Spinner().spin($('#levellist-spinner')[0]);
+
+    // Build the request
     robozzle.blockIndex = robozzle.pageIndex - (robozzle.pageIndex % robozzle.blockSize);
     var request = {
         blockIndex: robozzle.blockIndex / robozzle.blockSize,
@@ -160,18 +164,25 @@ robozzle.getLevels = function (force) {
     if (robozzle.userName && robozzle.hideSolved) {
         request.unsolvedByUser = robozzle.userName;
     }
+
+    // Send the request
     robozzle.service('GetLevelsPaged', request, function (result, response) {
+        // Store the response
         robozzle.levelCount = parseInt(response.totalCount, 10);
         robozzle.levels = response.GetLevelsPagedResult.LevelInfo2;
         if (!$.isArray(robozzle.levels)) {
-            /* Handle only one level in the block */
+            // Handle only one level in the block
             robozzle.levels = [ robozzle.levels ];
         }
+
+        // Update the display
         if (robozzle.blockIndex >= robozzle.levelCount) {
             robozzle.setPageIndex(robozzle.levelCount);
         } else {
             robozzle.displayLevels();
         }
+
+        // Show the levels again
         spinner.stop();
         $('#levellist').show();
     });
@@ -185,19 +196,23 @@ robozzle.setPageIndex = function (index) {
 };
 
 robozzle.hashPassword = function (password) {
-    var salt = "5A6fKpgSnXoMpxbcHcb7";
+    var salt = '5A6fKpgSnXoMpxbcHcb7';
     return CryptoJS.SHA1(password + salt).toString();
 };
 
 robozzle.logIn = function (userName, password, callback) {
+    // Build the request
     var hash = robozzle.hashPassword(password);
     var request = {
         userName: userName,
         password: hash
     };
+
+    // Handle the response in a callback so it can be cancelled if needed
     var callbacks = $.Callbacks();
     callbacks.add(function (result, response) {
         if (result === 'true') {
+            // Store the response
             robozzle.userName = userName;
             robozzle.password = hash;
             robozzle.solvedLevels = {};
@@ -208,6 +223,8 @@ robozzle.logIn = function (userName, password, callback) {
             $.each(response.votes, function (index, value) {
                 robozzle.votes[value.Levelid] = value;
             });
+
+            // Update the display
             $('#menu-signin').hide();
             $('#menu-register').hide();
             $('#menu-user').text(robozzle.userName).show();
@@ -218,6 +235,8 @@ robozzle.logIn = function (userName, password, callback) {
             callback(false);
         }
     });
+
+    // Send the request
     robozzle.service('LogIn', request, function (result, response) {
         callbacks.fire(result, response).empty();
     });
@@ -233,14 +252,15 @@ robozzle.logOut = function () {
     robozzle.password = null;
     robozzle.solvedLevels = {};
     robozzle.votes = {};
+
     $('#menu-signout').hide();
-    $('#menu-user').text("").hide();
+    $('#menu-user').text('').hide();
     $('#menu-register').show();
     $('#menu-signin').show();
     robozzle.displayLevels();
 };
 
-$(document).ready(function() {
+$(document).ready(function () {
     $('#pagefirst').click(function () {
         robozzle.setPageIndex(0);
     });
@@ -268,20 +288,20 @@ $(document).ready(function() {
     robozzle.topSolvers();
 
     var signinForm;
-    var signin = $("#dialog-signin").dialog({
+    var signin = $('#dialog-signin').dialog({
         autoOpen: false,
         modal: true,
         buttons: [
             {
                 id: 'dialog-signin-button',
                 text: 'Sign in',
-                click: function() {
+                click: function () {
                     signinForm.submit();
                 }
             },
             {
                 text: 'Cancel',
-                click: function() {
+                click: function () {
                     signin.dialog('close');
                 }
             }
@@ -289,14 +309,14 @@ $(document).ready(function() {
         open: function () {
             $('#dialog-signin-button').prop('disabled', false);
             signin.find(':input').prop('disabled', false);
-            signin.find('#signin-error').text("");
+            signin.find('#signin-error').text('');
         },
         close: function () {
             robozzle.logInCancel();
             signin.find('input[name="password"]').val('')
         }
     });
-    signinForm = signin.find("form").on("submit", function (event) {
+    signinForm = signin.find('form').on('submit', function (event) {
         event.preventDefault();
         $('#dialog-signin-button').prop('disabled', true);
         signin.find(':input').prop('disabled', true);
@@ -307,14 +327,14 @@ $(document).ready(function() {
                     $('#dialog-signin-button').prop('disabled', false);
                     signin.find(':input').prop('disabled', false);
                     if (result) {
-                        signin.dialog("close");
+                        signin.dialog('close');
                     } else {
-                        signin.find('#signin-error').text("Invalid username/password");
+                        signin.find('#signin-error').text('Invalid username/password');
                     }
                 });
     });
-    $("#menu-signin").on("click", function() {
-        signin.dialog("open");
+    $('#menu-signin').on('click', function () {
+        signin.dialog('open');
     });
-    $("#menu-signout").on("click", robozzle.logOut);
+    $('#menu-signout').on('click', robozzle.logOut);
 });
