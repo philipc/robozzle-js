@@ -42,12 +42,11 @@ robozzle.parseXML = function (node) {
                 obj[childName].push(childVal);
             } else {
                 obj[childName] = childVal;
-            };
+            }
         }
         return obj;
     } else if (node.nodeType == 9) {
-        var obj = robozzle.parseXML(node.documentElement);
-        return obj;
+        return robozzle.parseXML(node.documentElement);
     } else {
         return null;
     }
@@ -98,12 +97,11 @@ robozzle.topSolvers = function () {
 robozzle.displayLevel = function (level) {
     var html = $('#templates .levelitem').clone();
     html.find('div.title').text(level.Title);
-    if (level.DifficultyVoteCount != 0)
-        var difficulty = Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 100) / 100;
-    else
-        var difficulty = '-';
+    var difficulty = '-';
+    if (level.DifficultyVoteCount !== 0)
+        difficulty = Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 100) / 100;
     html.find('span.difficulty').text(difficulty);
-    html.find('a.stats').attr('href', 'puzzle.aspx?id=' + level.Id),
+    html.find('a.stats').attr('href', 'puzzle.aspx?id=' + level.Id);
     html.find('a.comments')
         .text(level.CommentCount + ' comments')
         .attr('href', 'forums/thread.aspx?puzzle=' + level.Id);
@@ -328,7 +326,7 @@ $(document).ready(function () {
         },
         close: function () {
             robozzle.logInCancel();
-            signin.find('input[name="password"]').val('')
+            signin.find('input[name="password"]').val('');
         }
     });
     signinForm = signin.find('form').on('submit', function (event) {
