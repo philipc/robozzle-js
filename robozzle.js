@@ -242,7 +242,10 @@ robozzle.logIn = function (userName, password, callback) {
             // Update the display
             $('#menu-signin').hide();
             $('#menu-register').hide();
-            $('#menu-user').text(robozzle.userName).show();
+            $('#menu-user').show()
+                .find('a')
+                .attr('href', 'user.aspx?name=' + userName)
+                .text(robozzle.userName);
             $('#menu-signout').show();
             robozzle.displayLevels();
             callback(true);

@@ -59,6 +59,10 @@ ul.menu li.active {
     background-color: #707070;
     color: white;
 }
+ul.menu a {
+    color: #505050;
+    text-decoration: none;
+}
 #content {
     position: relative;
     padding: 10px;
