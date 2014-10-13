@@ -215,10 +215,9 @@ robozzle.hashPassword = function (password) {
 
 robozzle.logIn = function (userName, password, callback) {
     // Build the request
-    var hash = robozzle.hashPassword(password);
     var request = {
         userName: userName,
-        password: hash
+        password: password
     };
 
     // Handle the response in a callback so it can be cancelled if needed
@@ -227,7 +226,7 @@ robozzle.logIn = function (userName, password, callback) {
         if (result === 'true') {
             // Store the response
             robozzle.userName = userName;
-            robozzle.password = hash;
+            robozzle.password = password;
             robozzle.solvedLevels = {};
             $.each(response.solvedLevels, function (index, value) {
                 robozzle.solvedLevels[value] = true;
@@ -236,6 +235,9 @@ robozzle.logIn = function (userName, password, callback) {
             $.each(response.votes, function (index, value) {
                 robozzle.votes[value.Levelid] = value;
             });
+
+            localStorage.setItem('userName', userName);
+            localStorage.setItem('password', password);
 
             // Update the display
             $('#menu-signin').hide();
@@ -265,6 +267,9 @@ robozzle.logOut = function () {
     robozzle.password = null;
     robozzle.solvedLevels = {};
     robozzle.votes = {};
+
+    localStorage.removeItem('userName');
+    localStorage.removeItem('password');
 
     $('#menu-signout').hide();
     $('#menu-user').text('').hide();
@@ -335,7 +340,7 @@ $(document).ready(function () {
         signin.find(':input').prop('disabled', true);
         robozzle.logIn(
                 signin.find('input[name="name"]').val(),
-                signin.find('input[name="password"]').val(),
+                robozzle.hashPassword(signin.find('input[name="password"]').val()),
                 function (result) {
                     $('#dialog-signin-button').prop('disabled', false);
                     signin.find(':input').prop('disabled', false);
@@ -350,4 +355,10 @@ $(document).ready(function () {
         signin.dialog('open');
     });
     $('#menu-signout').on('click', robozzle.logOut);
+
+    var userName = localStorage.getItem('userName');
+    var password = localStorage.getItem('password');
+    if (userName !== null && password !== null) {
+        robozzle.logIn(userName, password, function (result) {});
+    }
 });
