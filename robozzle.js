@@ -76,6 +76,7 @@ robozzle.topSolversResponse = function (table, solved, names) {
                     $('<a/>')
                         .text(names[i])
                         .attr('href', 'user.aspx?name=' + names[i])
+                        .attr('target', '_blank')
                 )
             )
         );
@@ -101,13 +102,17 @@ robozzle.displayLevel = function (level) {
     if (level.DifficultyVoteCount !== 0)
         difficulty = Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 100) / 100;
     html.find('span.difficulty').text(difficulty);
-    html.find('a.stats').attr('href', 'puzzle.aspx?id=' + level.Id);
+    html.find('a.stats')
+        .attr('href', 'puzzle.aspx?id=' + level.Id)
+        .attr('target', '_blank');
     html.find('a.comments')
         .text(level.CommentCount + ' comments')
-        .attr('href', 'forums/thread.aspx?puzzle=' + level.Id);
+        .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
+        .attr('target', '_blank');
     html.find('a.author')
         .text(level.SubmittedBy)
-        .attr('href', 'user.aspx?name=' + level.SubmittedBy);
+        .attr('href', 'user.aspx?name=' + level.SubmittedBy)
+        .attr('target', '_blank');
     html.find('span.liked').text('+' + level.Liked);
     html.find('span.disliked').text('-' + level.Disliked);
     if (robozzle.solvedLevels[level.Id.toString()]) {
