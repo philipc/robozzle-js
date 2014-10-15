@@ -213,6 +213,17 @@ robozzle.setPageIndex = function (index) {
     }
 };
 
+robozzle.setSortKind = function (sortKind) {
+    if (robozzle.sortKind == sortKind) {
+        return;
+    }
+
+    $('#levelmenu li').removeClass('active');
+    $('#levelmenu li[data-kind="' + sortKind + '"]').addClass('active');
+    robozzle.sortKind = sortKind;
+    robozzle.getLevels(true);
+};
+
 robozzle.hashPassword = function (password) {
     var salt = '5A6fKpgSnXoMpxbcHcb7';
     return CryptoJS.SHA1(password + salt).toString();
@@ -310,8 +321,12 @@ $(document).ready(function () {
         robozzle.hideSolved = $(this).prop('checked');
         robozzle.getLevels(true);
     });
+    $('#levelmenu li').click(function () {
+        robozzle.setSortKind(parseInt($(this).attr('data-kind')));
+    });
 
-    robozzle.getLevels();
+    robozzle.sortKind = -1;
+    robozzle.setSortKind(1);
     robozzle.topSolvers();
 
     var signinForm;
