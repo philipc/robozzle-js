@@ -250,7 +250,7 @@ robozzle.logIn = function (userName, password, callback) {
             $('#menu-user').show()
                 .find('a')
                 .attr('href', 'user.aspx?name=' + userName)
-                .text(robozzle.userName);
+                .text(userName);
             $('#menu-signout').show();
             robozzle.displayLevels();
             callback(true);
@@ -280,7 +280,8 @@ robozzle.logOut = function () {
     localStorage.removeItem('password');
 
     $('#menu-signout').hide();
-    $('#menu-user').text('').hide();
+    $('#menu-user').hide()
+        .find('a').removeAttr('href').text('');
     $('#menu-register').show();
     $('#menu-signin').show();
     robozzle.displayLevels();
