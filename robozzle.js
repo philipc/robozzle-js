@@ -221,7 +221,6 @@ robozzle.setSortKind = function (sortKind) {
     $('#levelmenu li').removeClass('active');
     $('#levelmenu li[data-kind="' + sortKind + '"]').addClass('active');
     robozzle.sortKind = sortKind;
-    robozzle.getLevels(true);
 };
 
 robozzle.hashPassword = function (password) {
@@ -324,10 +323,11 @@ $(document).ready(function () {
     });
     $('#levelmenu li').click(function () {
         robozzle.setSortKind(parseInt($(this).attr('data-kind')));
+        robozzle.getLevels(true);
     });
 
     robozzle.sortKind = -1;
-    robozzle.setSortKind(1);
+    robozzle.setSortKind(0);
     robozzle.topSolvers();
 
     var signinForm;
@@ -390,6 +390,12 @@ $(document).ready(function () {
     var userName = localStorage.getItem('userName');
     var password = localStorage.getItem('password');
     if (userName !== null && password !== null) {
-        robozzle.logIn(userName, password, function (result) {});
+        var spinner = new Spinner().spin($('#levellist-spinner')[0]);
+        robozzle.logIn(userName, password, function (result) {
+            spinner.stop();
+            robozzle.getLevels(false);
+        });
+    } else {
+        robozzle.getLevels(false);
     }
 });
