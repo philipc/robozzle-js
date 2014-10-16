@@ -319,6 +319,7 @@ $(document).ready(function () {
     });
     $('#hidesolved').click(function () {
         robozzle.hideSolved = $(this).prop('checked');
+        localStorage.setItem('hideSolved', robozzle.hideSolved);
         robozzle.getLevels(true);
     });
     $('#levelmenu li').click(function () {
@@ -379,6 +380,12 @@ $(document).ready(function () {
         signin.dialog('open');
     });
     $('#menu-signout').on('click', robozzle.logOut);
+
+    var hideSolved = localStorage.getItem('hideSolved');
+    if (hideSolved != null) {
+        robozzle.hideSolved = hideSolved === 'true';
+        $('#hidesolved').prop('checked', robozzle.hideSolved);
+    }
 
     var userName = localStorage.getItem('userName');
     var password = localStorage.getItem('password');
