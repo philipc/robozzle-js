@@ -22,6 +22,9 @@ robozzle.parseXML = function (node) {
     if (node.nodeType == 3) {
         return node.nodeValue.replace(/^\s+/,'').replace(/\s+$/,'');
     } else if (node.nodeType == 1) {
+        if (node.getAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'nil') === 'true') {
+            return null;
+        }
         var obj = {};
         for (var childNode = node.firstChild; childNode; childNode = childNode.nextSibling) {
             //console.log([childNode.nodeName, childNode.nodeType, childNode.namespaceURI]);
@@ -109,10 +112,15 @@ robozzle.displayLevel = function (level) {
         .text(level.CommentCount + ' comments')
         .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
         .attr('target', '_blank');
-    html.find('a.author')
-        .text(level.SubmittedBy)
-        .attr('href', 'user.aspx?name=' + level.SubmittedBy)
-        .attr('target', '_blank');
+    if (level.SubmittedBy != null) {
+        html.find('a.author')
+            .text(level.SubmittedBy)
+            .attr('href', 'user.aspx?name=' + level.SubmittedBy)
+            .attr('target', '_blank')
+            .show();
+    } else {
+        html.find('span.author').hide();
+    }
     html.find('span.liked').text('+' + level.Liked);
     html.find('span.disliked').text('-' + level.Disliked);
     if (robozzle.solvedLevels[level.Id.toString()]) {
