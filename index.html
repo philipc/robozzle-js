@@ -20,7 +20,7 @@
                     <h2>a social puzzle game</h2>
                 </header>
                 <ul class="menu">
-                    <li class="active" id="menu-play" style="width: 100px">Puzzles</li>
+                    <li id="menu-play" class="active" style="width: 100px">Puzzles</li>
                     <li id="menu-makepuzzle" style="width: 100px">Make a Puzzle</li>
                     <li id="menu-forums" style="width: 70px"><a href="/forums/" target="_blank">Forums</a></li>
                     <li id="menu-wiki" style="width: 70px"><a href="/wiki/" target="_blank">Wiki</a></li>
@@ -31,50 +31,60 @@
                     <li id="menu-signout" style="width: 66px; float: right">Sign Out</li>
                 </ul>
                 <div id="content">
-                    <div id="levels">
-                        <ul class="tabbar" id="levelmenu">
-                            <li data-kind="0">Campaign</li><li data-kind="3">Popular</li><li data-kind="1">Easy to hard</li><li data-kind="2">New to old</li>
-                        </ul>
-                        <div id="levellist-container">
-                            <ul id="levellist">
+                    <div id="content-levels">
+                        <div id="levels">
+                            <ul class="tabbar" id="levelmenu">
+                                <li data-kind="0">Campaign</li><li data-kind="3">Popular</li><li data-kind="1">Easy to hard</li><li data-kind="2">New to old</li>
                             </ul>
-                            <div id="levellist-spinner">
-                            </div>
-                            <button id="refresh">Refresh</button>
-                            <div id="pagecontrol"><div>
-                                <button id="pagefirst">First</button><button id="pageprev">Prev</button><input type="text" id="pagecurrent" value="1"></input>/<span id="pagemax">1</span><button id="pagenext">Next</button><button id="pagelast">Last</button>
-                            </div></div>
-                            <div id="hidesolved-container">
-                                <input type="checkbox" id="hidesolved"><label for="hidesolved">Hide solved</label>
+                            <div id="levellist-container">
+                                <ul id="levellist">
+                                </ul>
+                                <div id="levellist-spinner">
+                                </div>
+                                <button id="refresh">Refresh</button>
+                                <div id="pagecontrol"><div>
+                                    <button id="pagefirst">First</button><button id="pageprev">Prev</button><input type="text" id="pagecurrent" value="1"></input>/<span id="pagemax">1</span><button id="pagenext">Next</button><button id="pagelast">Last</button>
+                                </div></div>
+                                <div id="hidesolved-container">
+                                    <input type="checkbox" id="hidesolved"><label for="hidesolved">Hide solved</label>
+                                </div>
                             </div>
                         </div>
+                        <div id="scoreboard">
+                            <h1>Most Puzzles Solved</h1>
+                            <table id="topsolvers">
+                            </table>
+                            <h1>Most Solved Today</h1>
+                            <table id="topsolverstoday">
+                            </table>
+                            <a href="scoreboard.aspx" target="_blank">Full scoreboard</a>
+                        </div>
                     </div>
-                    <div id="game">
+                    <div id="content-game">
+                        <div id="statusbar">
+                            <div class="title">
+                            </div>
+                            <div class="stats">
+                                <a class="stats">stats</a>
+                                <a class="comments">comments</a>
+                            </div>
+                            <div class="hint">
+                            </div>
+                        </div>
                         <div id="board">
-                            <div id="statusbar">
-                            </div>
-                            <div id="designtoolbar">
-                            </div>
-                            <div id="designpanel">
-                            </div>
-                            <div id="painttoolbar">
-                            </div>
-                            <div id="program">
-                            </div>
-                            <div id="gametoolbar">
-                            </div>
+                        </div>
+                        <div id="designtoolbar">
+                        </div>
+                        <div id="designpanel">
+                        </div>
+                        <div id="painttoolbar">
+                        </div>
+                        <div id="program">
+                        </div>
+                        <div id="gametoolbar">
                         </div>
                     </div>
-                    <div id="tutorial"></div>
-                    <div id="scoreboard">
-                        <h1>Most Puzzles Solved</h1>
-                        <table id="topsolvers">
-                        </table>
-                        <h1>Most Solved Today</h1>
-                        <table id="topsolverstoday">
-                        </table>
-                        <a href="scoreboard.aspx" target="_blank">Full scoreboard</a>
-                    </div>
+                    <div id="content-tutorial"></div>
                 </div>
             </div>
         </div>

@@ -100,6 +100,7 @@ robozzle.topSolvers = function () {
 
 robozzle.displayLevel = function (level) {
     var html = $('#templates .levelitem').clone();
+    html.attr('data-level-id', level.Id);
     html.find('div.title').text(level.Title);
     var difficulty = '-';
     if (level.DifficultyVoteCount !== 0)
@@ -116,8 +117,7 @@ robozzle.displayLevel = function (level) {
         html.find('a.author')
             .text(level.SubmittedBy)
             .attr('href', 'user.aspx?name=' + level.SubmittedBy)
-            .attr('target', '_blank')
-            .show();
+            .attr('target', '_blank');
     } else {
         html.find('span.author').hide();
     }
@@ -126,6 +126,9 @@ robozzle.displayLevel = function (level) {
     if (robozzle.solvedLevels[level.Id.toString()]) {
         html.addClass('solved');
     }
+    html.click(function () {
+        robozzle.displayGame($(this).attr('data-level-id'));
+    });
     return html;
 };
 
@@ -157,6 +160,9 @@ robozzle.clampPageIndex = function () {
 };
 
 robozzle.getLevels = function (force) {
+    $('#content').children().hide();
+    $('#content-levels').show();
+
     // Prevent multiple requests
     if (robozzle.levelLoading) {
         robozzle.levelReload = true;
@@ -230,6 +236,30 @@ robozzle.setSortKind = function (sortKind) {
     $('#levelmenu li[data-kind="' + sortKind + '"]').addClass('active');
     robozzle.sortKind = sortKind;
 };
+
+robozzle.displayGame = function (id) {
+    var level = null;
+    for (var i = 0; i < robozzle.levels.length; i++) {
+        if (robozzle.levels[i].Id === id) {
+            level = robozzle.levels[i];
+        }
+    }
+    if (level === null) {
+        //FIXME: fetch level
+        return;
+    }
+    $('#content').children().hide();
+    $('#content-game').show();
+    var status = $('#statusbar');
+    status.find('div.title').text(level.Title);
+    status.find('a.stats')
+        .attr('href', 'puzzle.aspx?id=' + level.Id)
+        .attr('target', '_blank');
+    status.find('a.comments')
+        .text(level.CommentCount + ' comments')
+        .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
+        .attr('target', '_blank');
+}
 
 robozzle.hashPassword = function (password) {
     var salt = '5A6fKpgSnXoMpxbcHcb7';
@@ -333,6 +363,9 @@ $(document).ready(function () {
         robozzle.setSortKind(parseInt($(this).attr('data-kind')));
         robozzle.getLevels(true);
     });
+    $('#menu-play').click(function () {
+        robozzle.getLevels(false);
+    });
 
     robozzle.sortKind = -1;
     robozzle.setSortKind(0);
@@ -394,6 +427,9 @@ $(document).ready(function () {
         robozzle.hideSolved = hideSolved === 'true';
         $('#hidesolved').prop('checked', robozzle.hideSolved);
     }
+
+    $('#content').children().hide();
+    $('#content-levels').show();
 
     var userName = localStorage.getItem('userName');
     var password = localStorage.getItem('password');

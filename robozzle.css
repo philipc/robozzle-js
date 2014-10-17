@@ -118,6 +118,9 @@ li.levelitem:hover {
 li.levelitem.solved {
     background-color: #707070;
 }
+li.levelitem.solved:hover {
+    background-color: #808080;
+}
 li.levelitem div.title {
     position: absolute;
     top: 5px;
@@ -210,6 +213,9 @@ li.levelitem span.disliked {
 }
 #scoreboard a:visited {
     color: #d0d0b0;
+}
+#content > div {
+    display: none;
 }
 #menu-signout, #menu-user {
     display: none;
