@@ -247,6 +247,7 @@ robozzle.displayGame = function (level) {
     $('#menu li').removeClass('active');
     $('#content').children().hide();
     $('#content-game').show();
+
     var status = $('#statusbar');
     status.find('span.title').text(level.Title);
     if (level.About !== null) {
@@ -261,6 +262,31 @@ robozzle.displayGame = function (level) {
         .text(level.CommentCount + ' comments')
         .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
         .attr('target', '_blank');
+
+    var board = $('#board').empty();
+    for (var j = 0; j < level.Colors.length; j++) {
+        var colors = level.Colors[j];
+        var items = level.Items[j];
+        var row = $('<tr/>');
+        for (var i = 0; i < colors.length; i++) {
+            var item = $('<div/>').addClass('item');
+            if (items.charAt(i) === '*') {
+                item.addClass('item-star');
+            }
+            var cell = $('<td/>').append(item);
+            if (items.charAt(i) !== '#') {
+                if (colors.charAt(i) === 'R') {
+                    cell.addClass('board-color-red');
+                } else if (colors.charAt(i) === 'G') {
+                    cell.addClass('board-color-green');
+                } else if (colors.charAt(i) === 'B') {
+                    cell.addClass('board-color-blue');
+                }
+            }
+            row.append(cell);
+        }
+        board.append(row);
+    }
 };
 
 robozzle.setGame = function (id) {
