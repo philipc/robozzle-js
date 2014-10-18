@@ -1,6 +1,6 @@
 /*==========================
 jquery.soap.js  http://plugins.jquery.com/soap/ or https://github.com/doedje/jquery.soap
-version: 1.4.2
+version: 1.4.4
 
 jQuery plugin for communicating with a web service using SOAP.
 
@@ -31,7 +31,7 @@ For information about how to use jQuery.soap, authors, changelog, the latest ver
 Visit: https://github.com/doedje/jquery.soap
 
 Documentation about THIS version is found here:
-https://github.com/doedje/jquery.soap/blob/1.4.2/README.md
+https://github.com/doedje/jquery.soap/blob/1.4.4/README.md
 
 ======================*/
 
@@ -209,8 +209,12 @@ https://github.com/doedje/jquery.soap/blob/1.4.2/README.md
 			if (!soapEnv.attr('xmlns:' + this.prefix)) {
 				soapEnv.addNamespace(this.prefix, this.soapConfig.namespaceURL);
 			}
-			// maybe add xsi here?
-			// xsi="http://www.w3.org/2001/XMLSchema-instance
+			if (!soapEnv.attr('xmlns:xsi')) {
+				soapEnv.addNamespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+			}
+			if (!soapEnv.attr('xmlns:xsd')) {
+				soapEnv.addNamespace('xsd', 'http://www.w3.org/2001/XMLSchema');
+			}
 			return '<?xml version="1.0" encoding="UTF-8"?>' + soapEnv.toString();
 		},
 		send: function(options) {
@@ -262,7 +266,7 @@ https://github.com/doedje/jquery.soap/blob/1.4.2/README.md
 		this.value = undefined;
 
 		this.attr = function(name, value) {
-			if (!!name && !!value) {
+			if (!!name && !!value || !!name && value === "") {
 				this.attributes[name] = value;
 				return this;
 			} else if (!!name) {
@@ -273,7 +277,7 @@ https://github.com/doedje/jquery.soap/blob/1.4.2/README.md
 		};
 		this.val = function(value) {
 			if (value === undefined) {
-				if (this.attr('nil') === 'true') {
+				if (this.attr('xsi:nil') === 'true') {
 					return null;
 				} else {
 					return this.value;
@@ -282,7 +286,7 @@ https://github.com/doedje/jquery.soap/blob/1.4.2/README.md
 				this.value = value;
 				return this;
 			} else {
-				this.attr("nil","true");
+				this.attr("xsi:nil","true");
 				return this;
 			}
 		};
@@ -445,7 +449,7 @@ https://github.com/doedje/jquery.soap/blob/1.4.2/README.md
 			var childObject;
 			if (params === null) {
 				soapObject = new SOAPObject(prefix+name);
-				soapObject.attr('nil', true);
+				soapObject.attr('xsi:nil', 'true');
 			} else if (typeof params == 'object') {
 				// added by DT - check if object is in fact an Array and treat accordingly
 				if(params.constructor.toString().indexOf("Array") > -1) { // type is array
