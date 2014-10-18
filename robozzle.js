@@ -47,10 +47,6 @@ robozzle.parseXML = function (node) {
                 obj[childName] = childVal;
             }
         }
-        // This is a bit of a hack.  It's needed when LevelInfo2.About is empty.
-        if ($.isEmptyObject(obj)) {
-            return null;
-        }
         return obj;
     } else if (node.nodeType == 9) {
         return robozzle.parseXML(node.documentElement);
@@ -250,7 +246,7 @@ robozzle.displayGame = function (level) {
 
     var status = $('#statusbar');
     status.find('span.title').text(level.Title);
-    if (level.About !== null) {
+    if (!jQuery.isEmptyObject(level.About) && level.About !== null) {
         status.find('div.about').text(level.About).show();
     } else {
         status.find('div.about').hide();
