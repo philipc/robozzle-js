@@ -34,14 +34,14 @@ header h2 {
     font-size: 14px;
     font-weight: normal;
 }
-ul.menu {
+#menu {
     list-style: none;
     margin: 0;
     padding: 0;
     height: 26px;
     background-color: #909090;
 }
-ul.menu li {
+#menu li {
     float: left;
     height: 26px;
     line-height: 26px;
@@ -52,14 +52,14 @@ ul.menu li {
     color: #505050;
     cursor: pointer;
 }
-ul.menu li:hover {
+#menu li:hover {
     background-color: #a0a0a0;
 }
-ul.menu li.active {
+#menu li.active {
     background-color: #707070;
     color: white;
 }
-ul.menu a {
+#menu a {
     color: #505050;
     text-decoration: none;
 }

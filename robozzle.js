@@ -160,6 +160,8 @@ robozzle.clampPageIndex = function () {
 };
 
 robozzle.getLevels = function (force) {
+    $('#menu li').removeClass('active');
+    $('#menu-levels').addClass('active');
     $('#content').children().hide();
     $('#content-levels').show();
 
@@ -248,6 +250,7 @@ robozzle.displayGame = function (id) {
         //FIXME: fetch level
         return;
     }
+    $('#menu li').removeClass('active');
     $('#content').children().hide();
     $('#content-game').show();
     var status = $('#statusbar');
@@ -363,7 +366,7 @@ $(document).ready(function () {
         robozzle.setSortKind(parseInt($(this).attr('data-kind')));
         robozzle.getLevels(true);
     });
-    $('#menu-play').click(function () {
+    $('#menu-levels').click(function () {
         robozzle.getLevels(false);
     });
 
@@ -428,6 +431,8 @@ $(document).ready(function () {
         $('#hidesolved').prop('checked', robozzle.hideSolved);
     }
 
+    $('#menu li').removeClass('active');
+    $('#menu-levels').addClass('active');
     $('#content').children().hide();
     $('#content-levels').show();
 
