@@ -47,6 +47,10 @@ robozzle.parseXML = function (node) {
                 obj[childName] = childVal;
             }
         }
+        // This is a bit of a hack.  It's needed when LevelInfo2.About is empty.
+        if ($.isEmptyObject(obj)) {
+            return null;
+        }
         return obj;
     } else if (node.nodeType == 9) {
         return robozzle.parseXML(node.documentElement);
