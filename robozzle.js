@@ -131,7 +131,7 @@ robozzle.displayLevel = function (level) {
         html.addClass('solved');
     }
     html.click(function () {
-        robozzle.displayGame($(this).attr('data-level-id'));
+        robozzle.setGame($(this).attr('data-level-id'));
     });
     return html;
 };
@@ -243,17 +243,7 @@ robozzle.setSortKind = function (sortKind) {
     robozzle.sortKind = sortKind;
 };
 
-robozzle.displayGame = function (id) {
-    var level = null;
-    for (var i = 0; i < robozzle.levels.length; i++) {
-        if (robozzle.levels[i].Id === id) {
-            level = robozzle.levels[i];
-        }
-    }
-    if (level === null) {
-        //FIXME: fetch level
-        return;
-    }
+robozzle.displayGame = function (level) {
     $('#menu li').removeClass('active');
     $('#content').children().hide();
     $('#content-game').show();
@@ -266,6 +256,25 @@ robozzle.displayGame = function (id) {
         .text(level.CommentCount + ' comments')
         .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
         .attr('target', '_blank');
+};
+
+robozzle.setGame = function (id) {
+    if (robozzle.levels !== null) {
+        var level;
+        for (var i = 0; i < robozzle.levels.length; i++) {
+            level = robozzle.levels[i];
+            if (robozzle.levels[i].Id === id) {
+                robozzle.displayGame(level);
+                return;
+            }
+        }
+    }
+    var request = {
+        levelId: id
+    };
+    robozzle.service('GetLevel', request, function (result, response) {
+        robozzle.displayGame(response.GetLevelResult);
+    });
 }
 
 robozzle.hashPassword = function (password) {
