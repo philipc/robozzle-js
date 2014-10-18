@@ -248,7 +248,12 @@ robozzle.displayGame = function (level) {
     $('#content').children().hide();
     $('#content-game').show();
     var status = $('#statusbar');
-    status.find('div.title').text(level.Title);
+    status.find('span.title').text(level.Title);
+    if (level.About !== null) {
+        status.find('div.about').text(level.About).show();
+    } else {
+        status.find('div.about').hide();
+    }
     status.find('a.stats')
         .attr('href', 'puzzle.aspx?id=' + level.Id)
         .attr('target', '_blank');
