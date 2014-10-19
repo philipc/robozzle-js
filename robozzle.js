@@ -259,30 +259,31 @@ robozzle.displayGame = function (level) {
         .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
         .attr('target', '_blank');
 
-    var board = $('#board').empty();
+    var board = [];
+    var $board = $('<table/>').addClass('board');
     for (var j = 0; j < level.Colors.length; j++) {
         var colors = level.Colors[j];
         var items = level.Items[j];
-        var row = $('<tr/>');
+        var row = [];
+        var $row = $('<tr/>');
         for (var i = 0; i < colors.length; i++) {
-            var item = $('<div/>').addClass('item');
-            if (items.charAt(i) === '*') {
-                item.addClass('item-star');
-            }
-            var cell = $('<td/>').append(item);
+            var $item = $('<div/>').addClass('item');
+            var $cell = $('<td/>').addClass('board').append($item);
             if (items.charAt(i) !== '#') {
-                if (colors.charAt(i) === 'R') {
-                    cell.addClass('board-color-red');
-                } else if (colors.charAt(i) === 'G') {
-                    cell.addClass('board-color-green');
-                } else if (colors.charAt(i) === 'B') {
-                    cell.addClass('board-color-blue');
-                }
+                $item.attr('data-item', items.charAt(i));
+                $cell.attr('data-color', colors.charAt(i));
             }
-            row.append(cell);
+            row.push($cell);
+            $row.append($cell);
         }
-        board.append(row);
+        board.push(row);
+        $board.append($row);
     }
+    var $robot = $('<div/>').addClass('robot')
+        .attr('data-dir', level.RobotDir)
+        .css('left', level.RobotCol * 40 + 'px')
+        .css('top', level.RobotRow * 40 + 'px');
+    $('#board').empty().append($board).append($robot);
 };
 
 robozzle.setGame = function (id) {

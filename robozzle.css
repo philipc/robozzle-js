@@ -240,44 +240,50 @@ li.levelitem span.disliked {
     color: #d0d0b0;
 }
 #board {
+    position: relative;
+}
+table.board {
     border-collapse: collapse;
 }
-#board td {
+td.board {
     padding: 0px;
     width: 40px;
     height: 40px;
     background: url(images/board.png) no-repeat;
     background-position: 0px 40px;
 }
-#board td.board-color-red {
+td.board[data-color=R] {
     background-position: 0px 0px;
 }
-#board td.board-color-green {
+td.board[data-color=G] {
     background-position: 0px -40px;
 }
-#board td.board-color-blue {
+td.board[data-color=B] {
     background-position: 0px -80px;
 }
-#board div.item {
+div.item, div.robot {
     width: 40px;
     height: 40px;
     background: url(images/item.png) no-repeat;
     background-position: 40px 0px;
 }
-#board div.item-robot-left {
+div.item[data-item='*'] {
+    background-position: -160px 0px;
+}
+div.robot {
+    position: absolute;
+}
+div.robot[data-dir='0'] {
     background-position: 0px 0px;
 }
-#board div.item-robot-down {
+div.robot[data-dir='1'] {
     background-position: -40px 0px;
 }
-#board div.item-robot-right {
+div.robot[data-dir='2'] {
     background-position: -80px 0px;
 }
-#board div.item-robot-up {
+div.robot[data-dir='3'] {
     background-position: -120px 0px;
-}
-#board div.item-star {
-    background-position: -160px 0px;
 }
 #content > div {
     display: none;
