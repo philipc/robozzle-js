@@ -239,26 +239,7 @@ robozzle.setSortKind = function (sortKind) {
     robozzle.sortKind = sortKind;
 };
 
-robozzle.displayGame = function (level) {
-    $('#menu li').removeClass('active');
-    $('#content').children().hide();
-    $('#content-game').show();
-
-    var status = $('#statusbar');
-    status.find('span.title').text(level.Title);
-    if (!jQuery.isEmptyObject(level.About) && level.About !== null) {
-        status.find('div.about').text(level.About).show();
-    } else {
-        status.find('div.about').hide();
-    }
-    status.find('a.stats')
-        .attr('href', 'puzzle.aspx?id=' + level.Id)
-        .attr('target', '_blank');
-    status.find('a.comments')
-        .text(level.CommentCount + ' comments')
-        .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
-        .attr('target', '_blank');
-
+robozzle.displayBoard = function (level) {
     var board = [];
     var $board = $('<table/>').addClass('board');
     for (var j = 0; j < level.Colors.length; j++) {
@@ -286,6 +267,29 @@ robozzle.displayGame = function (level) {
     $('#board').empty().append($board).append($robot);
 };
 
+robozzle.displayGame = function (level) {
+    $('#menu li').removeClass('active');
+    $('#content').children().hide();
+    $('#content-game').show();
+
+    var status = $('#statusbar');
+    status.find('span.title').text(level.Title);
+    if (!jQuery.isEmptyObject(level.About) && level.About !== null) {
+        status.find('div.about').text(level.About).show();
+    } else {
+        status.find('div.about').hide();
+    }
+    status.find('a.stats')
+        .attr('href', 'puzzle.aspx?id=' + level.Id)
+        .attr('target', '_blank');
+    status.find('a.comments')
+        .text(level.CommentCount + ' comments')
+        .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
+        .attr('target', '_blank');
+
+    robozzle.displayBoard(level);
+};
+
 robozzle.setGame = function (id) {
     if (robozzle.levels !== null) {
         var level;
@@ -303,7 +307,7 @@ robozzle.setGame = function (id) {
     robozzle.service('GetLevel', request, function (result, response) {
         robozzle.displayGame(response.GetLevelResult);
     });
-}
+};
 
 robozzle.hashPassword = function (password) {
     var salt = '5A6fKpgSnXoMpxbcHcb7';
