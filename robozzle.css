@@ -214,6 +214,13 @@ li.levelitem span.disliked {
 #scoreboard a:visited {
     color: #d0d0b0;
 }
+.table-container {
+    display: table;
+}
+.table-column {
+    display: table-cell;
+    vertical-align: top;
+}
 #statusbar {
     width: 620px;
     padding: 3px 10px 10px;
@@ -269,6 +276,24 @@ div.robot-2 {
 }
 div.robot-3 {
     transform: rotate(270deg);
+}
+#program {
+    vertical-align: bottom;
+}
+#program-toolbar {
+    vertical-align: bottom;
+}
+#program-toolbar > div {
+    display: block;
+}
+div.func {
+    line-height: 0;
+    margin: 10px;
+}
+div.condition, div.command {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
 }
 #content > div {
     display: none;
