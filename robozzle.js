@@ -18,6 +18,17 @@ var robozzle = {
     votes: {}
 };
 
+(function ( $ ) {
+$.fn.updateClass = function (classBase, classVal) {
+    var pattern = new RegExp('(^|\s)' + classBase + '-[A-Za-z0-9]+', 'g');
+    this.attr('class',
+               function (i, c) {
+                   return c.replace(pattern, '');
+               });
+    return classVal === null ? this : this.addClass(classBase + '-' + classVal);
+};
+})(jQuery);
+
 robozzle.parseXML = function (node) {
     if (node.nodeType == 3) {
         return node.nodeValue.replace(/^\s+/,'').replace(/\s+$/,'');
@@ -251,8 +262,10 @@ robozzle.displayBoard = function (level) {
             var $item = $('<div/>').addClass('item');
             var $cell = $('<td/>').addClass('board').append($item);
             if (items.charAt(i) !== '#') {
-                $item.attr('data-item', items.charAt(i));
-                $cell.attr('data-color', colors.charAt(i));
+                $cell.updateClass('board-color', colors.charAt(i));
+                if (items.charAt(i) === '*') {
+                    $item.addClass('board-star');
+                }
             }
             row.push($cell);
             $row.append($cell);
@@ -261,7 +274,7 @@ robozzle.displayBoard = function (level) {
         $board.append($row);
     }
     var $robot = $('<div/>').addClass('robot')
-        .attr('data-dir', level.RobotDir)
+        .updateClass('robot', level.RobotDir)
         .css('left', level.RobotCol * 40 + 'px')
         .css('top', level.RobotRow * 40 + 'px');
     $('#board').empty().append($board).append($robot);
@@ -383,7 +396,61 @@ robozzle.logOut = function () {
     robozzle.displayLevels();
 };
 
+robozzle.css = function (selector, property, value) {
+        try {
+            document.styleSheets[0].insertRule(selector + ' {' + property + ':' + value + '}',
+                document.styleSheets[0].cssRules.length);
+        } catch(err) {
+            try {
+                document.styleSheets[0].addRule(selector, property + ':' + value);
+            } catch(err) {}
+        }
+};
+
+robozzle.cssSVG = function (selector, property, value) {
+    var value64 = 'url("data:image/svg+xml;base64,' + window.btoa(value) + '")';
+    robozzle.css(selector, property, value64);
+};
+
+robozzle.loadSVGTile = function (color, color1, color2) {
+    robozzle.cssSVG('td.board-color-' + color, 'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">\
+            <defs>\
+                <linearGradient id="conditionfill" x1="0" y1="0" x2="1" y2="0">\
+                    <stop offset="0" stop-color="' + color1 + '"/>\
+                    <stop offset="1" stop-color="' + color2 + '"/>\
+                </linearGradient>\
+            </defs>\
+            <rect width="100%" height="100%" fill="url(#conditionfill)" stroke="black"/>\
+        </svg>');
+};
+
+robozzle.loadSVG = function () {
+    robozzle.loadSVGTile('R', '#ff6868', '#c53838');
+    robozzle.loadSVGTile('G', '#63c963', '#339933');
+    robozzle.loadSVGTile('B', '#6363ff', '#3333cc');
+
+    robozzle.cssSVG('div.board-star', 'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 80 80">\
+            <path fill="#ffff33" stroke="none" d="M40,20 35,34 21,34 32,42 28,56 40,48 52,56 48,42 59,34 45,34 z"/>\
+        </svg>');
+
+    robozzle.cssSVG('div.robot', 'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="3 0 43 40">\
+            <defs>\
+                <linearGradient id="robotfill" x1="0" x2="0" y1="0" y2="1">\
+                    <stop offset="0.4" stop-color="#808080"/>\
+                    <stop offset="0.5" stop-color="#FFFFFF"/>\
+                    <stop offset="0.6" stop-color="#808080"/>\
+                </linearGradient>\
+            </defs>\
+            <path fill="url(#robotfill)" stroke="#000000" stroke-opacity="0.4" d="M10,10 L35,20 10,30 17,20 z"/>\
+        </svg>');
+};
+
 $(document).ready(function () {
+    robozzle.loadSVG();
+
     $('#pagefirst').click(function () {
         robozzle.setPageIndex(0);
     });
