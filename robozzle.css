@@ -280,11 +280,24 @@ div.robot-3 {
 #program {
     vertical-align: bottom;
 }
-#program-toolbar {
+#program-toolbar-container {
     vertical-align: bottom;
 }
-#program-toolbar > div {
-    display: block;
+#program-toolbar {
+    vertical-align: bottom;
+    background-color: #707070;
+    padding: 5px;
+}
+div.icon-group {
+    padding: 5px;
+}
+div.icon {
+    width: 30px;
+    height: 30px;
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+    margin: -1px;
 }
 div.func {
     line-height: 0;

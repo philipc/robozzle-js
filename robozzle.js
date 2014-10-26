@@ -302,31 +302,29 @@ robozzle.displayProgram = function (level) {
 
 robozzle.displayProgramToolbar = function (level) {
     var $toolbar = $('#program-toolbar').empty();
-    var appendCommand = function (command) {
-        $toolbar.append(
-                $('<div/>').addClass('condition').updateClass('condition', 'any').append(
-                        $('<div/>').addClass('command').updateClass('command', command)));
+    var $group = $('<div/>').addClass('icon-group');
+    var makeCommand = function (command) {
+        return $('<div/>')
+            .addClass('icon')
+            .append($('<div/>').addClass('command').updateClass('command', command));
     }
-    var appendCondition = function (condition) {
-        $toolbar.append(
-                $('<div/>').addClass('condition').updateClass('condition', 'any').append(
-                        $('<div/>').addClass('command').updateClass('condition', condition)));
+    var makeCondition = function (condition) {
+        return $('<div/>')
+            .addClass('icon')
+            .append($('<div/>').addClass('command').updateClass('condition', condition));
     }
-    appendCommand('f');
-    appendCommand('l');
-    appendCommand('r');
-    appendCommand('1');
-    appendCommand('2');
-    appendCommand('3');
-    appendCommand('4');
-    appendCommand('5');
-    appendCommand('R');
-    appendCommand('G');
-    appendCommand('B');
-    appendCondition('any');
-    appendCondition('R');
-    appendCondition('G');
-    appendCondition('B');
+    $toolbar.append(
+            $('<div/>').addClass('icon-group')
+            .append(makeCommand('f'), makeCommand('l'), makeCommand('r')));
+    $toolbar.append(
+            $('<div/>').addClass('icon-group')
+            .append(makeCommand('1'), makeCommand('2'), makeCommand('3'), makeCommand('4'), makeCommand('5')));
+    $toolbar.append(
+            $('<div/>').addClass('icon-group')
+            .append(makeCommand('R'), makeCommand('G'), makeCommand('B')));
+    $toolbar.append(
+            $('<div/>').addClass('icon-group')
+            .append(makeCondition('any'), makeCondition('R'), makeCondition('G'), makeCondition('B')));
 }
 
 robozzle.displayGame = function (level) {
@@ -513,6 +511,43 @@ robozzle.loadSVGCondition = function (condition, color1, color2) {
         </svg>');
 };
 
+robozzle.loadSVGIcon = function () {
+    robozzle.cssSVG('div.icon', 'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <defs>\
+                <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>\
+                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
+                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>\
+                </linearGradient>\
+            </defs>\
+            <rect width="100%" height="100%" fill="#595959" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
+        </svg>');
+    robozzle.cssSVG('div.icon:hover', 'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <defs>\
+                <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>\
+                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
+                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>\
+                </linearGradient>\
+                <linearGradient id="hovershinebrush" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.3"/>\
+                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
+                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
+                    <stop offset="0.856" stop-color="#ffffff" stop-opacity="0"/>\
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0.15"/>\
+                </linearGradient>\
+            </defs>\
+            <rect width="100%" height="100%" fill="#393939" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#hovershinebrush)" stroke="none"/>\
+        </svg>');
+};
+
 robozzle.loadSVG = function () {
     robozzle.loadSVGTile('R', '#ff6868', '#c53838');
     robozzle.loadSVGTile('G', '#63c963', '#339933');
@@ -566,6 +601,8 @@ robozzle.loadSVG = function () {
     robozzle.loadSVGCondition('R', '#ff6868', '#c53838');
     robozzle.loadSVGCondition('G', '#63c963', '#339933');
     robozzle.loadSVGCondition('B', '#6363ff', '#3333cc');
+
+    robozzle.loadSVGIcon();
 };
 
 $(document).ready(function () {
