@@ -524,7 +524,7 @@ robozzle.loadSVG = function () {
         </svg>');
 
     robozzle.cssSVG('div.robot', 'background',
-        '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="3 0 43 40">\
+        '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">\
             <defs>\
                 <linearGradient id="robotfill" x1="0" x2="0" y1="0" y2="1">\
                     <stop offset="0.4" stop-color="#808080"/>\
@@ -532,7 +532,7 @@ robozzle.loadSVG = function () {
                     <stop offset="0.6" stop-color="#808080"/>\
                 </linearGradient>\
             </defs>\
-            <path fill="url(#robotfill)" stroke="black" stroke-opacity="0.4" d="M10,10 L35,20 10,30 17,20 z"/>\
+            <path fill="url(#robotfill)" stroke="black" stroke-opacity="0.4" d="M8,10 L33,20 8,30 15,20 z"/>\
         </svg>');
 
     robozzle.cssSVG('div.command-f', 'background',
