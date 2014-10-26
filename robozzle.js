@@ -472,14 +472,18 @@ robozzle.loadSVGTile = function (color, color1, color2) {
                     <stop offset="1" stop-color="' + color2 + '"/>\
                 </linearGradient>\
             </defs>\
-            <rect width="100%" height="100%" fill="url(#conditionfill)" stroke="black"/>\
+            <rect width="100%" height="100%" fill="url(#conditionfill)" stroke="none"/>\
+            <line x1="0" x2="40" y1="1" y2="1" stroke-width="2" stroke-opacity="0.1" stroke="white"/>\
+            <line x1="1" x2="1" y1="0" y2="40" stroke-width="2" stroke-opacity="0.1" stroke="white"/>\
+            <line x1="0" x2="40" y1="39" y2="39" stroke-width="2" stroke-opacity="0.2" stroke="black"/>\
+            <line x1="39" x2="39" y1="0" y2="40" stroke-width="2" stroke-opacity="0.2" stroke="black"/>\
         </svg>');
 };
 
 robozzle.loadSVGPaint = function (command, color) {
     robozzle.cssSVG('div.command-' + command, 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
-        <circle cx="15" cy="15" r="8" stroke="black" fill="' + color + '"/>\
+            <circle cx="15" cy="15" r="8.5" stroke="black" fill="' + color + '"/>\
         </svg>');
 };
 
@@ -516,7 +520,7 @@ robozzle.loadSVG = function () {
 
     robozzle.cssSVG('div.board-star', 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 80 80">\
-            <path fill="#ffff33" stroke="none" d="M40,20 35,34 21,34 32,42 28,56 40,48 52,56 48,42 59,34 45,34 z"/>\
+            <path fill="#ffff33" stroke="black" stroke-opacity="0.4" d="M40,20 35,34 21,34 32,42 28,56 40,48 52,56 48,42 59,34 45,34 z"/>\
         </svg>');
 
     robozzle.cssSVG('div.robot', 'background',
@@ -528,7 +532,7 @@ robozzle.loadSVG = function () {
                     <stop offset="0.6" stop-color="#808080"/>\
                 </linearGradient>\
             </defs>\
-            <path fill="url(#robotfill)" stroke="#000000" stroke-opacity="0.4" d="M10,10 L35,20 10,30 17,20 z"/>\
+            <path fill="url(#robotfill)" stroke="black" stroke-opacity="0.4" d="M10,10 L35,20 10,30 17,20 z"/>\
         </svg>');
 
     robozzle.cssSVG('div.command-f', 'background',
