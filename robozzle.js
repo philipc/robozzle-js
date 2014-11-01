@@ -283,21 +283,25 @@ robozzle.displayBoard = function (level) {
 robozzle.displayProgram = function (level) {
     var program = [];
     var $program = $('#program').empty();
+    var $sublist = $('<div/>').addClass('sub-list').addClass('table-container');
     for (var j = 0; j < 5; j++) {
-        var func = [];
-        var $func = $('<div/>').addClass('func');
+        var sub = [];
+        var $subgrid = $('<div/>').addClass('sub-grid').addClass('table-column');
         for (var i = 0; i < 10; i++) {
             var $command = $('<div/>').addClass('command').text(i);
             var $condition = $('<div/>').addClass('condition').append($command);
             if (i == 5) {
-                $func.append($('<br/>'));
+                $subgrid.append($('<br/>'));
             }
-            func.push($condition);
-            $func.append($condition);
+            sub.push($condition);
+            $subgrid.append($condition);
         }
-        program.push(func);
-        $program.append($func);
+        program.push(sub);
+        var $sublabel = $('<div/>').addClass('sub-label').addClass('table-column').text('F' + (j + 1));
+        var $sub = $('<div/>').addClass('sub').addClass('table-row').append($sublabel).append($subgrid);
+        $sublist.append($sub);
     }
+    $program.append($sublist);
 };
 
 robozzle.displayProgramToolbar = function (level) {

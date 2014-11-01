@@ -217,6 +217,9 @@ li.levelitem span.disliked {
 .table-container {
     display: table;
 }
+.table-row {
+    display: table-row;
+}
 .table-column {
     display: table-cell;
     vertical-align: top;
@@ -304,9 +307,17 @@ div.icon {
     border-width: 1px;
     margin: -1px;
 }
-div.func {
-    line-height: 0;
-    margin: 10px;
+div.sub-list {
+    border-spacing: 10px;
+}
+div.sub {
+}
+div.sub-label {
+    vertical-align: middle;
+    color: white;
+}
+div.sub-grid {
+    white-space: nowrap;
 }
 div.condition, div.command {
     display: inline-block;
