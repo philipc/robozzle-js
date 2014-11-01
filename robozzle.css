@@ -287,9 +287,22 @@ div.robot-3 {
     vertical-align: bottom;
 }
 #program {
-    background-color: #707070;
     padding: 5px;
     margin: 5px;
+    background-color: #707070;
+    color: white;
+}
+#program-control {
+    white-space: nowrap;
+}
+#program-go {
+    width: 65%;
+}
+#program-step {
+    width: 33%;
+}
+#program-edit {
+    width: 100%;
 }
 #program-toolbar {
     background-color: #707070;
@@ -307,14 +320,15 @@ div.icon {
     border-width: 1px;
     margin: -1px;
 }
-div.sub-list {
+#sub-list {
+    display: table;
     border-spacing: 10px;
 }
 div.sub {
 }
 div.sub-label {
     vertical-align: middle;
-    color: white;
+    font-size: 14px;
 }
 div.sub-grid {
     white-space: nowrap;
@@ -329,6 +343,7 @@ div.command {
     text-align: center;
     vertical-align: middle;
     color: #707070;
+    font-size: 12px;
 }
 #content > div {
     display: none;

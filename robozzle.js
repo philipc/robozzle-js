@@ -282,8 +282,7 @@ robozzle.displayBoard = function (level) {
 
 robozzle.displayProgram = function (level) {
     var program = [];
-    var $program = $('#program').empty();
-    var $sublist = $('<div/>').addClass('sub-list').addClass('table-container');
+    var $sublist = $('#sub-list').empty();
     for (var j = 0; j < 5; j++) {
         var sub = [];
         var $subgrid = $('<div/>').addClass('sub-grid').addClass('table-column');
@@ -301,7 +300,6 @@ robozzle.displayProgram = function (level) {
         var $sub = $('<div/>').addClass('sub').addClass('table-row').append($sublabel).append($subgrid);
         $sublist.append($sub);
     }
-    $program.append($sublist);
 };
 
 robozzle.displayProgramToolbar = function (level) {
