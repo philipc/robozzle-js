@@ -465,7 +465,7 @@ robozzle.loadSVGTile = function (color, color1, color2) {
     robozzle.cssSVG('td.board-color-' + color, 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">\
             <defs>\
-                <linearGradient id="conditionfill" x1="0" y1="0" x2="1" y2="0">\
+                <linearGradient id="conditionfill" x1="0" y1="0" x2="1" y2="1">\
                     <stop offset="0" stop-color="' + color1 + '"/>\
                     <stop offset="1" stop-color="' + color2 + '"/>\
                 </linearGradient>\
@@ -549,9 +549,9 @@ robozzle.loadSVGIcon = function () {
 };
 
 robozzle.loadSVG = function () {
-    robozzle.loadSVGTile('R', '#ff6868', '#c53838');
-    robozzle.loadSVGTile('G', '#63c963', '#339933');
-    robozzle.loadSVGTile('B', '#6363ff', '#3333cc');
+    robozzle.loadSVGTile('R', '#e55858', '#c53838');
+    robozzle.loadSVGTile('G', '#53b953', '#339933');
+    robozzle.loadSVGTile('B', '#5353ec', '#3333cc');
 
     robozzle.cssSVG('div.board-star', 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 80 80">\
