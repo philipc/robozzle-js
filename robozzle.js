@@ -494,7 +494,7 @@ robozzle.loadSVGConditionIcon = function (condition, color1, color2) {
                     <stop offset="1" stop-color="' + color2 + '"/>\
                 </linearGradient>\
             </defs>\
-            <rect x="5" y="5" width="20" height="20" fill="url(#conditionfill)" stroke="black"/>\
+            <rect x="4.5" y="4.5" width="21" height="21" fill="url(#conditionfill)" stroke="black"/>\
         </svg>');
 };
 
