@@ -287,7 +287,7 @@ robozzle.displayProgram = function (level) {
         var func = [];
         var $func = $('<div/>').addClass('func');
         for (var i = 0; i < 10; i++) {
-            var $command = $('<div/>').addClass('command');
+            var $command = $('<div/>').addClass('command').text(i);
             var $condition = $('<div/>').addClass('condition').append($command);
             if (i == 5) {
                 $func.append($('<br/>'));
@@ -548,6 +548,19 @@ robozzle.loadSVGIcon = function () {
         </svg>');
 };
 
+robozzle.loadSVGConditionNone = function () {
+    robozzle.cssSVG('div.condition', 'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <defs>\
+                <linearGradient id="programfill" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#C0C0C0"/>\
+                    <stop offset="1" stop-color="#DDDDDD"/>\
+                </linearGradient>\
+            </defs>\
+            <rect x="0.5" y="0.5" width="29" height="29" fill="url(#programfill)" stroke="#404040"/>\
+        </svg>');
+};
+
 robozzle.loadSVG = function () {
     robozzle.loadSVGTile('R', '#e55858', '#c53838');
     robozzle.loadSVGTile('G', '#53b953', '#339933');
@@ -601,6 +614,7 @@ robozzle.loadSVG = function () {
     robozzle.loadSVGCondition('R', '#ff6868', '#c53838');
     robozzle.loadSVGCondition('G', '#63c963', '#339933');
     robozzle.loadSVGCondition('B', '#6363ff', '#3333cc');
+    robozzle.loadSVGConditionNone();
 
     robozzle.loadSVGIcon();
 };

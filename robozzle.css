@@ -277,16 +277,21 @@ div.robot-2 {
 div.robot-3 {
     transform: rotate(270deg);
 }
-#program {
+#program-container {
     vertical-align: bottom;
 }
 #program-toolbar-container {
     vertical-align: bottom;
 }
-#program-toolbar {
-    vertical-align: bottom;
+#program {
     background-color: #707070;
     padding: 5px;
+    margin: 5px;
+}
+#program-toolbar {
+    background-color: #707070;
+    padding: 5px;
+    margin: 5px;
 }
 div.icon-group {
     padding: 5px;
@@ -307,6 +312,12 @@ div.condition, div.command {
     display: inline-block;
     width: 30px;
     height: 30px;
+}
+div.command {
+    line-height: 30px;
+    text-align: center;
+    vertical-align: middle;
+    color: #707070;
 }
 #content > div {
     display: none;
