@@ -309,16 +309,23 @@ div.robot-3 {
     padding: 5px;
     margin: 5px;
 }
-div.icon-group {
+.icon-group {
     padding: 5px;
 }
-div.icon {
-    width: 30px;
-    height: 30px;
+.icon {
+    display: block;
+    outline: none;
+    width: 32px;
+    height: 32px;
     border-color: black;
     border-style: solid;
     border-width: 1px;
     margin: -1px;
+    padding: 0;
+}
+.icon::-moz-focus-inner {
+    border: 0;
+    padding: 0;
 }
 #sub-list {
     display: table;
@@ -333,12 +340,12 @@ div.sub-label {
 div.sub-grid {
     white-space: nowrap;
 }
-div.condition, div.command {
+.condition, .command {
     display: inline-block;
     width: 30px;
     height: 30px;
 }
-div.command {
+.command {
     line-height: 30px;
     text-align: center;
     vertical-align: middle;

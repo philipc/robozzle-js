@@ -306,12 +306,12 @@ robozzle.displayProgramToolbar = function (level) {
     var $toolbar = $('#program-toolbar').empty();
     var $group = $('<div/>').addClass('icon-group');
     var makeCommand = function (command) {
-        return $('<div/>')
+        return $('<button/>')
             .addClass('icon')
             .append($('<div/>').addClass('command').updateClass('command', command));
     }
     var makeCondition = function (condition) {
-        return $('<div/>')
+        return $('<button/>')
             .addClass('icon')
             .append($('<div/>').addClass('command').updateClass('condition', condition));
     }
@@ -481,14 +481,14 @@ robozzle.loadSVGTile = function (color, color1, color2) {
 };
 
 robozzle.loadSVGPaint = function (command, color) {
-    robozzle.cssSVG('div.command-' + command, 'background',
+    robozzle.cssSVG('.command-' + command, 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
             <circle cx="15" cy="15" r="8.5" stroke="black" fill="' + color + '"/>\
         </svg>');
 };
 
 robozzle.loadSVGConditionIcon = function (condition, color1, color2) {
-    robozzle.cssSVG('div.command.condition-' + condition, 'background',
+    robozzle.cssSVG('.command.condition-' + condition, 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
             <defs>\
                 <linearGradient id="conditionfill" x1="0" y1="0" x2="0" y2="1">\
@@ -514,7 +514,7 @@ robozzle.loadSVGCondition = function (condition, color1, color2) {
 };
 
 robozzle.loadSVGIcon = function () {
-    robozzle.cssSVG('div.icon', 'background',
+    robozzle.cssSVG('.icon', 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
             <defs>\
                 <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
@@ -527,7 +527,7 @@ robozzle.loadSVGIcon = function () {
             <rect width="100%" height="100%" fill="#595959" stroke="none"/>\
             <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
         </svg>');
-    robozzle.cssSVG('div.icon:hover', 'background',
+    robozzle.cssSVG('.icon:hover', 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
             <defs>\
                 <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
@@ -545,8 +545,28 @@ robozzle.loadSVGIcon = function () {
                 </linearGradient>\
             </defs>\
             <rect width="100%" height="100%" fill="#393939" stroke="none"/>\
-            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
             <rect width="100%" height="100%" fill="url(#hovershinebrush)" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
+        </svg>');
+    robozzle.cssSVG('.icon:hover:active', 'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <defs>\
+                <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>\
+                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
+                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>\
+                </linearGradient>\
+                <linearGradient id="pressedbrush" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#000000" stop-opacity="0.30"/>\
+                    <stop offset="0.467" stop-color="#000000" stop-opacity="0.30"/>\
+                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0.15"/>\
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0.15"/>\
+                </linearGradient>\
+            </defs>\
+            <rect width="100%" height="100%" fill="#595959" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#pressedbrush)" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
         </svg>');
 };
 
@@ -585,23 +605,23 @@ robozzle.loadSVG = function () {
             <path fill="url(#robotfill)" stroke="black" stroke-opacity="0.4" d="M8,10 L33,20 8,30 15,20 z"/>\
         </svg>');
 
-    robozzle.cssSVG('div.command-f', 'background',
+    robozzle.cssSVG('.command-f', 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
             <path fill="#eeeeee" stroke="none" d="M14,25 16,25 16,9 19.5,15 21.5,15 16,5 14,5 8.5,15 10.5,15 14,9 z"/>\
         </svg>');
 
-    robozzle.cssSVG('div.command-r, div.command-l', 'background',
+    robozzle.cssSVG('.command-r, .command-l', 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
         <path fill="#eeeeee" stroke="none" d="M5,25 C5,14 11,11 22,11 L15,7 15,5 25,11 25,13 15,18 15,16 22,13 C12,13 7,15 7,25 z"/>\
         </svg>');
-    robozzle.css('div.command-l', 'transform', 'scale(-1,1)');
+    robozzle.css('.command-l', 'transform', 'scale(-1,1)');
 
     robozzle.loadSVGPaint('R', '#c53838');
     robozzle.loadSVGPaint('G', '#339933');
     robozzle.loadSVGPaint('B', '#3333cc');
 
     for (var i = 1; i <= 5; i++) {
-        robozzle.cssSVG('div.command-' + i, 'background',
+        robozzle.cssSVG('.command-' + i, 'background',
             '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
                 <text text-anchor="middle" x="15" y="22" font-size="18" font-family="Verdana, sans-serif" fill="#eeeeee" stroke="none">F' + i + '</text>\
             </svg>');
