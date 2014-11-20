@@ -20,7 +20,7 @@ var robozzle = {
 
 (function ( $ ) {
 $.fn.updateClass = function (classBase, classVal) {
-    var pattern = new RegExp('(^|\s)' + classBase + '-[A-Za-z0-9]+', 'g');
+    var pattern = new RegExp('(^|\\s)' + classBase + '-[A-Za-z0-9]+', 'g');
     this.attr('class',
                function (i, c) {
                    return c.replace(pattern, '');
@@ -289,6 +289,10 @@ robozzle.displayProgram = function (level) {
         for (var i = 0; i < 10; i++) {
             var $command = $('<div/>').addClass('command').text(i);
             var $condition = $('<div/>').addClass('condition').append($command);
+            $condition.on('mousemove', function (e) {
+                $('#program-selection').offset($(this).offset());
+                e.stopPropagation();
+            });
             if (i == 5) {
                 $subgrid.append($('<br/>'));
             }
@@ -308,12 +312,24 @@ robozzle.displayProgramToolbar = function (level) {
     var makeCommand = function (command) {
         return $('<button/>')
             .addClass('icon')
-            .append($('<div/>').addClass('command').updateClass('command', command));
+            .append($('<div/>').addClass('command').updateClass('command', command))
+            .click(function (e) {
+                $('#program-selection .condition').updateClass('condition', 'any');
+                $('#program-selection .command').updateClass('command', command);
+                $('#program-selection').show().offset({ left: e.pageX - 22, top: e.pageY - 15 });
+                e.stopPropagation();
+            });
     }
     var makeCondition = function (condition) {
         return $('<button/>')
             .addClass('icon')
-            .append($('<div/>').addClass('command').updateClass('condition', condition));
+            .append($('<div/>').addClass('command').updateClass('condition', condition))
+            .click(function (e) {
+                $('#program-selection .condition').updateClass('condition', condition);
+                $('#program-selection .command').updateClass('command');
+                $('#program-selection').show().offset({ left: e.pageX - 22, top: e.pageY - 15 });
+                e.stopPropagation();
+            });
     }
     $toolbar.append(
             $('<div/>').addClass('icon-group')
@@ -632,11 +648,11 @@ robozzle.loadSVG = function () {
     robozzle.loadSVGConditionIcon('G', '#63c963', '#339933');
     robozzle.loadSVGConditionIcon('B', '#6363ff', '#3333cc');
 
+    robozzle.loadSVGConditionNone();
     robozzle.loadSVGCondition('any', '#909090', '#606060');
     robozzle.loadSVGCondition('R', '#ff6868', '#c53838');
     robozzle.loadSVGCondition('G', '#63c963', '#339933');
     robozzle.loadSVGCondition('B', '#6363ff', '#3333cc');
-    robozzle.loadSVGConditionNone();
 
     robozzle.loadSVGIcon();
 };
@@ -673,6 +689,12 @@ $(document).ready(function () {
     });
     $('#menu-levels').click(function () {
         robozzle.getLevels(false);
+    });
+    $('#program-container, #program-toolbar').on('mousemove', function (e) {
+        $('#program-selection').offset({ left: e.pageX - 15, top: e.pageY - 15 });
+    });
+    $(document).click(function () {
+        $('#program-selection').hide();
     });
 
     robozzle.sortKind = -1;

@@ -281,6 +281,7 @@ div.robot-3 {
     transform: rotate(270deg);
 }
 #program-container {
+    cursor: default;
     vertical-align: bottom;
 }
 #program-toolbar-container {
@@ -308,6 +309,11 @@ div.robot-3 {
     background-color: #707070;
     padding: 5px;
     margin: 5px;
+}
+#program-selection {
+    display: none;
+    position: absolute;
+    pointer-events: none;
 }
 .icon-group {
     padding: 5px;
