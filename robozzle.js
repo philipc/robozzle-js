@@ -15,7 +15,12 @@ var robozzle = {
     userName: null,
     password: null,
     solvedLevels: {},
-    votes: {}
+    votes: {},
+
+    // program info
+    selection: false,
+    selectionCommand: null,
+    selectionCondition: null
 };
 
 (function ( $ ) {
@@ -287,17 +292,39 @@ robozzle.displayProgram = function (level) {
         var sub = [];
         var $subgrid = $('<div/>').addClass('sub-grid').addClass('table-column');
         for (var i = 0; i < 10; i++) {
-            var $command = $('<div/>').addClass('command').text(i);
-            var $condition = $('<div/>').addClass('condition').append($command);
-            $condition.on('mousemove', function (e) {
-                $('#program-selection').offset($(this).offset());
-                e.stopPropagation();
-            });
+            var $condition = $('<div/>')
+                .addClass('sub-cell')
+                .addClass('condition')
+                .on('mousemove', function (e) {
+                    $('#program-selection').offset($(this).offset());
+                    e.stopPropagation();
+                })
+                .click(function (e) {
+                    if (robozzle.selection) {
+                        if (robozzle.selectionCondition) {
+                            $(this).updateClass('condition', robozzle.selectionCondition);
+                            robozzle.selectionCondition = null;
+                        }
+                        if (robozzle.selectionCommand) {
+                            $(this).find('.command').updateClass('command', robozzle.selectionCommand);
+                            robozzle.selectionCommand = null;
+                        }
+                        $(this).find('span').hide();
+                        robozzle.selection = false;
+                    } else {
+                        $(this).updateClass('condition', null);
+                        $(this).find('.command').updateClass('command', null);
+                        $(this).find('span').show();
+                        // FIXME: set robozzle.selection
+                    }
+                });
+            var $command = $('<div/>').addClass('command');
+            var $label = $('<span/>').text(i);
             if (i == 5) {
                 $subgrid.append($('<br/>'));
             }
             sub.push($condition);
-            $subgrid.append($condition);
+            $subgrid.append($condition.append($command.append($label)));
         }
         program.push(sub);
         var $sublabel = $('<div/>').addClass('sub-label').addClass('table-column').text('F' + (j + 1));
@@ -314,7 +341,10 @@ robozzle.displayProgramToolbar = function (level) {
             .addClass('icon')
             .append($('<div/>').addClass('command').updateClass('command', command))
             .click(function (e) {
-                $('#program-selection .condition').updateClass('condition', 'any');
+                robozzle.selection = true;
+                robozzle.selectionCondition = null;
+                robozzle.selectionCommand = command;
+                $('#program-selection').updateClass('condition', 'any');
                 $('#program-selection .command').updateClass('command', command);
                 $('#program-selection').show().offset({ left: e.pageX - 22, top: e.pageY - 15 });
                 e.stopPropagation();
@@ -325,7 +355,10 @@ robozzle.displayProgramToolbar = function (level) {
             .addClass('icon')
             .append($('<div/>').addClass('command').updateClass('condition', condition))
             .click(function (e) {
-                $('#program-selection .condition').updateClass('condition', condition);
+                robozzle.selection = true;
+                robozzle.selectionCondition = condition;
+                robozzle.selectionCommand = null;
+                $('#program-selection').updateClass('condition', condition);
                 $('#program-selection .command').updateClass('command');
                 $('#program-selection').show().offset({ left: e.pageX - 22, top: e.pageY - 15 });
                 e.stopPropagation();
