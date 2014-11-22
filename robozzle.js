@@ -38,7 +38,6 @@ $.fn.updateClass = function (classBase, classVal) {
 $.fn.getClass = function (classBase) {
     var pattern = new RegExp('(^|\\s)' + classBase + '-([A-Za-z0-9]+)');
     var result = pattern.exec(this.attr('class'));
-    console.log(result);
     return result === null ? null : result[2];
 };
 })(jQuery);
@@ -294,6 +293,24 @@ robozzle.displayBoard = function (level) {
     $('#board').empty().append($board).append($robot);
 };
 
+robozzle.setSelection = function ($src, condition, command) {
+    if (condition || command) {
+        $('#program-selection').updateClass('condition', condition ? condition : 'any');
+        $('#program-selection .command').updateClass('command', command ? command : null);
+        $('#program-selection').show().offset($src.offset());
+        robozzle.selection = true;
+        robozzle.selectionCondition = condition;
+        robozzle.selectionCommand = command;
+    } else {
+        robozzle.hideSelection();
+    }
+};
+
+robozzle.hideSelection = function (condition, command) {
+    $('#program-selection').hide();
+    robozzle.selection = false;
+};
+
 robozzle.displayProgram = function (level) {
     var program = [];
     var $sublist = $('#sub-list').empty();
@@ -312,22 +329,23 @@ robozzle.displayProgram = function (level) {
                     if (robozzle.selection) {
                         if (robozzle.selectionCondition) {
                             $(this).updateClass('condition', robozzle.selectionCondition);
-                            robozzle.selectionCondition = null;
                         } else if (!$(this).getClass('condition')) {
                             $(this).updateClass('condition', 'any');
                         }
                         if (robozzle.selectionCommand) {
                             $(this).find('.command').updateClass('command', robozzle.selectionCommand);
-                            robozzle.selectionCommand = null;
                         }
                         $(this).find('span').hide();
-                        robozzle.selection = false;
+                        robozzle.hideSelection();
                     } else {
+                        robozzle.setSelection($(this), $(this).getClass('condition'),
+                                              $(this).find('.command').getClass('command'));
+
                         $(this).updateClass('condition', null);
                         $(this).find('.command').updateClass('command', null);
                         $(this).find('span').show();
-                        // FIXME: set robozzle.selection
                     }
+                    e.stopPropagation();
                 });
             var $command = $('<div/>').addClass('command');
             var $label = $('<span/>').text(i);
@@ -352,12 +370,7 @@ robozzle.displayProgramToolbar = function (level) {
             .addClass('icon')
             .append($('<div/>').addClass('command').updateClass('command', command))
             .click(function (e) {
-                robozzle.selection = true;
-                robozzle.selectionCondition = null;
-                robozzle.selectionCommand = command;
-                $('#program-selection').updateClass('condition', 'any');
-                $('#program-selection .command').updateClass('command', command);
-                $('#program-selection').show().offset({ left: e.pageX - 22, top: e.pageY - 15 });
+                robozzle.setSelection($(this), null, command);
                 e.stopPropagation();
             });
     }
@@ -366,12 +379,7 @@ robozzle.displayProgramToolbar = function (level) {
             .addClass('icon')
             .append($('<div/>').addClass('command').updateClass('condition', condition))
             .click(function (e) {
-                robozzle.selection = true;
-                robozzle.selectionCondition = condition;
-                robozzle.selectionCommand = null;
-                $('#program-selection').updateClass('condition', condition);
-                $('#program-selection .command').updateClass('command');
-                $('#program-selection').show().offset({ left: e.pageX - 22, top: e.pageY - 15 });
+                robozzle.setSelection($(this), condition, null);
                 e.stopPropagation();
             });
     }
@@ -738,7 +746,7 @@ $(document).ready(function () {
         $('#program-selection').offset({ left: e.pageX - 15, top: e.pageY - 15 });
     });
     $(document).click(function () {
-        $('#program-selection').hide();
+        robozzle.hideSelection();
     });
 
     robozzle.sortKind = -1;
