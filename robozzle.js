@@ -337,9 +337,13 @@ robozzle.displayProgram = function (level) {
     var program = [];
     var $sublist = $('#sub-list').empty();
     for (var j = 0; j < 5; j++) {
+        var sublength = parseInt(level.SubLengths[j]);
+        if (!sublength) {
+            continue;
+        }
         var sub = [];
         var $subgrid = $('<div/>').addClass('sub-grid').addClass('table-column');
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < sublength; i++) {
             var $condition = $('<div/>')
                 .addClass('sub-cell')
                 .addClass('condition')
@@ -373,7 +377,7 @@ robozzle.displayProgram = function (level) {
                 });
             var $command = $('<div/>').addClass('command');
             var $label = $('<span/>').text(i);
-            if (i == 5) {
+            if (i == 5 && sublength != 5) {
                 $subgrid.append($('<br/>'));
             }
             sub.push($condition);
