@@ -20,7 +20,8 @@ var robozzle = {
     // program info
     selection: false,
     selectionCommand: null,
-    selectionCondition: null
+    selectionCondition: null,
+    selectionOffset: null
 };
 
 (function ( $ ) {
@@ -293,11 +294,26 @@ robozzle.displayBoard = function (level) {
     $('#board').empty().append($board).append($robot);
 };
 
+robozzle.moveSelection = function ($src, x, y) {
+    if ($src) {
+        robozzle.selectionOffset = $src.offset();
+    } else if (x || y) {
+        robozzle.selectionOffset = { left: x, top: y };
+    } else if (!robozzle.selectionOffset) {
+        robozzle.selectionOffset = $('#program-container').offset();
+    }
+    $('#program-selection').offset(robozzle.selectionOffset);
+};
+
 robozzle.setSelection = function ($src, condition, command) {
+    if (!$('#program-toolbar').is(':visible')) {
+        return;
+    }
     if (condition || command) {
         $('#program-selection').updateClass('condition', condition ? condition : 'any');
         $('#program-selection .command').updateClass('command', command ? command : null);
-        $('#program-selection').show().offset($src.offset());
+        $('#program-selection').show();
+        robozzle.moveSelection($src);
         robozzle.selection = true;
         robozzle.selectionCondition = condition;
         robozzle.selectionCommand = command;
@@ -322,7 +338,7 @@ robozzle.displayProgram = function (level) {
                 .addClass('sub-cell')
                 .addClass('condition')
                 .on('mousemove', function (e) {
-                    $('#program-selection').offset($(this).offset());
+                    robozzle.moveSelection($(this));
                     e.stopPropagation();
                 })
                 .click(function (e) {
@@ -743,10 +759,55 @@ $(document).ready(function () {
         robozzle.getLevels(false);
     });
     $('#program-container, #program-toolbar').on('mousemove', function (e) {
-        $('#program-selection').offset({ left: e.pageX - 15, top: e.pageY - 15 });
+        robozzle.moveSelection(null, e.pageX - 15, e.pageY - 15);
     });
     $(document).click(function () {
         robozzle.hideSelection();
+    });
+    $(document).on('keydown', null, 'r', function () {
+        robozzle.setSelection(null, 'R', null);
+    });
+    $(document).on('keydown', null, 'g', function () {
+        robozzle.setSelection(null, 'G', null);
+    });
+    $(document).on('keydown', null, 'b', function () {
+        robozzle.setSelection(null, 'B', null);
+    });
+    $(document).on('keydown', null, 'n', function () {
+        robozzle.setSelection(null, 'any', null);
+    });
+    $(document).on('keydown', null, 'q', function () {
+        robozzle.setSelection(null, null, 'l');
+    });
+    $(document).on('keydown', null, 'w', function () {
+        robozzle.setSelection(null, null, 'f');
+    });
+    $(document).on('keydown', null, 'e', function () {
+        robozzle.setSelection(null, null, 'r');
+    });
+    $(document).on('keydown', null, '1', function () {
+        robozzle.setSelection(null, null, '1');
+    });
+    $(document).on('keydown', null, '2', function () {
+        robozzle.setSelection(null, null, '2');
+    });
+    $(document).on('keydown', null, '3', function () {
+        robozzle.setSelection(null, null, '3');
+    });
+    $(document).on('keydown', null, '4', function () {
+        robozzle.setSelection(null, null, '4');
+    });
+    $(document).on('keydown', null, '5', function () {
+        robozzle.setSelection(null, null, '5');
+    });
+    $(document).on('keydown', null, 'shift+r', function () {
+        robozzle.setSelection(null, null, 'R');
+    });
+    $(document).on('keydown', null, 'shift+g', function () {
+        robozzle.setSelection(null, null, 'G');
+    });
+    $(document).on('keydown', null, 'shift+b', function () {
+        robozzle.setSelection(null, null, 'B');
     });
 
     robozzle.sortKind = -1;
