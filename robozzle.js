@@ -416,6 +416,8 @@ robozzle.displayProgram = function (level) {
                         $(this).find('.command').updateClass('command', null);
                         $(this).find('span').show();
                     }
+                    robozzle.hoverSelection($(this).getClass('condition'),
+                                            $(this).find('.command').getClass('command'));
                     e.stopPropagation();
                 });
             var $command = $('<div/>').addClass('command');
