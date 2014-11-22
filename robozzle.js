@@ -558,7 +558,7 @@ robozzle.loadSVGCondition = function (condition, color1, color2) {
                     <stop offset="1" stop-color="' + color2 + '"/>\
                 </linearGradient>\
             </defs>\
-            <rect width="100%" height="100%" fill="url(#conditionfill)" stroke="none"/>\
+            <rect x="0.5" y="0.5" width="29" height="29" fill="url(#conditionfill)" stroke="#404040"/>\
         </svg>');
 };
 
