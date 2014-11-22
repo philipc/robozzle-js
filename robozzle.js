@@ -21,7 +21,9 @@ var robozzle = {
     selection: false,
     selectionCommand: null,
     selectionCondition: null,
-    selectionOffset: null
+    selectionOffset: null,
+    hoverCommand: null,
+    hoverCondition: null
 };
 
 (function ( $ ) {
@@ -294,6 +296,11 @@ robozzle.displayBoard = function (level) {
     $('#board').empty().append($board).append($robot);
 };
 
+robozzle.hoverSelection = function (condition, command) {
+    robozzle.hoverCondition = condition;
+    robozzle.hoverCommand = command;
+};
+
 robozzle.moveSelection = function ($src, x, y) {
     if ($src) {
         robozzle.selectionOffset = $src.offset();
@@ -303,23 +310,22 @@ robozzle.moveSelection = function ($src, x, y) {
         robozzle.selectionOffset = $('#program-container').offset();
     }
     $('#program-selection').offset(robozzle.selectionOffset);
+    $('#program-selection').updateClass('condition', robozzle.selectionCondition || robozzle.hoverCondition || 'any');
+    $('#program-selection .command').updateClass('command', robozzle.selectionCommand || robozzle.hoverCommand || null);
 };
 
 robozzle.setSelection = function ($src, condition, command) {
     if (!$('#program-toolbar').is(':visible')) {
         return;
     }
-    if (condition || command) {
-        $('#program-selection').updateClass('condition', condition ? condition : 'any');
-        $('#program-selection .command').updateClass('command', command ? command : null);
-        $('#program-selection').show();
-        robozzle.moveSelection($src);
-        robozzle.selection = true;
-        robozzle.selectionCondition = condition;
-        robozzle.selectionCommand = command;
-    } else {
-        robozzle.hideSelection();
+    if (!condition && !command) {
+        return;
     }
+    robozzle.selection = true;
+    robozzle.selectionCondition = condition;
+    robozzle.selectionCommand = command;
+    $('#program-selection').show();
+    robozzle.moveSelection($src, null, null);
 };
 
 robozzle.hideSelection = function (condition, command) {
@@ -338,6 +344,8 @@ robozzle.displayProgram = function (level) {
                 .addClass('sub-cell')
                 .addClass('condition')
                 .on('mousemove', function (e) {
+                    robozzle.hoverSelection($(this).getClass('condition'),
+                                            $(this).find('.command').getClass('command'));
                     robozzle.moveSelection($(this));
                     e.stopPropagation();
                 })
@@ -759,6 +767,7 @@ $(document).ready(function () {
         robozzle.getLevels(false);
     });
     $('#program-container, #program-toolbar').on('mousemove', function (e) {
+        robozzle.hoverSelection(null, null);
         robozzle.moveSelection(null, e.pageX - 15, e.pageY - 15);
     });
     $(document).click(function () {
