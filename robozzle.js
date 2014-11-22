@@ -34,6 +34,15 @@ $.fn.updateClass = function (classBase, classVal) {
 };
 })(jQuery);
 
+(function ( $ ) {
+$.fn.getClass = function (classBase) {
+    var pattern = new RegExp('(^|\\s)' + classBase + '-([A-Za-z0-9]+)');
+    var result = pattern.exec(this.attr('class'));
+    console.log(result);
+    return result === null ? null : result[2];
+};
+})(jQuery);
+
 robozzle.parseXML = function (node) {
     if (node.nodeType == 3) {
         return node.nodeValue.replace(/^\s+/,'').replace(/\s+$/,'');
@@ -304,6 +313,8 @@ robozzle.displayProgram = function (level) {
                         if (robozzle.selectionCondition) {
                             $(this).updateClass('condition', robozzle.selectionCondition);
                             robozzle.selectionCondition = null;
+                        } else if (!$(this).getClass('condition')) {
+                            $(this).updateClass('condition', 'any');
                         }
                         if (robozzle.selectionCommand) {
                             $(this).find('.command').updateClass('command', robozzle.selectionCommand);
