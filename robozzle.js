@@ -17,7 +17,8 @@ var robozzle = {
     solvedLevels: {},
     votes: {},
 
-    // program info
+    // active level info
+    level: null,
     selection: false,
     selectionCommand: null,
     selectionCondition: null,
@@ -296,6 +297,45 @@ robozzle.displayBoard = function (level) {
     $('#board').empty().append($board).append($robot);
 };
 
+robozzle.allowedCommand = function (command) {
+    if (!robozzle.level) {
+        return;
+    }
+
+    if (command == 'f' || command == 'l' || command == 'r') {
+        return true;
+    }
+
+    if (command == '1') {
+        return parseInt(robozzle.level.SubLengths[0]);
+    }
+    if (command == '2') {
+        return parseInt(robozzle.level.SubLengths[1]);
+    }
+    if (command == '3') {
+        return parseInt(robozzle.level.SubLengths[2]);
+    }
+    if (command == '4') {
+        return parseInt(robozzle.level.SubLengths[3]);
+    }
+    if (command == '5') {
+        return parseInt(robozzle.level.SubLengths[4]);
+    }
+
+    var allowedCommands = parseInt(robozzle.level.AllowedCommands);
+    if (command == 'R') {
+        return allowedCommands & 1;
+    }
+    if (command == 'G') {
+        return allowedCommands & 2;
+    }
+    if (command == 'B') {
+        return allowedCommands & 3;
+    }
+
+    return false;
+};
+
 robozzle.hoverSelection = function (condition, command) {
     robozzle.hoverCondition = condition;
     robozzle.hoverCommand = command;
@@ -319,6 +359,9 @@ robozzle.setSelection = function ($src, condition, command) {
         return;
     }
     if (!condition && !command) {
+        return;
+    }
+    if (command && !robozzle.allowedCommand(command)) {
         return;
     }
     robozzle.selection = true;
@@ -392,7 +435,6 @@ robozzle.displayProgram = function (level) {
 
 robozzle.displayProgramToolbar = function (level) {
     var $toolbar = $('#program-toolbar').empty();
-    var $group = $('<div/>').addClass('icon-group');
     var makeCommand = function (command) {
         return $('<button/>')
             .addClass('icon')
@@ -414,12 +456,30 @@ robozzle.displayProgramToolbar = function (level) {
     $toolbar.append(
             $('<div/>').addClass('icon-group')
             .append(makeCommand('f'), makeCommand('l'), makeCommand('r')));
-    $toolbar.append(
-            $('<div/>').addClass('icon-group')
-            .append(makeCommand('1'), makeCommand('2'), makeCommand('3'), makeCommand('4'), makeCommand('5')));
-    $toolbar.append(
-            $('<div/>').addClass('icon-group')
-            .append(makeCommand('R'), makeCommand('G'), makeCommand('B')));
+
+    var $group = $('<div/>').addClass('icon-group');
+    for (var i = 0; i < 5; i++) {
+        if (parseInt(level.SubLengths[i])) {
+            $group.append(makeCommand(i + 1));
+        }
+    }
+    $toolbar.append($group);
+
+    var allowedCommands = parseInt(level.AllowedCommands);
+    if (allowedCommands) {
+        var $group = $('<div/>').addClass('icon-group');
+        if (allowedCommands & 1) {
+            $group.append(makeCommand('R'));
+        }
+        if (allowedCommands & 2) {
+            $group.append(makeCommand('G'));
+        }
+        if (allowedCommands & 4) {
+            $group.append(makeCommand('B'));
+        }
+        $toolbar.append($group);
+    }
+
     $toolbar.append(
             $('<div/>').addClass('icon-group')
             .append(makeCondition('any'), makeCondition('R'), makeCondition('G'), makeCondition('B')));
@@ -429,6 +489,8 @@ robozzle.displayGame = function (level) {
     $('#menu li').removeClass('active');
     $('#content').children().hide();
     $('#content-game').show();
+
+    robozzle.level = level;
 
     var status = $('#statusbar');
     status.find('span.title').text(level.Title);
