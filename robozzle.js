@@ -24,7 +24,11 @@ var robozzle = {
     selectionCondition: null,
     selectionOffset: null,
     hoverCommand: null,
-    hoverCondition: null
+    hoverCondition: null,
+    robotDir: 0,
+    robotCol: 0,
+    robotRow: 0,
+    robotSpeed: 200
 };
 
 (function ( $ ) {
@@ -267,6 +271,51 @@ robozzle.setSortKind = function (sortKind) {
     robozzle.sortKind = sortKind;
 };
 
+robozzle.displayRobot = function () {
+    $('#robot')
+        .css('left', robozzle.robotCol * 40 + 'px')
+        .css('top', robozzle.robotRow * 40 + 'px')
+        .css('transform', 'rotate(' + robozzle.robotDir * 90 + 'deg)');
+};
+
+robozzle.moveRobot = function () {
+    if (robozzle.robotDir == 0) {
+        robozzle.robotCol++;
+    } else if (robozzle.robotDir == 1) {
+        robozzle.robotRow++;
+    } else if (robozzle.robotDir == 2) {
+        robozzle.robotCol--;
+    } else if (robozzle.robotDir == 3) {
+        robozzle.robotRow--;
+    }
+    $('#robot').animate({
+        left: robozzle.robotCol * 40 + 'px',
+        top: robozzle.robotRow * 40 + 'px'
+    }, robozzle.robotSpeed);
+};
+
+robozzle.turnRobot = function (right) {
+    var dir = robozzle.robotDir;
+    var startAngle = dir * 90;
+    if (right) {
+        dir++;
+    } else {
+        dir--;
+    }
+    var endAngle = dir * 90;
+    robozzle.robotDir = (dir + 4) % 4;
+
+    var $robot = $('#robot');
+    $({deg: startAngle}).animate({deg: endAngle}, {
+        duration: robozzle.robotSpeed,
+        step: function(now) {
+            $robot.css({
+                transform: 'rotate(' + now + 'deg)'
+            });
+        }
+    });
+};
+
 robozzle.displayBoard = function (level) {
     var board = [];
     var $board = $('<table/>').addClass('board');
@@ -290,11 +339,12 @@ robozzle.displayBoard = function (level) {
         board.push(row);
         $board.append($row);
     }
-    var $robot = $('<div/>').addClass('robot')
-        .updateClass('robot', level.RobotDir)
-        .css('left', level.RobotCol * 40 + 'px')
-        .css('top', level.RobotRow * 40 + 'px');
+    var $robot = $('<div/>').attr('id', 'robot').addClass('robot');
     $('#board').empty().append($board).append($robot);
+    robozzle.robotDir = level.RobotDir;
+    robozzle.robotCol = level.RobotCol;
+    robozzle.robotRow = level.RobotRow;
+    robozzle.displayRobot();
 };
 
 robozzle.allowedCommand = function (command) {
@@ -531,6 +581,12 @@ robozzle.setGame = function (id) {
     robozzle.service('GetLevel', request, function (result, response) {
         robozzle.displayGame(response.GetLevelResult);
     });
+};
+
+robozzle.runProgram = function (id) {
+    //robozzle.moveRobot();
+    //robozzle.turnRobot(false);
+    //robozzle.turnRobot(true);
 };
 
 robozzle.hashPassword = function (password) {
@@ -833,6 +889,9 @@ $(document).ready(function () {
     });
     $('#menu-levels').click(function () {
         robozzle.getLevels(false);
+    });
+    $('#program-go').click(function () {
+        robozzle.runProgram();
     });
     $('#program-container, #program-toolbar').on('mousemove', function (e) {
         robozzle.hoverSelection(null, null);
