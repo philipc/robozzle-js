@@ -28,7 +28,8 @@ var robozzle = {
     robotDir: 0,
     robotCol: 0,
     robotRow: 0,
-    robotSpeed: 200
+    robotSpeed: 200,
+    stepTimeout: null
 };
 
 (function ( $ ) {
@@ -305,6 +306,8 @@ robozzle.displayBoard = function (level) {
     $('#board').empty().append($board).append($robot);
     robozzle.board = board;
     robozzle.stack = [ { sub: 0, cmd: 0 } ];
+    robozzle.started = false;
+    robozzle.finished = false;
     robozzle.robotDir = level.RobotDir;
     robozzle.robotCol = level.RobotCol;
     robozzle.robotRow = level.RobotRow;
@@ -596,6 +599,8 @@ robozzle.moveRobot = function () {
                 });
             }
         });
+        robozzle.finished = true;
+        $('#program-go').text('Reset');
     }
 };
 
@@ -621,9 +626,42 @@ robozzle.turnRobot = function (right) {
     });
 };
 
-robozzle.runProgram = function (id) {
-    // FIXME: check sublength against cmd
+robozzle.stepCancel = function () {
+    if (robozzle.stepTimeout) {
+        window.clearTimeout(robozzle.stepTimeout);
+        robozzle.stepTimeout = null;
+    }
+    $('#program-go').text('Go!');
+};
+
+robozzle.stepReset = function () {
+    robozzle.stepCancel();
+    robozzle.displayBoard(robozzle.level);
+};
+
+robozzle.stepWait = function (loop) {
+    if (loop && !robozzle.finished) {
+        robozzle.stepTimeout = window.setTimeout(function () {
+            robozzle.stepTimeout = null;
+            robozzle.stepExecute(loop);
+        }, robozzle.robotSpeed);
+        $('#program-go').text('Reset');
+    }
+};
+
+robozzle.stepExecute = function (loop) {
+    robozzle.started = true;
     var $cmd = robozzle.program[robozzle.stack[0].sub][robozzle.stack[0].cmd];
+    if (!$cmd) {
+        robozzle.stack.shift();
+        if (robozzle.stack.length) {
+            robozzle.stepExecute(loop);
+        } else {
+            robozzle.finished = true;
+            $('#program-go').text('Reset');
+        }
+        return;
+    }
     var cond = $cmd.getClass('condition');
     var cmd = $cmd.find('.command').getClass('command');
     var $cell = robozzle.board[robozzle.robotRow][robozzle.robotCol];
@@ -631,18 +669,20 @@ robozzle.runProgram = function (id) {
     robozzle.stack[0].cmd++;
     if (cond == 'any' || cond == color) {
         switch (cmd) {
-        case 'f': robozzle.moveRobot(); break;
-        case 'l': robozzle.turnRobot(false); break;
-        case 'r': robozzle.turnRobot(true); break;
-        case '1': robozzle.stack.unshift({ sub: 0, cmd: 0 }); break;
-        case '2': robozzle.stack.unshift({ sub: 1, cmd: 0 }); break;
-        case '3': robozzle.stack.unshift({ sub: 2, cmd: 0 }); break;
-        case '4': robozzle.stack.unshift({ sub: 3, cmd: 0 }); break;
-        case '5': robozzle.stack.unshift({ sub: 4, cmd: 0 }); break;
-        case 'R': $cell.updateClass('board-color', 'R'); break;
-        case 'G': $cell.updateClass('board-color', 'G'); break;
-        case 'B': $cell.updateClass('board-color', 'B'); break;
+        case 'f': robozzle.moveRobot(loop); robozzle.stepWait(loop); break;
+        case 'l': robozzle.turnRobot(false); robozzle.stepWait(loop); break;
+        case 'r': robozzle.turnRobot(true); robozzle.stepWait(loop); break;
+        case '1': robozzle.stack.unshift({ sub: 0, cmd: 0 }); robozzle.stepExecute(loop); break;
+        case '2': robozzle.stack.unshift({ sub: 1, cmd: 0 }); robozzle.stepExecute(loop); break;
+        case '3': robozzle.stack.unshift({ sub: 2, cmd: 0 }); robozzle.stepExecute(loop); break;
+        case '4': robozzle.stack.unshift({ sub: 3, cmd: 0 }); robozzle.stepExecute(loop); break;
+        case '5': robozzle.stack.unshift({ sub: 4, cmd: 0 }); robozzle.stepExecute(loop); break;
+        case 'R': $cell.updateClass('board-color', 'R'); robozzle.stepWait(loop); break;
+        case 'G': $cell.updateClass('board-color', 'G'); robozzle.stepWait(loop); break;
+        case 'B': $cell.updateClass('board-color', 'B'); robozzle.stepWait(loop); break;
         }
+    } else {
+        robozzle.stepExecute(loop);
     }
 };
 
@@ -948,7 +988,18 @@ $(document).ready(function () {
         robozzle.getLevels(false);
     });
     $('#program-go').click(function () {
-        robozzle.runProgram();
+        if (robozzle.finished || robozzle.stepTimeout) {
+            robozzle.stepReset();
+        } else {
+            robozzle.stepExecute(true);
+        }
+    });
+    $('#program-step').click(function () {
+        if (robozzle.stepTimeout) {
+            robozzle.stepCancel();
+        } else if (!robozzle.finished) {
+            robozzle.stepExecute(false);
+        }
     });
     $('#program-container, #program-toolbar').on('mousemove', function (e) {
         robozzle.hoverSelection(null, null);
