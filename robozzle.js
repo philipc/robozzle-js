@@ -316,6 +316,7 @@ robozzle.displayBoard = function (level) {
     $('#board').empty().append($board).append($robot);
     robozzle.board = board;
     robozzle.stars = stars;
+    robozzle.steps = 0;
     robozzle.stack = [ { sub: 0, cmd: 0 } ];
     robozzle.started = false;
     robozzle.finished = false;
@@ -662,6 +663,16 @@ robozzle.stepWait = function (loop) {
         robozzle.stepTimeout = window.setTimeout(function () {
             robozzle.stepTimeout = null;
             alert('Finished!');
+        }, robozzle.robotSpeed);
+        robozzle.finished = true;
+        robozzle.displayGoReset();
+        return;
+    }
+    robozzle.steps++;
+    if (robozzle.steps >= 1000) {
+        robozzle.stepTimeout = window.setTimeout(function () {
+            robozzle.stepTimeout = null;
+            alert('Out of fuel!');
         }, robozzle.robotSpeed);
         robozzle.finished = true;
         robozzle.displayGoReset();
