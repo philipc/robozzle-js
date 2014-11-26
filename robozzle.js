@@ -642,6 +642,18 @@ robozzle.turnRobot = function (right) {
     });
 };
 
+robozzle.callSub = function (loop, calls, sub) {
+    if (calls & (1 << sub)) {
+        // Infinite loop
+        robozzle.finished = true;
+        robozzle.displayGoReset();
+        return;
+    }
+    calls |= 1 << sub;
+    robozzle.stack.unshift({ sub: sub, cmd: 0 });
+    robozzle.stepExecute(loop, calls);
+};
+
 robozzle.stepCancel = function () {
     if (robozzle.stepTimeout) {
         window.clearTimeout(robozzle.stepTimeout);
@@ -681,19 +693,19 @@ robozzle.stepWait = function (loop) {
     if (loop) {
         robozzle.stepTimeout = window.setTimeout(function () {
             robozzle.stepTimeout = null;
-            robozzle.stepExecute(loop);
+            robozzle.stepExecute(loop, 0);
         }, robozzle.robotSpeed);
         robozzle.displayGoReset();
     }
 };
 
-robozzle.stepExecute = function (loop) {
+robozzle.stepExecute = function (loop, calls) {
     robozzle.started = true;
     var $cmd = robozzle.program[robozzle.stack[0].sub][robozzle.stack[0].cmd];
     if (!$cmd) {
         robozzle.stack.shift();
         if (robozzle.stack.length) {
-            robozzle.stepExecute(loop);
+            robozzle.stepExecute(loop, calls);
         } else {
             robozzle.finished = true;
             robozzle.displayGoReset();
@@ -710,17 +722,17 @@ robozzle.stepExecute = function (loop) {
         case 'f': robozzle.moveRobot(loop); robozzle.stepWait(loop); break;
         case 'l': robozzle.turnRobot(false); robozzle.stepWait(loop); break;
         case 'r': robozzle.turnRobot(true); robozzle.stepWait(loop); break;
-        case '1': robozzle.stack.unshift({ sub: 0, cmd: 0 }); robozzle.stepExecute(loop); break;
-        case '2': robozzle.stack.unshift({ sub: 1, cmd: 0 }); robozzle.stepExecute(loop); break;
-        case '3': robozzle.stack.unshift({ sub: 2, cmd: 0 }); robozzle.stepExecute(loop); break;
-        case '4': robozzle.stack.unshift({ sub: 3, cmd: 0 }); robozzle.stepExecute(loop); break;
-        case '5': robozzle.stack.unshift({ sub: 4, cmd: 0 }); robozzle.stepExecute(loop); break;
+        case '1': robozzle.callSub(loop, calls, 0); break;
+        case '2': robozzle.callSub(loop, calls, 2); break;
+        case '3': robozzle.callSub(loop, calls, 3); break;
+        case '4': robozzle.callSub(loop, calls, 4); break;
+        case '5': robozzle.callSub(loop, calls, 5); break;
         case 'R': $cell.updateClass('board-color', 'R'); robozzle.stepWait(loop); break;
         case 'G': $cell.updateClass('board-color', 'G'); robozzle.stepWait(loop); break;
         case 'B': $cell.updateClass('board-color', 'B'); robozzle.stepWait(loop); break;
         }
     } else {
-        robozzle.stepExecute(loop);
+        robozzle.stepExecute(loop, calls);
     }
 };
 
@@ -1029,14 +1041,14 @@ $(document).ready(function () {
         if (robozzle.finished || robozzle.stepTimeout) {
             robozzle.stepReset();
         } else {
-            robozzle.stepExecute(true);
+            robozzle.stepExecute(true, 0);
         }
     });
     $('#program-step').click(function () {
         if (robozzle.stepTimeout) {
             robozzle.stepCancel();
         } else if (!robozzle.finished) {
-            robozzle.stepExecute(false);
+            robozzle.stepExecute(false, 0);
         }
     });
     $('#program-container, #program-toolbar').on('mousemove', function (e) {
