@@ -272,6 +272,14 @@ robozzle.setSortKind = function (sortKind) {
     robozzle.sortKind = sortKind;
 };
 
+robozzle.displayGoReset = function () {
+    if (robozzle.finished || robozzle.stepTimeout) {
+        $('#program-go').text('Reset');
+    } else {
+        $('#program-go').text('Go!');
+    }
+};
+
 robozzle.displayRobot = function () {
     $('#robot')
         .css('left', robozzle.robotCol * 40 + 'px')
@@ -280,6 +288,7 @@ robozzle.displayRobot = function () {
 };
 
 robozzle.displayBoard = function (level) {
+    var stars = 0;
     var board = [];
     var $board = $('<table/>').addClass('board');
     for (var j = 0; j < level.Colors.length; j++) {
@@ -294,6 +303,7 @@ robozzle.displayBoard = function (level) {
                 $cell.updateClass('board-color', colors.charAt(i));
                 if (items.charAt(i) === '*') {
                     $item.addClass('board-star');
+                    stars++;
                 }
             }
             row.push($cell);
@@ -305,6 +315,7 @@ robozzle.displayBoard = function (level) {
     var $robot = $('<div/>').attr('id', 'robot').addClass('robot');
     $('#board').empty().append($board).append($robot);
     robozzle.board = board;
+    robozzle.stars = stars;
     robozzle.stack = [ { sub: 0, cmd: 0 } ];
     robozzle.started = false;
     robozzle.finished = false;
@@ -312,6 +323,7 @@ robozzle.displayBoard = function (level) {
     robozzle.robotCol = level.RobotCol;
     robozzle.robotRow = level.RobotRow;
     robozzle.displayRobot();
+    robozzle.displayGoReset();
 };
 
 robozzle.allowedCommand = function (command) {
@@ -584,7 +596,10 @@ robozzle.moveRobot = function () {
 
         var $item = $cell.find('.item');
         if ($item.hasClass('board-star')) {
-            $item.animate({ opacity: 0 }, robozzle.robotSpeed);
+            $item.animate({ opacity: 0 }, robozzle.robotSpeed)
+                .removeClass('board-star')
+                .addClass('board-star-fade');
+            robozzle.stars--;
         }
     }
     $('#robot').animate({ left: col * 40 + 'px', top: row * 40 + 'px' },
@@ -600,7 +615,7 @@ robozzle.moveRobot = function () {
             }
         });
         robozzle.finished = true;
-        $('#program-go').text('Reset');
+        robozzle.displayGoReset();
     }
 };
 
@@ -631,7 +646,7 @@ robozzle.stepCancel = function () {
         window.clearTimeout(robozzle.stepTimeout);
         robozzle.stepTimeout = null;
     }
-    $('#program-go').text('Go!');
+    robozzle.displayGoReset();
 };
 
 robozzle.stepReset = function () {
@@ -640,12 +655,24 @@ robozzle.stepReset = function () {
 };
 
 robozzle.stepWait = function (loop) {
-    if (loop && !robozzle.finished) {
+    if (robozzle.finished) {
+        return;
+    }
+    if (robozzle.stars == 0) {
+        robozzle.stepTimeout = window.setTimeout(function () {
+            robozzle.stepTimeout = null;
+            alert('Finished!');
+        }, robozzle.robotSpeed);
+        robozzle.finished = true;
+        robozzle.displayGoReset();
+        return;
+    }
+    if (loop) {
         robozzle.stepTimeout = window.setTimeout(function () {
             robozzle.stepTimeout = null;
             robozzle.stepExecute(loop);
         }, robozzle.robotSpeed);
-        $('#program-go').text('Reset');
+        robozzle.displayGoReset();
     }
 };
 
@@ -658,7 +685,7 @@ robozzle.stepExecute = function (loop) {
             robozzle.stepExecute(loop);
         } else {
             robozzle.finished = true;
-            $('#program-go').text('Reset');
+            robozzle.displayGoReset();
         }
         return;
     }
@@ -901,7 +928,7 @@ robozzle.loadSVG = function () {
     robozzle.loadSVGTile('G', '#53b953', '#339933');
     robozzle.loadSVGTile('B', '#5353ec', '#3333cc');
 
-    robozzle.cssSVG('div.board-star', 'background',
+    robozzle.cssSVG('div.board-star, div.board-star-fade', 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 80 80">\
             <path fill="#ffff33" stroke="black" stroke-opacity="0.4" d="M40,20 35,34 21,34 32,42 28,56 40,48 52,56 48,42 59,34 45,34 z"/>\
         </svg>');
