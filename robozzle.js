@@ -467,6 +467,55 @@ robozzle.displayProgram = function (level) {
     robozzle.program = program;
 };
 
+robozzle.readProgram = function () {
+    var program = '';
+    for (var j = 0; j < 5; j++) {
+        var sub = robozzle.program[j];
+        for (var i = 0; sub[i]; i++) {
+            var $cmd = sub[i];
+            var cond = $cmd.getClass('condition');
+            switch (cond) {
+            case 'any': program += '_'; break;
+            case 'R': program += 'r'; break;
+            case 'G': program += 'g'; break;
+            case 'B': program += 'b'; break;
+            default: continue;
+            }
+            var cmd = $cmd.find('.command').getClass('command');
+            switch (cmd) {
+            case 'f': program += 'F'; break;
+            case 'l': program += 'L'; break;
+            case 'r': program += 'R'; break;
+            case '1': program += '1'; break;
+            case '2': program += '2'; break;
+            case '3': program += '3'; break;
+            case '4': program += '4'; break;
+            case '5': program += '5'; break;
+            case 'R': program += 'r'; break;
+            case 'G': program += 'g'; break;
+            case 'B': program += 'b'; break;
+            default: program += '_'; break;
+            }
+        }
+        program += '|';
+    }
+    return program;
+};
+
+robozzle.submitSolution = function () {
+    if (!robozzle.level || !robozzle.userName || !robozzle.password)
+        return;
+    var request = {
+        levelId: robozzle.level.Id,
+        userName: robozzle.userName,
+        password: robozzle.password,
+        solution: robozzle.readProgram()
+    };
+    robozzle.service('SubmitSolution', request, function (result, response) {
+        // console.log(response.SubmitSolutionResult);
+    });
+};
+
 robozzle.displayProgramToolbar = function (level) {
     var $toolbar = $('#program-toolbar').empty();
     var makeCommand = function (command) {
@@ -674,6 +723,7 @@ robozzle.stepWait = function (loop) {
     if (robozzle.stars == 0) {
         robozzle.stepTimeout = window.setTimeout(function () {
             robozzle.stepTimeout = null;
+            robozzle.submitSolution();
             alert('Finished!');
         }, robozzle.robotSpeed);
         robozzle.finished = true;
