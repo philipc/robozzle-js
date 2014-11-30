@@ -773,10 +773,10 @@ robozzle.stepExecute = function (loop, calls) {
         case 'l': robozzle.turnRobot(false); robozzle.stepWait(loop); break;
         case 'r': robozzle.turnRobot(true); robozzle.stepWait(loop); break;
         case '1': robozzle.callSub(loop, calls, 0); break;
-        case '2': robozzle.callSub(loop, calls, 2); break;
-        case '3': robozzle.callSub(loop, calls, 3); break;
-        case '4': robozzle.callSub(loop, calls, 4); break;
-        case '5': robozzle.callSub(loop, calls, 5); break;
+        case '2': robozzle.callSub(loop, calls, 1); break;
+        case '3': robozzle.callSub(loop, calls, 2); break;
+        case '4': robozzle.callSub(loop, calls, 3); break;
+        case '5': robozzle.callSub(loop, calls, 4); break;
         case 'R': $cell.updateClass('board-color', 'R'); robozzle.stepWait(loop); break;
         case 'G': $cell.updateClass('board-color', 'G'); robozzle.stepWait(loop); break;
         case 'B': $cell.updateClass('board-color', 'B'); robozzle.stepWait(loop); break;
