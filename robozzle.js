@@ -653,11 +653,12 @@ robozzle.moveRobot = function () {
         }
     }
     $('#robot').animate({ left: col * 40 + 'px', top: row * 40 + 'px' },
-                        robozzle.robotSpeed);
+                        robozzle.robotSpeed, "linear");
     if (crash) {
         var $robot = $('#robot');
         $({scale: 1.0}).animate({scale: 0.0}, {
             duration: robozzle.robotSpeed,
+            easing: "linear",
             step: function(now) {
                 $robot.css({
                     transform: 'scale(' + now + ') rotate(' + robozzle.robotDir * 90 + 'deg)'
@@ -683,6 +684,7 @@ robozzle.turnRobot = function (right) {
     var $robot = $('#robot');
     $({deg: startAngle}).animate({deg: endAngle}, {
         duration: robozzle.robotSpeed,
+        easing: "linear",
         step: function(now) {
             $robot.css({
                 transform: 'rotate(' + now + 'deg)'
