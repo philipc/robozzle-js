@@ -26,9 +26,11 @@ var robozzle = {
     hoverCommand: null,
     hoverCondition: null,
     robotDir: 0,
+    robotDeg: 0,
     robotCol: 0,
     robotRow: 0,
     robotSpeed: 200,
+    robotAnimation: null,
     stepTimeout: null
 };
 
@@ -281,10 +283,19 @@ robozzle.displayGoReset = function () {
 };
 
 robozzle.displayRobot = function () {
+    var state = robozzle.robotAnimation;
     $('#robot')
-        .css('left', robozzle.robotCol * 40 + 'px')
-        .css('top', robozzle.robotRow * 40 + 'px')
-        .css('transform', 'rotate(' + robozzle.robotDir * 90 + 'deg)');
+        .css('left', state.left + 'px')
+        .css('top', state.top + 'px')
+        .css('transform', 'rotate(' + (((state.deg % 360) + 360) % 360) + 'deg) scale(' + state.scale + ')');
+};
+
+robozzle.animateRobot = function (props) {
+    $(robozzle.robotAnimation).animate(props, {
+        duration: robozzle.robotSpeed,
+        easing: "linear",
+        progress: robozzle.displayRobot
+    });
 };
 
 robozzle.displayBoard = function (level) {
@@ -321,8 +332,15 @@ robozzle.displayBoard = function (level) {
     robozzle.started = false;
     robozzle.finished = false;
     robozzle.robotDir = level.RobotDir;
+    robozzle.robotDeg = level.RobotDir * 90;
     robozzle.robotCol = level.RobotCol;
     robozzle.robotRow = level.RobotRow;
+    robozzle.robotAnimation = {
+        left: robozzle.robotCol * 40,
+        top: robozzle.robotRow * 40,
+        deg: robozzle.robotDeg,
+        scale: 1.0
+    };
     robozzle.displayRobot();
     robozzle.displayGoReset();
 };
@@ -652,19 +670,9 @@ robozzle.moveRobot = function () {
             robozzle.stars--;
         }
     }
-    $('#robot').animate({ left: col * 40 + 'px', top: row * 40 + 'px' },
-                        robozzle.robotSpeed, "linear");
+    robozzle.animateRobot({ left: col * 40, top: row * 40 });
     if (crash) {
-        var $robot = $('#robot');
-        $({scale: 1.0}).animate({scale: 0.0}, {
-            duration: robozzle.robotSpeed,
-            easing: "linear",
-            step: function(now) {
-                $robot.css({
-                    transform: 'scale(' + now + ') rotate(' + robozzle.robotDir * 90 + 'deg)'
-                });
-            }
-        });
+        robozzle.animateRobot({ scale: 0.0 });
         robozzle.finished = true;
         robozzle.displayGoReset();
     }
@@ -672,25 +680,15 @@ robozzle.moveRobot = function () {
 
 robozzle.turnRobot = function (right) {
     var dir = robozzle.robotDir;
-    var startAngle = dir * 90;
     if (right) {
         dir++;
+        robozzle.robotDeg += 90;
     } else {
         dir--;
+        robozzle.robotDeg -= 90;
     }
-    var endAngle = dir * 90;
     robozzle.robotDir = (dir + 4) % 4;
-
-    var $robot = $('#robot');
-    $({deg: startAngle}).animate({deg: endAngle}, {
-        duration: robozzle.robotSpeed,
-        easing: "linear",
-        step: function(now) {
-            $robot.css({
-                transform: 'rotate(' + now + 'deg)'
-            });
-        }
-    });
+    robozzle.animateRobot({ deg: robozzle.robotDeg });
 };
 
 robozzle.callSub = function (loop, calls, sub) {
