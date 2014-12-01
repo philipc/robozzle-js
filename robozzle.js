@@ -420,6 +420,7 @@ robozzle.setSelection = function ($src, condition, command) {
     if (command && !robozzle.allowedCommand(command)) {
         return;
     }
+    robozzle.stepReset();
     robozzle.selection = true;
     robozzle.selectionCondition = condition;
     robozzle.selectionCommand = command;
@@ -710,8 +711,10 @@ robozzle.callSub = function (calls, sub) {
 };
 
 robozzle.stepReset = function () {
-    $(robozzle.robotAnimation).stop(true, false);
-    robozzle.displayBoard(robozzle.level);
+    if (robozzle.robotState != robozzle.robotStates.reset) {
+        $(robozzle.robotAnimation).stop(true, false);
+        robozzle.displayBoard(robozzle.level);
+    }
 };
 
 robozzle.stepWait = function () {
