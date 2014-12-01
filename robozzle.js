@@ -289,6 +289,7 @@ robozzle.setRobotState = function (state) {
     } else {
         $('#program-go').text('Reset');
     }
+    $('#program-step').prop('disabled', robozzle.robotState == robozzle.robotStates.finished);
 };
 
 robozzle.displayRobot = function () {
