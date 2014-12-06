@@ -364,6 +364,57 @@ div.sub-grid {
 #menu-signout, #menu-user {
     display: none;
 }
-#dialogs, #templates {
+#dialogs {
+    display: none;
+    z-index: 100;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(80,80,80,0.8);
+}
+.dialog {
+    display: none;
+    background-color: #707070;
+    border: solid 1px black;
+    text-align: center;
+}
+.dialog-title {
+    padding: 5px 20px;
+    background-color: #202020;
+    color: white;
+    font-weight: bold;
+}
+.dialog-error {
+    display: none;
+    padding: 5px 20px;
+    background-color: darkred;
+    color: #f88;
+}
+.dialog-link {
+    margin: 10px;
+}
+.dialog-link a:link {
+    color: #d0d0b0;
+}
+.dialog-link a:visited {
+    color: #d0d0b0;
+}
+.dialog form {
+    padding: 10px 20px;
+}
+.dialog td {
+    text-align: left;
+}
+.dialog td input {
+    box-sizing: border-box;
+    width: 100%;
+}
+#dialog-signin {
+    width: 270px;
+    margin: 250px auto 0;
+}
+#templates {
     display: none;
 }

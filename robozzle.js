@@ -838,7 +838,9 @@ robozzle.logIn = function (userName, password, callback) {
 };
 
 robozzle.logInCancel = function () {
-    robozzle.logInCallbacks.empty();
+    if (robozzle.logInCallbacks) {
+        robozzle.logInCallbacks.empty();
+    }
 };
 
 robozzle.logOut = function () {
@@ -856,6 +858,53 @@ robozzle.logOut = function () {
     $('#menu-register').show();
     $('#menu-signin').show();
     robozzle.displayLevels();
+};
+
+robozzle.showDialog = function ($dialog) {
+    $('#dialogs').show();
+    $dialog.show();
+};
+
+robozzle.hideDialog = function ($dialog) {
+    $dialog.hide();
+    $('#dialogs').hide();
+};
+
+robozzle.showSignin = function () {
+    var $signin = $('#dialog-signin');
+    $signin.find(':input').prop('disabled', false);
+    $('#dialog-signin-error').hide();
+    robozzle.showDialog($signin);
+};
+
+robozzle.hideSignin = function () {
+    var $signin = $('#dialog-signin');
+    robozzle.hideDialog($signin);
+    $signin.find('input[name="password"]').val('');
+};
+
+robozzle.submitSignin = function (event) {
+    event.preventDefault();
+    var $signin = $('#dialog-signin');
+    $signin.find(':input').prop('disabled', true);
+    $('#dialog-signin-cancel').prop('disabled', false);
+    robozzle.logIn(
+            $signin.find('input[name="name"]').val(),
+            robozzle.hashPassword($signin.find('input[name="password"]').val()),
+            function (result) {
+                $signin.find(':input').prop('disabled', false);
+                if (result) {
+                    robozzle.hideSignin();
+                } else {
+                    $('#dialog-signin-error').show();
+                }
+            });
+};
+
+robozzle.cancelSignin = function (event) {
+    event.preventDefault();
+    robozzle.logInCancel();
+    robozzle.hideSignin();
 };
 
 robozzle.css = function (selector, property, value) {
@@ -1162,55 +1211,9 @@ $(document).ready(function () {
     robozzle.setSortKind(0);
     robozzle.topSolvers();
 
-    var signinForm;
-    var signin = $('#dialog-signin').dialog({
-        autoOpen: false,
-        modal: true,
-        buttons: [
-            {
-                id: 'dialog-signin-button',
-                text: 'Sign in',
-                click: function () {
-                    signinForm.submit();
-                }
-            },
-            {
-                text: 'Cancel',
-                click: function () {
-                    signin.dialog('close');
-                }
-            }
-        ],
-        open: function () {
-            $('#dialog-signin-button').prop('disabled', false);
-            signin.find(':input').prop('disabled', false);
-            signin.find('#signin-error').text('');
-        },
-        close: function () {
-            robozzle.logInCancel();
-            signin.find('input[name="password"]').val('');
-        }
-    });
-    signinForm = signin.find('form').on('submit', function (event) {
-        event.preventDefault();
-        $('#dialog-signin-button').prop('disabled', true);
-        signin.find(':input').prop('disabled', true);
-        robozzle.logIn(
-                signin.find('input[name="name"]').val(),
-                robozzle.hashPassword(signin.find('input[name="password"]').val()),
-                function (result) {
-                    $('#dialog-signin-button').prop('disabled', false);
-                    signin.find(':input').prop('disabled', false);
-                    if (result) {
-                        signin.dialog('close');
-                    } else {
-                        signin.find('#signin-error').text('Invalid username/password');
-                    }
-                });
-    });
-    $('#menu-signin').on('click', function () {
-        signin.dialog('open');
-    });
+    $('#menu-signin').on('click', robozzle.showSignin);
+    $('#dialog-signin').find('form').on('submit', robozzle.submitSignin);
+    $('#dialog-signin-cancel').on('click', robozzle.cancelSignin);
     $('#menu-signout').on('click', robozzle.logOut);
 
     var hideSolved = localStorage.getItem('hideSolved');

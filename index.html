@@ -4,9 +4,7 @@
         <meta charset="UTF-8">
         <title>RoboZZle - a social puzzle game</title>
         <link rel='stylesheet' type='text/css' href='robozzle.css' />
-        <link rel='stylesheet' type='text/css' href='//code.jquery.com/ui/1.11.1/themes/ui-darkness/jquery-ui.css' />
         <script type='text/javascript' src='//code.jquery.com/jquery-1.11.1.min.js'></script>
-        <script type='text/javascript' src='//code.jquery.com/ui/1.11.1/jquery-ui.min.js'></script>
         <script type='text/javascript' src='jquery.soap.js'></script>
         <script type='text/javascript' src='jquery.hotkeys.js'></script>
         <script type='text/javascript' src='spin.min.js'></script>
@@ -110,17 +108,31 @@
             </div>
         </div>
         <div id="dialogs">
-            <div id="dialog-signin" title="Sign In">
+            <div id="dialog-signin" class="dialog" title="Sign In">
+                <div class="dialog-title">
+                    <span>Sign In</span>
+                </div>
+                <div id="dialog-signin-error" class="dialog-error">
+                    <span>Invalid username / password.</span>
+                </div>
                 <form>
-                    <fieldset>
-                        <p id="signin-error"></p>
-                        <label for="name">Name</label>
-                        <input type="text" name="name">
-                        <label for="password">Password</label>
-                        <input type="password" name="password">
-                        <!-- Allow form submission with keyboard without duplicating the dialog button -->
-                        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
-                    </fieldset>
+                    <table>
+                        <tr>
+                            <td><label for="name">Username:</label></td>
+                            <td><input type="text" name="name"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="password">Password:</label></td>
+                            <td><input type="password" name="password"></td>
+                        </tr>
+                    </table>
+                    <div class="dialog-link">
+                        <a href="/forgotpassword.aspx" target="_blank">Forgot password</a>
+                    </div>
+                    <div>
+                        <button id="dialog-signin-submit" type="submit">Sign In</button>
+                        <button id="dialog-signin-cancel">Cancel</button>
+                    </div>
                 </form>
             </div>
         </div>
