@@ -164,6 +164,7 @@ li.levelitem span.disliked {
     position: absolute;
     left: 50%;
     bottom: 10px;
+    white-space: nowrap;
 }
 #pagecontrol > div {
     width: 100%;
