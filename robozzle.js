@@ -29,7 +29,6 @@ var robozzle = {
     robotDeg: 0,
     robotCol: 0,
     robotRow: 0,
-    robotSpeed: 200,
     robotAnimation: null,
     robotStates: {
         reset: 0,
@@ -302,7 +301,7 @@ robozzle.displayRobot = function () {
 
 robozzle.animateRobot = function (props) {
     $(robozzle.robotAnimation).animate(props, {
-        duration: robozzle.robotSpeed,
+        duration: robozzle.robotDelay,
         easing: "linear",
         progress: robozzle.displayRobot
     });
@@ -673,7 +672,7 @@ robozzle.moveRobot = function () {
 
         var $item = $cell.find('.item');
         if ($item.hasClass('board-star')) {
-            $item.animate({ opacity: 0 }, robozzle.robotSpeed)
+            $item.animate({ opacity: 0 }, robozzle.robotDelay)
                 .removeClass('board-star')
                 .addClass('board-star-fade');
             robozzle.stars--;
@@ -1221,6 +1220,18 @@ $(document).ready(function () {
         robozzle.hideSolved = hideSolved === 'true';
         $('#hidesolved').prop('checked', robozzle.hideSolved);
     }
+
+    robozzle.robotSpeed = localStorage.getItem('robotSpeed');
+    if (robozzle.robotSpeed === null) {
+        robozzle.robotSpeed = 5;
+    }
+    // 0 -> 1020, 5 -> 145, 10 -> 20
+    robozzle.robotDelay = Math.pow(10 - robozzle.robotSpeed, 3) + 20;
+    $('#program-speed').val(robozzle.robotSpeed).change(function () {
+        robozzle.robotSpeed = parseInt($(this).val());
+        robozzle.robotDelay = Math.pow(10 - robozzle.robotSpeed, 3) + 20;
+        localStorage.setItem('robotSpeed', robozzle.robotSpeed);
+    });
 
     $('#menu li').removeClass('active');
     $('#menu-levels').addClass('active');

@@ -81,10 +81,10 @@
                                         <button id="program-go" class="button">Go!</button><button id="program-step" class="button">Step</button>
                                     </div>
                                     <button id="program-edit" class="button">Edit Puzzle</button>
-                                    <div>
-                                        <input type="radio" name="speed" value="slow">Slow</input>
-                                        <input type="radio" name="speed" value="medium">Medium</input>
-                                        <input type="radio" name="speed" value="fast">Fast</input>
+                                    <div id="program-speed-container" class="table-container">
+                                        <div class="table-column">Slow</div>
+                                        <div class="table-column"><input id="program-speed" type="range" min="0" max="10" value="5" /></div>
+                                        <div class="table-column">Fast</div>
                                     </div>
                                 </div>
                             </div>

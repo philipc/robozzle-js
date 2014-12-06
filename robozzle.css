@@ -291,11 +291,15 @@ div.robot-3 {
 #program {
     padding: 5px;
     margin: 5px;
+    width: 200px;
     background-color: #707070;
     color: white;
 }
 #program-control {
     white-space: nowrap;
+}
+#program-control .table-column {
+    vertical-align: middle;
 }
 #program-go {
     box-sizing: border-box;
@@ -308,6 +312,13 @@ div.robot-3 {
 #program-edit {
     box-sizing: border-box;
     width: 100%;
+}
+#program-speed-container {
+    margin: 0 auto;
+}
+#program-speed {
+    //box-sizing: border-box;
+    width: 100px; // box sizing isn't working on range input
 }
 #program-toolbar {
     background-color: #707070;
