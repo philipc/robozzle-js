@@ -169,6 +169,9 @@ robozzle.displayLevel = function (level) {
     html.click(function () {
         robozzle.setGame($(this).attr('data-level-id'));
     });
+    html.find('.stats').click(function (e) {
+        e.stopPropagation();
+    });
     return html;
 };
 
