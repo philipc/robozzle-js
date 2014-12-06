@@ -297,12 +297,15 @@ div.robot-3 {
     white-space: nowrap;
 }
 #program-go {
+    box-sizing: border-box;
     width: 65%;
 }
 #program-step {
-    width: 33%;
+    box-sizing: border-box;
+    width: 35%;
 }
 #program-edit {
+    box-sizing: border-box;
     width: 100%;
 }
 #program-toolbar {
