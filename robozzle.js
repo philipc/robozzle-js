@@ -601,6 +601,7 @@ robozzle.displayGame = function (level) {
     $('#menu li').removeClass('active');
     $('#content').children().hide();
     $('#content-game').show();
+    $('#program-edit').hide();
 
     robozzle.level = level;
 
