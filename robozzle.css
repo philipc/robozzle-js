@@ -410,6 +410,9 @@ div.sub-grid {
     background-color: darkred;
     color: #f88;
 }
+.dialog-message {
+    text-align: left;
+}
 .dialog-link {
     margin: 10px;
 }
@@ -431,6 +434,10 @@ div.sub-grid {
 }
 #dialog-signin {
     width: 270px;
+    margin: 250px auto 0;
+}
+#dialog-solved {
+    width: 450px;
     margin: 250px auto 0;
 }
 #templates {

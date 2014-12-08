@@ -727,7 +727,7 @@ robozzle.stepWait = function () {
     if (robozzle.stars == 0) {
         $(robozzle.robotAnimation).queue(function () {
             robozzle.submitSolution();
-            alert('Finished!');
+            robozzle.showSolved();
             $(this).dequeue();
         });
         robozzle.setRobotState(robozzle.robotStates.finished);
@@ -908,6 +908,38 @@ robozzle.cancelSignin = function (event) {
     event.preventDefault();
     robozzle.logInCancel();
     robozzle.hideSignin();
+};
+
+robozzle.initSignin = function () {
+    $('#dialog-signin').find('form').on('submit', robozzle.submitSignin);
+    $('#dialog-signin-cancel').on('click', robozzle.cancelSignin);
+};
+
+robozzle.showSolved = function () {
+    var $solved = $('#dialog-solved');
+    $solved.find('a.stats')
+        .attr('href', 'puzzle.aspx?id=' + robozzle.level.Id)
+        .attr('target', '_blank');
+    $solved.find('a.comments')
+        .attr('href', 'forums/thread.aspx?puzzle=' + robozzle.level.Id)
+        .attr('target', '_blank');
+    robozzle.showDialog($solved);
+};
+
+robozzle.submitSolved = function (event) {
+    event.preventDefault();
+    robozzle.hideDialog($('#dialog-solved'));
+    robozzle.getLevels(false);
+};
+
+robozzle.cancelSolved = function (event) {
+    event.preventDefault();
+    robozzle.hideDialog($('#dialog-solved'));
+};
+
+robozzle.initSolved = function () {
+    $('#dialog-solved').find('form').on('submit', robozzle.submitSolved);
+    $('#dialog-solved-replay').on('click', robozzle.cancelSolved);
 };
 
 robozzle.css = function (selector, property, value) {
@@ -1214,9 +1246,9 @@ $(document).ready(function () {
     robozzle.setSortKind(0);
     robozzle.topSolvers();
 
+    robozzle.initSignin();
+    robozzle.initSolved();
     $('#menu-signin').on('click', robozzle.showSignin);
-    $('#dialog-signin').find('form').on('submit', robozzle.submitSignin);
-    $('#dialog-signin-cancel').on('click', robozzle.cancelSignin);
     $('#menu-signout').on('click', robozzle.logOut);
 
     var hideSolved = localStorage.getItem('hideSolved');
