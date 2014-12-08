@@ -422,6 +422,9 @@ div.sub-grid {
 .dialog-link a:visited {
     color: #d0d0b0;
 }
+.dialog-button {
+    margin-top: 10px;
+}
 .dialog form {
     padding: 10px 20px;
 }
@@ -431,6 +434,10 @@ div.sub-grid {
 .dialog td input {
     box-sizing: border-box;
     width: 100%;
+}
+#dialog-message {
+    width: 450px;
+    margin: 250px auto 0;
 }
 #dialog-signin {
     width: 270px;

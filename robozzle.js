@@ -736,7 +736,8 @@ robozzle.stepWait = function () {
     robozzle.steps++;
     if (robozzle.steps >= 1000) {
         $(robozzle.robotAnimation).queue(function () {
-            alert('Out of fuel!');
+            robozzle.showMessage('Out of fuel!',
+                                 'You must solve the puzzle in at most 1000 steps.');
             $(this).dequeue();
         });
         robozzle.setRobotState(robozzle.robotStates.finished);
@@ -871,6 +872,22 @@ robozzle.showDialog = function ($dialog) {
 robozzle.hideDialog = function ($dialog) {
     $dialog.hide();
     $('#dialogs').hide();
+};
+
+robozzle.showMessage = function (title, message) {
+    var $dialog = $('#dialog-message');
+    $dialog.find('.dialog-title').text(title);
+    $dialog.find('.dialog-message').text(message);
+    robozzle.showDialog($dialog);
+};
+
+robozzle.submitMessage = function (event) {
+    event.preventDefault();
+    robozzle.hideDialog($('#dialog-message'));
+};
+
+robozzle.initMessage = function () {
+    $('#dialog-message').find('form').on('submit', robozzle.submitMessage);
 };
 
 robozzle.showSignin = function () {
@@ -1246,8 +1263,10 @@ $(document).ready(function () {
     robozzle.setSortKind(0);
     robozzle.topSolvers();
 
+    robozzle.initMessage();
     robozzle.initSignin();
     robozzle.initSolved();
+
     $('#menu-signin').on('click', robozzle.showSignin);
     $('#menu-signout').on('click', robozzle.logOut);
 

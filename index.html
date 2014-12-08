@@ -107,6 +107,17 @@
             </div>
         </div>
         <div id="dialogs">
+            <div id="dialog-message" class="dialog" title="Sign In">
+                <div class="dialog-title">
+                </div>
+                <form>
+                    <div class="dialog-message">
+                    </div>
+                    <div class="dialog-button">
+                        <button id="dialog-message-ok" type="submit">OK</button>
+                    </div>
+                </form>
+            </div>
             <div id="dialog-signin" class="dialog" title="Sign In">
                 <div class="dialog-title">
                     <span>Sign In</span>
@@ -128,7 +139,7 @@
                     <div class="dialog-link">
                         <a href="/forgotpassword.aspx" target="_blank">Forgot password</a>
                     </div>
-                    <div>
+                    <div class="dialog-button">
                         <button id="dialog-signin-submit" type="submit">Sign In</button>
                         <button id="dialog-signin-cancel">Cancel</button>
                     </div>
@@ -147,7 +158,7 @@
                         <a class="stats">solution lengths</a>,
                         <a class="comments">comments</a>
                     </div>
-                    <div>
+                    <div class="dialog-button">
                         <button id="dialog-solved-more" type="submit">More puzzles</button>
                         <button id="dialog-solved-replay">Replay</button>
                     </div>
