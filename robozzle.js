@@ -867,6 +867,8 @@ robozzle.logOut = function () {
 robozzle.showDialog = function ($dialog) {
     $('#dialogs').show();
     $dialog.show();
+    $dialog.find(":input:first").focus();
+    // TODO: prevent focus leaving the dialog
 };
 
 robozzle.hideDialog = function ($dialog) {
