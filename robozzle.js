@@ -865,8 +865,6 @@ robozzle.logOut = function () {
 };
 
 robozzle.showDialog = function ($dialog) {
-    robozzle.showDialogInputs = $('#content :input:enabled');
-    robozzle.showDialogInputs.attr('disabled', true);
     $('#dialogs').show();
     $dialog.show();
 };
@@ -874,7 +872,6 @@ robozzle.showDialog = function ($dialog) {
 robozzle.hideDialog = function ($dialog) {
     $dialog.hide();
     $('#dialogs').hide();
-    robozzle.showDialogInputs.attr('disabled', false);
 };
 
 robozzle.showMessage = function (title, message) {
