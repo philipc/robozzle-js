@@ -679,6 +679,7 @@ robozzle.setGame = function (id) {
     };
     robozzle.service('GetLevel', request, function (result, response) {
         robozzle.displayGame(response.GetLevelResult);
+        //robozzle.showSolved();
     });
 };
 
@@ -1401,13 +1402,9 @@ $(document).ready(function () {
         var spinner = new Spinner().spin($('#levellist-spinner')[0]);
         robozzle.logIn(userName, password, function (result) {
             spinner.stop();
-            //robozzle.getLevels(false);
-    robozzle.setGame(23);
-    //robozzle.setGame(4944);
-    //robozzle.setGame(4946);
+            robozzle.getLevels(false);
         });
     } else {
-        //robozzle.getLevels(false);
-    robozzle.setGame(23);
+        robozzle.getLevels(false);
     }
 });
