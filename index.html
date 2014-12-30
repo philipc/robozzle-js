@@ -150,8 +150,39 @@
                     <span>Congratulations!</span>
                 </div>
                 <form>
-                    <div class="dialog-message">
+                    <div id="dialog-solved-message" class="dialog-message">
                         You've completed the puzzle. You can play another puzzle, or replay the same one.
+                    </div>
+                    <div id="dialog-solved-form">
+                        <div id="dialog-solved-difficulty" class="difficulty">
+                            <input type="radio" id="dialog-solved-difficulty-1" name="difficulty" value="1" autocomplete="off"></input>
+                            <label for="dialog-solved-difficulty-1"><span>Very easy</span></label>
+                            <input type="radio" id="dialog-solved-difficulty-2" name="difficulty" value="2" autocomplete="off"></input>
+                            <label for="dialog-solved-difficulty-2"><span>Easy</span></label>
+                            <input type="radio" id="dialog-solved-difficulty-3" name="difficulty" value="3" autocomplete="off"></input>
+                            <label for="dialog-solved-difficulty-3"><span>Moderate</span></label>
+                            <input type="radio" id="dialog-solved-difficulty-4" name="difficulty" value="4" autocomplete="off"></input>
+                            <label for="dialog-solved-difficulty-4"><span>Hard</span></label>
+                            <input type="radio" id="dialog-solved-difficulty-5" name="difficulty" value="5" autocomplete="off"></input>
+                            <label for="dialog-solved-difficulty-5"><span>Very hard</span></label>
+                        </div>
+                        <div id="dialog-solved-difficulty-label"></div>
+                        <br>
+                        <div class="votes">
+                            <input type="checkbox" id="dialog-solved-like" name="like" autocomplete="off"></input>
+                            <label for="dialog-solved-like">Like</label>
+                            <span class="liked">+</span><span>/</span><span class="disliked">-</span>
+                            <input type="checkbox" id="dialog-solved-dislike" name="dislike" autocomplete="off"></input>
+                            <label for="dialog-solved-dislike">Dislike</label>
+                        </div>
+                        <!--
+                        <br>
+                        <div>
+                            <label for="comment">Comment:</label>
+                            <input type="text" name="comment" autocomplete="off">
+                        </div>
+                        -->
+                        <br>
                     </div>
                     <div class="dialog-link stats">
                         More on this puzzle:

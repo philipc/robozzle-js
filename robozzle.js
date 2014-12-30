@@ -15,7 +15,8 @@ var robozzle = {
     userName: null,
     password: null,
     solvedLevels: {},
-    votes: {},
+    likeVotes: {},
+    difficultyVotes: {},
 
     // active level info
     level: null,
@@ -545,6 +546,40 @@ robozzle.submitSolution = function () {
     });
 };
 
+robozzle.submitLevelVote = function () {
+    if (!robozzle.level || !robozzle.userName || !robozzle.password)
+        return;
+
+    var prevLikeVote = robozzle.likeVotes[robozzle.level.Id] || 0;
+    var likeVote;
+    if ($('#dialog-solved-like').prop('checked')) {
+        likeVote = 1;
+    } else if ($('#dialog-solved-dislike').prop('checked')) {
+        likeVote = -1;
+    } else {
+        likeVote = 0;
+    }
+
+    var prevDifficultyVote = robozzle.difficultyVotes[robozzle.level.Id] || 0;
+    var difficultyVote = $('#dialog-solved-difficulty input:checked').first().val() || 0;
+
+    if (prevLikeVote == likeVote && prevDifficultyVote == difficultyVote)
+        return;
+
+    robozzle.likeVotes[robozzle.level.Id] = likeVote;
+    robozzle.difficultyVotes[robozzle.level.Id] = difficultyVote;
+
+    var request = {
+        userName: robozzle.userName,
+        password: robozzle.password,
+        levelId: robozzle.level.Id,
+        vote0: likeVote,
+        vote1: difficultyVote
+    };
+    robozzle.service('SubmitLevelVote', request, function (result, response) {
+    });
+};
+
 robozzle.displayProgramToolbar = function (level) {
     var $toolbar = $('#program-toolbar').empty();
     var makeCommand = function (command) {
@@ -811,9 +846,14 @@ robozzle.logIn = function (userName, password, callback) {
             $.each(response.solvedLevels, function (index, value) {
                 robozzle.solvedLevels[value] = true;
             });
-            robozzle.votes = {};
-            $.each(response.votes, function (index, value) {
-                robozzle.votes[value.Levelid] = value;
+            robozzle.likeVotes = {};
+            robozzle.difficultyVotes = {};
+            $.each(response.votes.LevelVoteInfo, function (index, value) {
+                if (value.VoteKind === '0') {
+                    robozzle.likeVotes[value.LevelId] = value.Vote;
+                } else if (value.VoteKind === '1') {
+                    robozzle.difficultyVotes[value.LevelId] = value.Vote;
+                }
             });
 
             localStorage.setItem('userName', userName);
@@ -934,8 +974,45 @@ robozzle.initSignin = function () {
     $('#dialog-signin-cancel').on('click', robozzle.cancelSignin);
 };
 
+robozzle.displaySolvedVote = function () {
+    var text = $('#dialog-solved-difficulty input:checked + label span').first().text();
+    if (text) {
+        text = 'Your vote: ' + text;
+    } else {
+        text = 'Please vote on the difficulty';
+    }
+    $('#dialog-solved-difficulty-label').text(text);
+};
+
 robozzle.showSolved = function () {
     var $solved = $('#dialog-solved');
+    if (robozzle.userName) {
+        $('#dialog-solved-difficulty').find('input').prop('checked', false);
+        var vote = robozzle.difficultyVotes[robozzle.level.Id];
+        if (vote) {
+            $('#dialog-solved-difficulty').find('input[value="' + vote + '"]').prop('checked', true);
+        }
+
+        $('#dialog-solved-like').prop('checked', false);
+        $('#dialog-solved-dislike').prop('checked', false);
+        vote = robozzle.likeVotes[robozzle.level.Id];
+        if (vote == '1') {
+            $('#dialog-solved-like').prop('checked', true);
+        } else if (vote == '-1') {
+            $('#dialog-solved-dislike').prop('checked', true);
+        }
+
+        robozzle.displaySolvedVote();
+
+        $solved.find('span.liked').text('+' + robozzle.level.Liked);
+        $solved.find('span.disliked').text('-' + robozzle.level.Disliked);
+
+        $('#dialog-solved-message').hide();
+        $('#dialog-solved-form').show();
+    } else {
+        $('#dialog-solved-message').show();
+        $('#dialog-solved-form').hide();
+    }
     $solved.find('a.stats')
         .attr('href', 'puzzle.aspx?id=' + robozzle.level.Id)
         .attr('target', '_blank');
@@ -948,17 +1025,37 @@ robozzle.showSolved = function () {
 robozzle.submitSolved = function (event) {
     event.preventDefault();
     robozzle.hideDialog($('#dialog-solved'));
+    robozzle.submitLevelVote();
     robozzle.getLevels(false);
 };
 
 robozzle.cancelSolved = function (event) {
     event.preventDefault();
     robozzle.hideDialog($('#dialog-solved'));
+    robozzle.submitLevelVote();
 };
 
 robozzle.initSolved = function () {
     $('#dialog-solved').find('form').on('submit', robozzle.submitSolved);
     $('#dialog-solved-replay').on('click', robozzle.cancelSolved);
+    $('#dialog-solved-difficulty label').mouseenter(function () {
+        $('#dialog-solved-difficulty-label').text($(this).find('span').text());
+    }).mouseleave(function () {
+        robozzle.displaySolvedVote();
+    });
+    $('input[name="difficulty"]').change(function () {
+        robozzle.displaySolvedVote();
+    });
+    $('#dialog-solved-like').change(function () {
+        if ($(this).prop('checked')) {
+            $('#dialog-solved-dislike').prop('checked', false);
+        }
+    });
+    $('#dialog-solved-dislike').change(function () {
+        if ($(this).prop('checked')) {
+            $('#dialog-solved-like').prop('checked', false);
+        }
+    });
 };
 
 robozzle.css = function (selector, property, value) {

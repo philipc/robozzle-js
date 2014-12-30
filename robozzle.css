@@ -143,12 +143,6 @@ li.levelitem div.votes {
     bottom: 5px;
     right: 8px;
 }
-li.levelitem span.liked {
-    color: darkgreen;
-}
-li.levelitem span.disliked {
-    color: darkred;
-}
 #levellist a:link {
     color: black;
 }
@@ -428,6 +422,9 @@ div.sub-grid {
 .dialog form {
     padding: 10px 20px;
 }
+.dialog table {
+    width: 100%;
+}
 .dialog td {
     text-align: left;
 }
@@ -444,8 +441,69 @@ div.sub-grid {
     margin: 250px auto 0;
 }
 #dialog-solved {
-    width: 450px;
+    width: 400px;
     margin: 250px auto 0;
+}
+.difficulty {
+    position: relative;
+    display: inline-block;
+}
+.difficulty input {
+    position: absolute;
+    left: -999px;
+    clip: rect(0px, 0px, 0px, 0px);
+}
+.difficulty label {
+    float: left;
+    margin: 2px;
+    width: 10px;
+    height: 10px;
+    border: 1px solid black;
+}
+.difficulty span {
+    display: none;
+}
+.difficulty input + label {
+    background: #a53535;
+    background: -moz-linear-gradient(top, #c04040, #903030);
+}
+.difficulty:hover input + label,
+.difficulty:hover input:checked + label ~ label {
+    background: #d56060;
+    background: -moz-linear-gradient(top, #f08080, #c04040);
+}
+.difficulty input:checked + label ~ label,
+.difficulty:hover input + label:hover ~ label {
+    background: white;
+}
+.votes input {
+    position: absolute;
+    left: -999px;
+    clip: rect(0px, 0px, 0px, 0px);
+}
+.votes input + label {
+    display: inline-block;
+    width: 70px;
+    margin: 5px;
+    padding: 3px;
+    border: 1px solid rgba(0,0,0,0.2);
+    color: white;
+    -moz-user-select: none;
+}
+.votes input[name="like"]:checked + label {
+    background-color: #306030;
+}
+.votes input[name="dislike"]:checked + label {
+    background-color: #903030;
+}
+.votes {
+    font-weight: bold;
+}
+.votes span.liked {
+    color: darkgreen;
+}
+.votes span.disliked {
+    color: darkred;
 }
 #templates {
     display: none;
