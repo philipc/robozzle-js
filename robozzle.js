@@ -164,7 +164,7 @@ robozzle.displayLevel = function (level) {
     }
     html.find('span.liked').text('+' + level.Liked);
     html.find('span.disliked').text('-' + level.Disliked);
-    if (robozzle.solvedLevels[level.Id.toString()]) {
+    if (robozzle.solvedLevels[level.Id]) {
         html.addClass('solved');
     }
     html.click(function () {
@@ -535,6 +535,9 @@ robozzle.readProgram = function () {
 robozzle.submitSolution = function () {
     if (!robozzle.level || !robozzle.userName || !robozzle.password)
         return;
+
+    robozzle.solvedLevels[robozzle.level.Id] = true;
+
     var request = {
         levelId: robozzle.level.Id,
         userName: robozzle.userName,
@@ -844,7 +847,7 @@ robozzle.logIn = function (userName, password, callback) {
             robozzle.password = password;
             robozzle.solvedLevels = {};
             $.each(response.solvedLevels, function (index, value) {
-                robozzle.solvedLevels[value] = true;
+                robozzle.solvedLevels[parseInt(value)] = true;
             });
             robozzle.likeVotes = {};
             robozzle.difficultyVotes = {};
@@ -1398,9 +1401,13 @@ $(document).ready(function () {
         var spinner = new Spinner().spin($('#levellist-spinner')[0]);
         robozzle.logIn(userName, password, function (result) {
             spinner.stop();
-            robozzle.getLevels(false);
+            //robozzle.getLevels(false);
+    robozzle.setGame(23);
+    //robozzle.setGame(4944);
+    //robozzle.setGame(4946);
         });
     } else {
-        robozzle.getLevels(false);
+        //robozzle.getLevels(false);
+    robozzle.setGame(23);
     }
 });
