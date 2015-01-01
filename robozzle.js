@@ -143,10 +143,20 @@ robozzle.displayLevel = function (level) {
     var html = $('#templates .levelitem').clone();
     html.attr('data-level-id', level.Id);
     html.find('div.title').text(level.Title);
-    var difficulty = '-';
+    var difficultyAvg = 0;
     if (level.DifficultyVoteCount !== 0)
-        difficulty = Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 100) / 100;
-    html.find('span.difficulty').text(difficulty);
+        difficultyAvg = Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 10);
+    var $difficultyVal = html.find('.difficulty-val');
+    for (var i = 0; i < 5; i++) {
+        var val = difficultyAvg - i * 10;
+        if (val > 10) {
+            val = 10;
+        }
+        if (val < 0) {
+            val = 0;
+        }
+        $difficultyVal.eq(i).updateClass('difficulty-val', val);
+    }
     html.find('a.stats')
         .attr('href', 'puzzle.aspx?id=' + level.Id)
         .attr('target', '_blank');
@@ -1199,6 +1209,20 @@ robozzle.loadSVGConditionNone = function () {
 };
 
 robozzle.loadSVGDifficulty = function () {
+    for (var i = 0; i <= 10; i++) {
+        robozzle.cssSVG('.difficulty-val-' + i, 'background',
+            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
+                <defs>\
+                    <linearGradient id="difficultyFillOther" x1="0" x2="0" y1="0" y2="1">\
+                        <stop offset="0" stop-color="#4040c0"/>\
+                        <stop offset="1" stop-color="#303090"/>\
+                    </linearGradient>\
+                </defs>\
+                <rect x="2.5" y="2.5" width="11" height="11" fill="white" stroke="black"/>\
+                <rect x="3" y="3" width="' + i + '" height="10" fill="url(#difficultyFillOther)" stroke="none"/>\
+            </svg>');
+    }
+
     robozzle.cssSVG('.difficulty input + label', 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
             <defs>\

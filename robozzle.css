@@ -133,6 +133,11 @@ li.levelitem div.difficulty {
     top: 5px;
     right: 8px;
 }
+li.levelitem div.difficulty-val {
+    float: left;
+    width: 16px;
+    height: 16px;
+}
 li.levelitem div.stats {
     position: absolute;
     bottom: 5px;
@@ -444,22 +449,22 @@ div.sub-grid {
     width: 400px;
     margin: 250px auto 0;
 }
-.difficulty {
+.dialog .difficulty {
     position: relative;
     display: inline-block;
 }
-.difficulty input {
+.dialog .difficulty input {
     position: absolute;
     left: -999px;
     clip: rect(0px, 0px, 0px, 0px);
 }
-.difficulty label {
+.dialog .difficulty label {
     float: left;
     margin: 0px;
     width: 16px;
     height: 16px;
 }
-.difficulty span {
+.dialog .difficulty span {
     display: none;
 }
 .votes input {
