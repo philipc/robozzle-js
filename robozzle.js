@@ -139,10 +139,7 @@ robozzle.topSolvers = function () {
     });
 };
 
-robozzle.displayLevel = function (level) {
-    var html = $('#templates .levelitem').clone();
-    html.attr('data-level-id', level.Id);
-    html.find('div.title').text(level.Title);
+robozzle.displayDifficulty = function (level, html) {
     var difficultyAvg = 0;
     if (level.DifficultyVoteCount !== 0)
         difficultyAvg = Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 10);
@@ -157,6 +154,13 @@ robozzle.displayLevel = function (level) {
         }
         $difficultyVal.eq(i).updateClass('difficulty-val', val);
     }
+};
+
+robozzle.displayLevel = function (level) {
+    var html = $('#templates .levelitem').clone();
+    html.attr('data-level-id', level.Id);
+    html.find('div.title').text(level.Title);
+    robozzle.displayDifficulty(level, html);
     html.find('a.stats')
         .attr('href', 'puzzle.aspx?id=' + level.Id)
         .attr('target', '_blank');
@@ -1003,8 +1007,12 @@ robozzle.showSolved = function () {
     if (robozzle.userName) {
         $('#dialog-solved-difficulty').find('input').prop('checked', false);
         var vote = robozzle.difficultyVotes[robozzle.level.Id];
+        var $difficulty = $('#dialog-solved-difficulty');
         if (vote) {
-            $('#dialog-solved-difficulty').find('input[value="' + vote + '"]').prop('checked', true);
+            $difficulty.find('input[value="' + vote + '"]').prop('checked', true);
+            $difficulty.find('.difficulty-val').updateClass('difficulty-val', 'user');
+        } else {
+            robozzle.displayDifficulty(robozzle.level, $difficulty);
         }
 
         $('#dialog-solved-like').prop('checked', false);
@@ -1058,6 +1066,7 @@ robozzle.initSolved = function () {
         robozzle.displaySolvedVote();
     });
     $('input[name="difficulty"]').change(function () {
+        $('#dialog-solved-difficulty').find('.difficulty-val').updateClass('difficulty-val', 'user');
         robozzle.displaySolvedVote();
     });
     $('#dialog-solved-like').change(function () {
@@ -1209,6 +1218,7 @@ robozzle.loadSVGConditionNone = function () {
 };
 
 robozzle.loadSVGDifficulty = function () {
+    // Others' difficulty vote average: display based on class
     for (var i = 0; i <= 10; i++) {
         robozzle.cssSVG('.difficulty-val-' + i, 'background',
             '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
@@ -1223,7 +1233,8 @@ robozzle.loadSVGDifficulty = function () {
             </svg>');
     }
 
-    robozzle.cssSVG('.difficulty input + label', 'background',
+    // User's vote: default to all colored
+    robozzle.cssSVG('label.difficulty-val-user', 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
             <defs>\
                 <linearGradient id="difficultyFill" x1="0" x2="0" y1="0" y2="1">\
@@ -1234,8 +1245,10 @@ robozzle.loadSVGDifficulty = function () {
             <rect x="2.5" y="2.5" width="11" height="11" fill="url(#difficultyFill)" stroke="black"/>\
         </svg>');
 
+    // Hover vote: default to all colored
+    // This must ensure it overrides the white squares for the user's vote when hovering
     robozzle.cssSVG(
-        '.difficulty:hover input + label, .difficulty:hover input:checked + label ~ label',
+        '.difficulty:hover label.difficulty-val, .difficulty:hover input:checked + label ~ label.difficulty-val-user',
         'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
             <defs>\
@@ -1247,8 +1260,9 @@ robozzle.loadSVGDifficulty = function () {
             <rect x="2.5" y="2.5" width="11" height="11" fill="url(#difficultyFillHover)" stroke="black"/>\
         </svg>');
 
+    // Set white squares for user's vote and hover vote
     robozzle.cssSVG(
-        '.difficulty input:checked + label ~ label, .difficulty:hover input + label:hover ~ label',
+        '.difficulty input:checked + label ~ label.difficulty-val-user, .difficulty:hover input + label:hover ~ label.difficulty-val',
         'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
             <rect x="2.5" y="2.5" width="11" height="11" fill="white" stroke="black"/>\
