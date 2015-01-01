@@ -455,26 +455,12 @@ div.sub-grid {
 }
 .difficulty label {
     float: left;
-    margin: 2px;
-    width: 10px;
-    height: 10px;
-    border: 1px solid black;
+    margin: 0px;
+    width: 16px;
+    height: 16px;
 }
 .difficulty span {
     display: none;
-}
-.difficulty input + label {
-    background: #a53535;
-    background: -moz-linear-gradient(top, #c04040, #903030);
-}
-.difficulty:hover input + label,
-.difficulty:hover input:checked + label ~ label {
-    background: #d56060;
-    background: -moz-linear-gradient(top, #f08080, #c04040);
-}
-.difficulty input:checked + label ~ label,
-.difficulty:hover input + label:hover ~ label {
-    background: white;
 }
 .votes input {
     position: absolute;

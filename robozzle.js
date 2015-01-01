@@ -1198,6 +1198,39 @@ robozzle.loadSVGConditionNone = function () {
         </svg>');
 };
 
+robozzle.loadSVGDifficulty = function () {
+    robozzle.cssSVG('.difficulty input + label', 'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
+            <defs>\
+                <linearGradient id="difficultyFill" x1="0" x2="0" y1="0" y2="1">\
+                    <stop offset="0" stop-color="#c04040"/>\
+                    <stop offset="1" stop-color="#903030"/>\
+                </linearGradient>\
+            </defs>\
+            <rect x="2.5" y="2.5" width="11" height="11" fill="url(#difficultyFill)" stroke="black"/>\
+        </svg>');
+
+    robozzle.cssSVG(
+        '.difficulty:hover input + label, .difficulty:hover input:checked + label ~ label',
+        'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
+            <defs>\
+                <linearGradient id="difficultyFillHover" x1="0" x2="0" y1="0" y2="1">\
+                    <stop offset="0" stop-color="#f08080"/>\
+                    <stop offset="1" stop-color="#c04040"/>\
+                </linearGradient>\
+            </defs>\
+            <rect x="2.5" y="2.5" width="11" height="11" fill="url(#difficultyFillHover)" stroke="black"/>\
+        </svg>');
+
+    robozzle.cssSVG(
+        '.difficulty input:checked + label ~ label, .difficulty:hover input + label:hover ~ label',
+        'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
+            <rect x="2.5" y="2.5" width="11" height="11" fill="white" stroke="black"/>\
+        </svg>');
+};
+
 robozzle.loadSVG = function () {
     robozzle.loadSVGTile('R', '#e55858', '#c53838');
     robozzle.loadSVGTile('G', '#53b953', '#339933');
@@ -1254,6 +1287,8 @@ robozzle.loadSVG = function () {
     robozzle.loadSVGCondition('B', '#6363ff', '#3333cc');
 
     robozzle.loadSVGIcon();
+
+    robozzle.loadSVGDifficulty();
 };
 
 $(document).ready(function () {
