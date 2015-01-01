@@ -923,6 +923,7 @@ robozzle.logOut = function () {
 };
 
 robozzle.showDialog = function ($dialog) {
+    $('#dialog-modal').show();
     $('#dialogs').show();
     $dialog.show();
     $dialog.find(":input:first").focus();
@@ -932,6 +933,7 @@ robozzle.showDialog = function ($dialog) {
 robozzle.hideDialog = function ($dialog) {
     $dialog.hide();
     $('#dialogs').hide();
+    $('#dialog-modal').hide();
 };
 
 robozzle.showMessage = function (title, message) {

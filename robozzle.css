@@ -381,7 +381,7 @@ div.sub-grid {
 #menu-signout, #menu-user {
     display: none;
 }
-#dialogs {
+#dialog-modal {
     display: none;
     z-index: 100;
     position: fixed;
@@ -390,6 +390,12 @@ div.sub-grid {
     width: 100%;
     height: 100%;
     background-color: rgba(80,80,80,0.8);
+}
+#dialogs {
+    display: none;
+    z-index: 101;
+    position: absolute;
+    width: 100%;
 }
 .dialog {
     display: none;
