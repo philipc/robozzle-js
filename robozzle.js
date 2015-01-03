@@ -603,8 +603,9 @@ robozzle.submitLevelVote = function () {
 
 robozzle.displayProgramToolbar = function (level) {
     var $toolbar = $('#program-toolbar').empty();
-    var makeCommand = function (command) {
+    var makeCommand = function (command, title) {
         return $('<button/>')
+            .prop('title', title)
             .addClass('icon')
             .append($('<div/>').addClass('command').updateClass('command', command))
             .click(function (e) {
@@ -612,8 +613,9 @@ robozzle.displayProgramToolbar = function (level) {
                 e.stopPropagation();
             });
     }
-    var makeCondition = function (condition) {
+    var makeCondition = function (condition, title) {
         return $('<button/>')
+            .prop('title', title)
             .addClass('icon')
             .append($('<div/>').addClass('command').updateClass('condition', condition))
             .click(function (e) {
@@ -623,12 +625,14 @@ robozzle.displayProgramToolbar = function (level) {
     }
     $toolbar.append(
             $('<div/>').addClass('icon-group')
-            .append(makeCommand('f'), makeCommand('l'), makeCommand('r')));
+            .append(makeCommand('f', 'Move forward (w)'),
+                    makeCommand('l', 'Turn left (q)'),
+                    makeCommand('r', 'Turn right (e)')));
 
     var $group = $('<div/>').addClass('icon-group');
     for (var i = 0; i < 5; i++) {
         if (parseInt(level.SubLengths[i])) {
-            $group.append(makeCommand(i + 1));
+            $group.append(makeCommand(i + 1, 'Call F' + (i + 1) + ' (' + (i + 1) + ')'));
         }
     }
     $toolbar.append($group);
@@ -637,20 +641,23 @@ robozzle.displayProgramToolbar = function (level) {
     if (allowedCommands) {
         var $group = $('<div/>').addClass('icon-group');
         if (allowedCommands & 1) {
-            $group.append(makeCommand('R'));
+            $group.append(makeCommand('R', 'Paint red (R)'));
         }
         if (allowedCommands & 2) {
-            $group.append(makeCommand('G'));
+            $group.append(makeCommand('G', 'Paint green (G)'));
         }
         if (allowedCommands & 4) {
-            $group.append(makeCommand('B'));
+            $group.append(makeCommand('B', 'Paint blue (B)'));
         }
         $toolbar.append($group);
     }
 
     $toolbar.append(
             $('<div/>').addClass('icon-group')
-            .append(makeCondition('any'), makeCondition('R'), makeCondition('G'), makeCondition('B')));
+            .append(makeCondition('any', 'No condition (n)'),
+                    makeCondition('R', 'Red condition (r)'),
+                    makeCondition('G', 'Green condition (g)'),
+                    makeCondition('B', 'Blue condution (b)')));
 }
 
 robozzle.displayGame = function (level) {
