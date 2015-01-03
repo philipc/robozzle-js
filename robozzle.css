@@ -328,7 +328,7 @@ div.robot-3 {
     margin: 5px;
 }
 #program-selection {
-    display: none;
+    visibility: hidden;
     position: absolute;
     pointer-events: none;
 }

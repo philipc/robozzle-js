@@ -427,7 +427,7 @@ robozzle.moveSelection = function ($src, x, y) {
     $('#program-selection .command').updateClass('command', robozzle.selectionCommand || robozzle.hoverCommand || null);
 };
 
-robozzle.setSelection = function ($src, condition, command) {
+robozzle.setSelection = function (condition, command) {
     if (!$('#program-toolbar').is(':visible')) {
         return;
     }
@@ -441,12 +441,12 @@ robozzle.setSelection = function ($src, condition, command) {
     robozzle.selection = true;
     robozzle.selectionCondition = condition;
     robozzle.selectionCommand = command;
-    $('#program-selection').show();
-    robozzle.moveSelection($src, null, null);
+    $('#program-selection').css('visibility', 'visible');
+    robozzle.moveSelection();
 };
 
 robozzle.hideSelection = function (condition, command) {
-    $('#program-selection').hide();
+    $('#program-selection').css('visibility', 'hidden');
     robozzle.selection = false;
 };
 
@@ -484,7 +484,7 @@ robozzle.displayProgram = function (level) {
                         $(this).find('span').hide();
                         robozzle.hideSelection();
                     } else {
-                        robozzle.setSelection($(this), $(this).getClass('condition'),
+                        robozzle.setSelection($(this).getClass('condition'),
                                               $(this).find('.command').getClass('command'));
 
                         $(this).updateClass('condition', null);
@@ -604,7 +604,7 @@ robozzle.displayProgramToolbar = function (level) {
             .addClass('icon')
             .append($('<div/>').addClass('command').updateClass('command', command))
             .click(function (e) {
-                robozzle.setSelection($(this), null, command);
+                robozzle.setSelection(null, command);
                 e.stopPropagation();
             });
     }
@@ -613,7 +613,7 @@ robozzle.displayProgramToolbar = function (level) {
             .addClass('icon')
             .append($('<div/>').addClass('command').updateClass('condition', condition))
             .click(function (e) {
-                robozzle.setSelection($(this), condition, null);
+                robozzle.setSelection(condition, null);
                 e.stopPropagation();
             });
     }
@@ -1392,49 +1392,49 @@ $(document).ready(function () {
         robozzle.hideSelection();
     });
     $(document).on('keydown', null, 'r', function () {
-        robozzle.setSelection(null, 'R', null);
+        robozzle.setSelection('R', null);
     });
     $(document).on('keydown', null, 'g', function () {
-        robozzle.setSelection(null, 'G', null);
+        robozzle.setSelection('G', null);
     });
     $(document).on('keydown', null, 'b', function () {
-        robozzle.setSelection(null, 'B', null);
+        robozzle.setSelection('B', null);
     });
     $(document).on('keydown', null, 'n', function () {
-        robozzle.setSelection(null, 'any', null);
+        robozzle.setSelection('any', null);
     });
     $(document).on('keydown', null, 'q', function () {
-        robozzle.setSelection(null, null, 'l');
+        robozzle.setSelection(null, 'l');
     });
     $(document).on('keydown', null, 'w', function () {
-        robozzle.setSelection(null, null, 'f');
+        robozzle.setSelection(null, 'f');
     });
     $(document).on('keydown', null, 'e', function () {
-        robozzle.setSelection(null, null, 'r');
+        robozzle.setSelection(null, 'r');
     });
     $(document).on('keydown', null, '1', function () {
-        robozzle.setSelection(null, null, '1');
+        robozzle.setSelection(null, '1');
     });
     $(document).on('keydown', null, '2', function () {
-        robozzle.setSelection(null, null, '2');
+        robozzle.setSelection(null, '2');
     });
     $(document).on('keydown', null, '3', function () {
-        robozzle.setSelection(null, null, '3');
+        robozzle.setSelection(null, '3');
     });
     $(document).on('keydown', null, '4', function () {
-        robozzle.setSelection(null, null, '4');
+        robozzle.setSelection(null, '4');
     });
     $(document).on('keydown', null, '5', function () {
-        robozzle.setSelection(null, null, '5');
+        robozzle.setSelection(null, '5');
     });
     $(document).on('keydown', null, 'shift+r', function () {
-        robozzle.setSelection(null, null, 'R');
+        robozzle.setSelection(null, 'R');
     });
     $(document).on('keydown', null, 'shift+g', function () {
-        robozzle.setSelection(null, null, 'G');
+        robozzle.setSelection(null, 'G');
     });
     $(document).on('keydown', null, 'shift+b', function () {
-        robozzle.setSelection(null, null, 'B');
+        robozzle.setSelection(null, 'B');
     });
 
     robozzle.sortKind = -1;
