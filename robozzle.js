@@ -417,8 +417,12 @@ robozzle.hoverSelection = function (condition, command) {
 robozzle.moveSelection = function ($src, x, y) {
     if ($src) {
         robozzle.selectionOffset = $src.offset();
+        robozzle.selectionOffset.left--;
+        robozzle.selectionOffset.top--;
+        $('#program-selection').addClass('program-selection-highlight');
     } else if (x || y) {
         robozzle.selectionOffset = { left: x, top: y };
+        $('#program-selection').removeClass('program-selection-highlight');
     } else if (!robozzle.selectionOffset) {
         robozzle.selectionOffset = $('#program-container').offset();
     }

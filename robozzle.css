@@ -332,6 +332,9 @@ div.robot-3 {
     position: absolute;
     pointer-events: none;
 }
+.program-selection-highlight {
+    border: 1px yellow solid;
+}
 .icon-group {
     padding: 5px;
 }
