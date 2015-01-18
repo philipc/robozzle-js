@@ -1262,6 +1262,7 @@ robozzle.submitSolved = function (event) {
     event.preventDefault();
     robozzle.hideDialog($('#dialog-solved'));
     robozzle.submitLevelVote();
+    history.pushState({ }, "", "index.html");
     robozzle.getLevels(false);
 };
 
