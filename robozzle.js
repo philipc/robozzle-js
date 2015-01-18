@@ -182,7 +182,9 @@ robozzle.displayLevel = function (level) {
         html.addClass('solved');
     }
     html.click(function () {
-        robozzle.setGame($(this).attr('data-level-id'));
+        var id = $(this).attr('data-level-id');
+        history.pushState({ }, "", "index.html?puzzle=" + id);
+        robozzle.parseUrl();
     });
     html.find('.stats').click(function (e) {
         e.stopPropagation();
@@ -454,7 +456,194 @@ robozzle.hideSelection = function (condition, command) {
     robozzle.selection = false;
 };
 
-robozzle.displayProgram = function (level) {
+robozzle.encodeBits = function (encodeState, val, bits)
+{
+    for (var i = 0; i < bits; i++) {
+        if (val & (1 << i)) {
+            encodeState.val |= (1 << encodeState.bits);
+        }
+        encodeState.bits++;
+        if (encodeState.bits == 6) {
+            var c;
+            if (encodeState.val < 26) {
+                c = String.fromCharCode(97 + encodeState.val);
+            } else if (encodeState.val < 52) {
+                c = String.fromCharCode(65 + encodeState.val - 26);
+            } else if (encodeState.val < 62) {
+                c = String.fromCharCode(48 + encodeState.val - 52);
+            } else if (encodeState.val < 62) {
+                c = '_';
+            } else {
+                c = '-';
+            }
+            encodeState.output = encodeState.output + c;
+            encodeState.val = 0;
+            encodeState.bits = 0;
+        }
+    }
+};
+
+robozzle.encodeCommand = function (encodeState, cond, cmd) {
+    switch (cond) {
+    case 'R': cond = 1; break;
+    case 'G': cond = 2; break;
+    case 'B': cond = 3; break;
+    default: cond = 0; break;
+    }
+
+    var subcmd;
+    var sublen = 0;
+    switch (cmd) {
+    case 'f': cmd = 1; break;
+    case 'l': cmd = 2; break;
+    case 'r': cmd = 3; break;
+    case '1': cmd = 4; subcmd = 0; sublen = 3; break;
+    case '2': cmd = 4; subcmd = 1; sublen = 3; break;
+    case '3': cmd = 4; subcmd = 2; sublen = 3; break;
+    case '4': cmd = 4; subcmd = 3; sublen = 3; break;
+    case '5': cmd = 4; subcmd = 4; sublen = 3; break;
+    case 'R': cmd = 5; subcmd = 1; sublen = 2; break;
+    case 'G': cmd = 5; subcmd = 2; sublen = 2; break;
+    case 'B': cmd = 5; subcmd = 3; sublen = 2; break;
+    default: cmd = 0; break;
+    }
+
+    robozzle.encodeBits(encodeState, cond, 2);
+    robozzle.encodeBits(encodeState, cmd, 3);
+    if (sublen) {
+        robozzle.encodeBits(encodeState, subcmd, sublen);
+    }
+};
+
+robozzle.encodeProgram = function (level) {
+    var encodeState = {
+        output: '',
+        val: 0,
+        bits: 0
+    };
+
+    robozzle.encodeBits(encodeState, 0, 3); // Version number = 0
+    robozzle.encodeBits(encodeState, robozzle.program.length, 3);
+    for (var j = 0; j < robozzle.program.length; j++) {
+        var sub = robozzle.program[j];
+        robozzle.encodeBits(encodeState, sub.length, 4);
+        for (var i = 0; i < sub.length; i++) {
+            var $cmd = sub[i];
+            var cond = $cmd.getClass('condition');
+            var cmd = $cmd.find('.command').getClass('command');
+            robozzle.encodeCommand(encodeState, cond, cmd);
+        }
+    }
+
+    robozzle.encodeBits(encodeState, 0, 5); // Flush
+    return encodeState.output;
+};
+
+robozzle.decodeBits = function (decodeState, bits)
+{
+    var val = 0;
+    for (var i = 0; i < bits; i++) {
+        if (decodeState.bits == 0) {
+            var c = decodeState.input.charCodeAt(decodeState.index);
+            decodeState.index++;
+            if (c >= 97 && c < 97 + 26) {
+                decodeState.val = c - 97;
+            } else if (c >= 65 && c < 65 + 26) {
+                decodeState.val = c - 65 + 26;
+            } else if (c >= 48 && c < 48 + 10) {
+                decodeState.val = c - 48 + 52;
+            } else if (c == 95) {
+                decodeState.val = 62;
+            } else if (c == 45) {
+                decodeState.val = 63;
+            } else {
+                decodeState.val = 0;
+            }
+            decodeState.bits = 6;
+        }
+        if (decodeState.val & (1 << (6 - decodeState.bits))) {
+            val |= (1 << i);
+        }
+        decodeState.bits--;
+    }
+    return val;
+};
+
+robozzle.decodeCommand = function (decodeState) {
+    var cond = robozzle.decodeBits(decodeState, 2);
+    switch (cond) {
+    case 1: cond = 'R'; break;
+    case 2: cond = 'G'; break;
+    case 3: cond = 'B'; break;
+    default: cond = null; break;
+    }
+
+    var cmd = robozzle.decodeBits(decodeState, 3);
+    switch (cmd) {
+    case 1: cmd = 'f'; break;
+    case 2: cmd = 'l'; break;
+    case 3: cmd = 'r'; break;
+    case 4:
+            var subcmd = robozzle.decodeBits(decodeState, 3);
+            switch (subcmd) {
+            case 0: cmd = '1'; break;
+            case 1: cmd = '2'; break;
+            case 2: cmd = '3'; break;
+            case 3: cmd = '4'; break;
+            case 4: cmd = '5'; break;
+            default: cmd = null; break;
+            }
+            break;
+    case 5:
+            var subcmd = robozzle.decodeBits(decodeState, 2);
+            switch (subcmd) {
+            case 1: cmd = 'R'; break;
+            case 2: cmd = 'G'; break;
+            case 3: cmd = 'B'; break;
+            default: cmd = null; break;
+            }
+            break;
+    default: cmd = null; break;
+    }
+
+    return [ cond, cmd ];
+};
+
+robozzle.decodeProgram = function (input) {
+    if (!input) {
+        return null;
+    }
+
+    var decodeState = {
+        input: input,
+        index: 0,
+        val: 0,
+        bits: 0
+    };
+
+    var version = robozzle.decodeBits(decodeState, 3);
+    if (version != 0) {
+        return null;
+    }
+
+    var program = [];
+    var length = robozzle.decodeBits(decodeState, 3);
+    for (var j = 0; j < length; j++) {
+        var sub = [];
+        var sublen = robozzle.decodeBits(decodeState, 4);
+        for (var i = 0; i < sublen; i++) {
+            sub.push(robozzle.decodeCommand(decodeState));
+        }
+        program.push(sub);
+    }
+
+    return program;
+};
+
+robozzle.displayProgram = function (level, commands) {
+    if (!commands) {
+        commands = [];
+    }
     var program = [];
     var $sublist = $('#sub-list').empty();
     for (var j = 0; j < 5; j++) {
@@ -497,10 +686,23 @@ robozzle.displayProgram = function (level) {
                     }
                     robozzle.hoverSelection($(this).getClass('condition'),
                                             $(this).find('.command').getClass('command'));
+                    history.replaceState({ }, "", "index.html?puzzle=" + robozzle.level.Id + "&program=" + robozzle.encodeProgram());
                     e.stopPropagation();
                 });
             var $command = $('<div/>').addClass('command');
             var $label = $('<span/>').text(i);
+            if (j < commands.length && i < commands[j].length) {
+                // TODO: validate commands
+                if (commands[j][i][0] != null) {
+                    $condition.updateClass('condition', commands[j][i][0]);
+                    $command.updateClass('command', commands[j][i][1]);
+                    $label.hide();
+                } else if (commands[j][i][1] != null) {
+                    $condition.updateClass('condition', 'any');
+                    $command.updateClass('command', commands[j][i][1]);
+                    $label.hide();
+                }
+            }
             if (i == 5 && sublength != 5) {
                 $subgrid.append($('<br/>'));
             }
@@ -517,7 +719,7 @@ robozzle.displayProgram = function (level) {
 
 robozzle.readProgram = function () {
     var program = '';
-    for (var j = 0; j < 5; j++) {
+    for (var j = 0; j < robozzle.program.length; j++) {
         var sub = robozzle.program[j];
         for (var i = 0; sub[i]; i++) {
             var $cmd = sub[i];
@@ -660,7 +862,7 @@ robozzle.displayProgramToolbar = function (level) {
                     makeCondition('B', 'Blue condution (b)')));
 }
 
-robozzle.displayGame = function (level) {
+robozzle.displayGame = function (level, program) {
     $('#menu li').removeClass('active');
     $('#content').children().hide();
     $('#content-game').show();
@@ -684,17 +886,17 @@ robozzle.displayGame = function (level) {
         .attr('target', '_blank');
 
     robozzle.displayBoard(level);
-    robozzle.displayProgram(level);
+    robozzle.displayProgram(level, program);
     robozzle.displayProgramToolbar(level);
 };
 
-robozzle.setGame = function (id) {
+robozzle.setGame = function (id, program) {
     if (robozzle.levels !== null) {
         var level;
         for (var i = 0; i < robozzle.levels.length; i++) {
             level = robozzle.levels[i];
             if (robozzle.levels[i].Id === id) {
-                robozzle.displayGame(level);
+                robozzle.displayGame(level, program);
                 return;
             }
         }
@@ -703,8 +905,7 @@ robozzle.setGame = function (id) {
         levelId: id
     };
     robozzle.service('GetLevel', request, function (result, response) {
-        robozzle.displayGame(response.GetLevelResult);
-        //robozzle.showSolved();
+        robozzle.displayGame(response.GetLevelResult, program);
     });
 };
 
@@ -1342,6 +1543,23 @@ robozzle.loadSVG = function () {
     robozzle.loadSVGDifficulty();
 };
 
+robozzle.parseUrl = function () {
+    var urlParams = {};
+    var query = window.location.search.substring(1);
+    var search = /([^&=]+)=?([^&]*)/g;
+    var decode = function (s) { return decodeURIComponent(s.replace(/\+/g, " ")); };
+    var match;
+    while (match = search.exec(query)) {
+       urlParams[decode(match[1])] = decode(match[2]);
+    }
+
+    if ('puzzle' in urlParams) {
+        robozzle.setGame(urlParams['puzzle'], robozzle.decodeProgram(urlParams['program']));
+    } else {
+        robozzle.getLevels(false);
+    }
+};
+
 $(document).ready(function () {
     robozzle.loadSVG();
 
@@ -1373,7 +1591,8 @@ $(document).ready(function () {
         robozzle.getLevels(true);
     });
     $('#menu-levels').click(function () {
-        robozzle.getLevels(false);
+        history.pushState({ }, "", "index.html");
+        robozzle.parseUrl();
     });
     $('#program-go').click(function () {
         if (robozzle.robotState == robozzle.robotStates.reset
@@ -1477,6 +1696,8 @@ $(document).ready(function () {
         localStorage.setItem('robotSpeed', robozzle.robotSpeed);
     });
 
+    window.onpopstate = robozzle.parseUrl;
+
     $('#menu li').removeClass('active');
     $('#menu-levels').addClass('active');
     $('#content').children().hide();
@@ -1488,9 +1709,9 @@ $(document).ready(function () {
         var spinner = new Spinner().spin($('#levellist-spinner')[0]);
         robozzle.logIn(userName, password, function (result) {
             spinner.stop();
-            robozzle.getLevels(false);
+            robozzle.parseUrl();
         });
     } else {
-        robozzle.getLevels(false);
+        robozzle.parseUrl();
     }
 });
