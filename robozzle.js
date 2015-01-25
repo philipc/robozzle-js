@@ -182,9 +182,7 @@ robozzle.displayLevel = function (level) {
         html.addClass('solved');
     }
     html.click(function () {
-        var id = $(this).attr('data-level-id');
-        history.pushState({ }, "", "index.html?puzzle=" + id);
-        robozzle.parseUrl();
+        robozzle.navigatePuzzle($(this).attr('data-level-id'));
     });
     html.find('.stats').click(function (e) {
         e.stopPropagation();
@@ -686,7 +684,7 @@ robozzle.displayProgram = function (level, commands) {
                     }
                     robozzle.hoverSelection($(this).getClass('condition'),
                                             $(this).find('.command').getClass('command'));
-                    history.replaceState({ }, "", "index.html?puzzle=" + robozzle.level.Id + "&program=" + robozzle.encodeProgram());
+                    robozzle.setPuzzleUrl(robozzle.level.Id, robozzle.encodeProgram());
                     e.stopPropagation();
                 });
             var $command = $('<div/>').addClass('command');
@@ -1262,8 +1260,7 @@ robozzle.submitSolved = function (event) {
     event.preventDefault();
     robozzle.hideDialog($('#dialog-solved'));
     robozzle.submitLevelVote();
-    history.pushState({ }, "", "index.html");
-    robozzle.getLevels(false);
+    robozzle.navigateIndex();
 };
 
 robozzle.cancelSolved = function (event) {
@@ -1561,6 +1558,20 @@ robozzle.parseUrl = function () {
     }
 };
 
+robozzle.navigateIndex = function () {
+    history.pushState({ }, "", "index.html");
+    robozzle.parseUrl();
+};
+
+robozzle.navigatePuzzle = function (id) {
+    history.pushState({ }, "", "index.html?puzzle=" + id);
+    robozzle.parseUrl();
+};
+
+robozzle.setPuzzleUrl= function (id, program) {
+    history.replaceState({ }, "", "index.html?puzzle=" + id + "&program=" + program);
+};
+
 $(document).ready(function () {
     robozzle.loadSVG();
 
@@ -1592,8 +1603,7 @@ $(document).ready(function () {
         robozzle.getLevels(true);
     });
     $('#menu-levels').click(function () {
-        history.pushState({ }, "", "index.html");
-        robozzle.parseUrl();
+        robozzle.navigateIndex();
     });
     $('#program-go').click(function () {
         if (robozzle.robotState == robozzle.robotStates.reset
