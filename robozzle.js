@@ -864,6 +864,10 @@ robozzle.displayGame = function (level, program) {
     $('#menu li').removeClass('active');
     $('#content').children().hide();
     $('#content-game').show();
+    $('#program-container').show();
+    $('#program-toolbar-container').show();
+    $('#design-toolbar-container').hide();
+    $('#design-panel-container').hide();
     $('#program-edit').hide();
 
     robozzle.level = level;
@@ -877,11 +881,13 @@ robozzle.displayGame = function (level, program) {
     }
     status.find('a.stats')
         .attr('href', 'puzzle.aspx?id=' + level.Id)
-        .attr('target', '_blank');
+        .attr('target', '_blank')
+        .show();
     status.find('a.comments')
         .text(level.CommentCount + ' comments')
         .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
-        .attr('target', '_blank');
+        .attr('target', '_blank')
+        .show();
 
     robozzle.displayBoard(level);
     robozzle.displayProgram(level, program);
@@ -905,6 +911,23 @@ robozzle.setGame = function (id, program) {
     robozzle.service('GetLevel', request, function (result, response) {
         robozzle.displayGame(response.GetLevelResult, program);
     });
+};
+
+robozzle.designGame = function (design, program) {
+    $('#menu li').removeClass('active');
+    $('#menu-makepuzzle').addClass('active');
+    $('#content').children().hide();
+    $('#content-game').show();
+    $('#program-container').hide();
+    $('#program-toolbar-container').hide();
+    $('#design-toolbar-container').show();
+    $('#design-panel-container').show();
+
+    var status = $('#statusbar');
+    status.find('span.title').text("Designing a puzzle");
+    status.find('div.about').text("Design a puzzle, solve it, and then submit it to challenge others.").show();
+    status.find('a.stats').hide();
+    status.find('a.comments').hide();
 };
 
 robozzle.moveRobot = function () {
@@ -1553,6 +1576,8 @@ robozzle.parseUrl = function () {
 
     if ('puzzle' in urlParams) {
         robozzle.setGame(urlParams['puzzle'], robozzle.decodeProgram(urlParams['program']));
+    } else if ('design' in urlParams) {
+        robozzle.designGame(urlParams['design'], robozzle.decodeProgram(urlParams['program']));
     } else {
         robozzle.getLevels(false);
     }
@@ -1565,6 +1590,11 @@ robozzle.navigateIndex = function () {
 
 robozzle.navigatePuzzle = function (id) {
     history.pushState({ }, "", "index.html?puzzle=" + id);
+    robozzle.parseUrl();
+};
+
+robozzle.navigateDesign = function () {
+    history.pushState({ }, "", "index.html?design=");
     robozzle.parseUrl();
 };
 
@@ -1604,6 +1634,9 @@ $(document).ready(function () {
     });
     $('#menu-levels').click(function () {
         robozzle.navigateIndex();
+    });
+    $('#menu-makepuzzle').click(function () {
+        robozzle.navigateDesign();
     });
     $('#program-go').click(function () {
         if (robozzle.robotState == robozzle.robotStates.reset
