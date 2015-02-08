@@ -258,7 +258,7 @@ li.levelitem div.votes {
 table.board {
     border-collapse: collapse;
 }
-td.board {
+.board {
     padding: 0px;
     width: 40px;
     height: 40px;
@@ -333,6 +333,58 @@ div.robot-3 {
     pointer-events: none;
 }
 .program-selection-highlight {
+    border: 1px yellow solid;
+}
+#design-toolbar-container {
+    vertical-align: bottom;
+}
+#design-toolbar {
+    background-color: #707070;
+    margin: 5px;
+    padding: 5px 0px 5px;
+}
+#design-toolbar .board {
+    margin: 5px;
+    border: 1px solid black;
+}
+#design-panel-container {
+    vertical-align: bottom;
+}
+#design-panel {
+    padding: 5px;
+    margin: 5px;
+    width: 200px;
+    background-color: #707070;
+    color: white;
+}
+#design-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+#design-panel label.label-number {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 50%;
+}
+#design-panel input[type="text"] {
+    box-sizing: border-box;
+    width: 100%;
+}
+#design-panel input[type="number"] {
+    box-sizing: border-box;
+    width: 50%;
+}
+#design-panel button {
+    box-sizing: border-box;
+    width: 100%;
+}
+#design-selection {
+    visibility: hidden;
+    position: absolute;
+    pointer-events: none;
+}
+.design-selection-highlight {
     border: 1px yellow solid;
 }
 .icon-group {

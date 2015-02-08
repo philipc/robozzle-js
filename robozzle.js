@@ -913,6 +913,44 @@ robozzle.setGame = function (id, program) {
     });
 };
 
+robozzle.decodeDesign = function (design) {
+    var level = {};
+    level.Colors = [
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "       BB       ",
+        "       BB       ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        ];
+    level.Items = [
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        "                ",
+        ];
+    level.RobotDir = 0;
+    level.RobotCol = 7;
+    level.RobotRow = 5;
+    level.AllowedCommands = 0;
+    level.SubLengths = [ 10, 10, 10, 10, 10 ];
+    return level;
+};
+
 robozzle.designGame = function (design, program) {
     $('#menu li').removeClass('active');
     $('#menu-makepuzzle').addClass('active');
@@ -928,6 +966,9 @@ robozzle.designGame = function (design, program) {
     status.find('div.about').text("Design a puzzle, solve it, and then submit it to challenge others.").show();
     status.find('a.stats').hide();
     status.find('a.comments').hide();
+
+    robozzle.design = robozzle.decodeDesign(design)
+    robozzle.displayBoard(robozzle.design);
 };
 
 robozzle.moveRobot = function () {
@@ -1333,7 +1374,7 @@ robozzle.cssSVG = function (selector, property, value) {
 };
 
 robozzle.loadSVGTile = function (color, color1, color2) {
-    robozzle.cssSVG('td.board-color-' + color, 'background',
+    robozzle.cssSVG('.board-color-' + color, 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">\
             <defs>\
                 <linearGradient id="conditionfill" x1="0" y1="0" x2="1" y2="1">\
@@ -1346,6 +1387,27 @@ robozzle.loadSVGTile = function (color, color1, color2) {
             <line x1="1" x2="1" y1="0" y2="40" stroke-width="2" stroke-opacity="0.1" stroke="white"/>\
             <line x1="0" x2="40" y1="39" y2="39" stroke-width="2" stroke-opacity="0.2" stroke="black"/>\
             <line x1="39" x2="39" y1="0" y2="40" stroke-width="2" stroke-opacity="0.2" stroke="black"/>\
+        </svg>');
+};
+
+robozzle.loadSVGBoardErase = function () {
+    robozzle.cssSVG('.board-erase', 'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">\
+            <line x1="13" x2="27" y1="13" y2="27" stroke-width="4" stroke-opacity="0.6" stroke="#f04040"/>\
+            <line x1="13" x2="27" y1="27" y2="13" stroke-width="4" stroke-opacity="0.6" stroke="#f04040"/>\
+        </svg>');
+};
+
+robozzle.loadSVGBoardIcon = function () {
+    robozzle.cssSVG('.board-icon', 'background',
+        '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">\
+            <defs>\
+                <linearGradient id="iconfill" x1="0" y1="0" x2="1" y2="1">\
+                    <stop offset="0" stop-color="#b0b0b0"/>\
+                    <stop offset="1" stop-color="#707070"/>\
+                </linearGradient>\
+            </defs>\
+            <rect width="100%" height="100%" fill="url(#iconfill)" stroke="none"/>\
         </svg>');
 };
 
@@ -1508,6 +1570,8 @@ robozzle.loadSVG = function () {
     robozzle.loadSVGTile('R', '#e55858', '#c53838');
     robozzle.loadSVGTile('G', '#53b953', '#339933');
     robozzle.loadSVGTile('B', '#5353ec', '#3333cc');
+    robozzle.loadSVGBoardErase();
+    robozzle.loadSVGBoardIcon();
 
     robozzle.cssSVG('div.board-star, div.board-star-fade', 'background',
         '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 80 80">\
