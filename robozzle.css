@@ -270,6 +270,7 @@ div.item, div.robot {
 div.robot {
     position: absolute;
     transform-origin: 50% 50%;
+    pointer-events: none;
 }
 div.robot-none {
     display: none;

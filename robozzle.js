@@ -343,7 +343,11 @@ robozzle.displayBoard = function (level) {
         var $row = $('<tr/>');
         for (var i = 0; i < colors.length; i++) {
             var $item = $('<div/>').addClass('item');
-            var $cell = $('<td/>').addClass('board').append($item);
+            var $cell = $('<td/>')
+                .attr('data-col', i)
+                .attr('data-row', j)
+                .addClass('board')
+                .append($item);
             if (items.charAt(i) !== '#') {
                 $cell.updateClass('board-color', colors.charAt(i));
                 if (items.charAt(i) === '*') {
@@ -351,6 +355,42 @@ robozzle.displayBoard = function (level) {
                     stars++;
                 }
             }
+            $cell.click(function (e) {
+                if (robozzle.designSelection) {
+                    if (robozzle.designSelectionColor !== null) {
+                        $(this).updateClass('board-color', robozzle.designSelectionColor);
+                        $(this).find('.item').updateClass('board', null);
+                    } else if (robozzle.designSelectionRobot !== null) {
+                        if ($(this).getClass('board-color')) {
+                            $(this).find('.item').updateClass('board', null);
+                            robozzle.robotCol = parseInt($(this).attr('data-col'));
+                            robozzle.robotRow = parseInt($(this).attr('data-row'));
+                            robozzle.robotDir = robozzle.designSelectionRobot;
+                            robozzle.robotDeg = robozzle.robotDir * 90;
+                            robozzle.robotAnimation = {
+                                left: robozzle.robotCol * 40,
+                                top: robozzle.robotRow * 40,
+                                deg: robozzle.robotDeg,
+                                scale: 1.0
+                            };
+                            robozzle.displayRobot();
+                        }
+                    } else if ($(this).attr('data-col') != robozzle.robotCol
+                                || $(this).attr('data-row') != robozzle.robotRow) {
+                        if (robozzle.designSelectionItem == 'star') {
+                            if ($(this).getClass('board-color')) {
+                                $(this).find('.item').updateClass('board', 'star');
+                            }
+                        } else if (robozzle.designSelectionItem == 'erase') {
+                            $(this).updateClass('board-color', null);
+                            $(this).find('.item').updateClass('board', null);
+                        }
+                    }
+                    // TODO: update URL
+                    // TODO: update design hover
+                    e.stopPropagation();
+                }
+            });
             row.push($cell);
             $row.append($cell);
         }
@@ -935,17 +975,20 @@ robozzle.moveDesignSelection = function ($src, x, y) {
     $('#design-selection').offset(robozzle.designSelectionOffset);
     $('#design-selection').updateClass('board-color', robozzle.designSelectionColor);
     $('#design-selection .item').updateClass('board', robozzle.designSelectionItem);
-    $('#design-selection .robot').updateClass('robot', robozzle.designSelectionRobot || 'none');
+    if (robozzle.designSelectionRobot === null) {
+        $('#design-selection .robot').updateClass('robot', 'none');
+    } else {
+        $('#design-selection .robot').updateClass('robot', robozzle.designSelectionRobot);
+    }
 };
 
 robozzle.setDesignSelection = function (color, item, robot) {
     if (!$('#design-toolbar').is(':visible')) {
         return;
     }
-    if (!color && !item && !robot) {
+    if (color === null && item === null && robot === null) {
         return;
     }
-    console.log('test');
     robozzle.designSelection = true;
     robozzle.designSelectionColor = color;
     robozzle.designSelectionItem = item;
@@ -998,10 +1041,10 @@ robozzle.displayDesignToolbar = function () {
     $toolbar.append(makeColor('B', 'Blue tile (b)'));
     $toolbar.append(makeItem('erase', 'Erase (x)'));
     $toolbar.append(makeItem('star', 'Star (s)'));
-    $toolbar.append(makeRobot('0', 'Robot right'));
-    $toolbar.append(makeRobot('1', 'Robot down'));
-    $toolbar.append(makeRobot('2', 'Robot left'));
-    $toolbar.append(makeRobot('3', 'Robot up'));
+    $toolbar.append(makeRobot(0, 'Robot right'));
+    $toolbar.append(makeRobot(1, 'Robot down'));
+    $toolbar.append(makeRobot(2, 'Robot left'));
+    $toolbar.append(makeRobot(3, 'Robot up'));
 }
 
 robozzle.decodeDesign = function (design) {
