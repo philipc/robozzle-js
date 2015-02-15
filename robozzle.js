@@ -37,7 +37,14 @@ var robozzle = {
         started: 2,
         stepping: 3
     },
-    robotState: 0
+    robotState: 0,
+
+    // design info
+    designSelection: false,
+    designSelectionColor: null,
+    designSelectionItem: null,
+    designSelectionRobot: null,
+    designSelectionOffset: null
 };
 
 (function ( $ ) {
@@ -864,11 +871,11 @@ robozzle.displayGame = function (level, program) {
     $('#menu li').removeClass('active');
     $('#content').children().hide();
     $('#content-game').show();
+    $('#content-game').children().hide();
+    $('#board-container').show();
     $('#program-container').show();
     $('#program-toolbar-container').show();
-    $('#design-toolbar-container').hide();
-    $('#design-panel-container').hide();
-    $('#program-edit').hide();
+    $('#program-selection').show();
 
     robozzle.level = level;
 
@@ -913,6 +920,90 @@ robozzle.setGame = function (id, program) {
     });
 };
 
+robozzle.moveDesignSelection = function ($src, x, y) {
+    if ($src) {
+        robozzle.designSelectionOffset = $src.offset();
+        robozzle.designSelectionOffset.left--;
+        robozzle.designSelectionOffset.top--;
+        $('#design-selection').addClass('design-selection-highlight');
+    } else if (x || y) {
+        robozzle.designSelectionOffset = { left: x, top: y };
+        $('#design-selection').removeClass('design-selection-highlight');
+    } else if (!robozzle.designSelectionOffset) {
+        robozzle.designSelectionOffset = $('#design-toolbar-container').offset();
+    }
+    $('#design-selection').offset(robozzle.designSelectionOffset);
+    $('#design-selection').updateClass('board-color', robozzle.designSelectionColor);
+    $('#design-selection .item').updateClass('board', robozzle.designSelectionItem);
+    $('#design-selection .robot').updateClass('robot', robozzle.designSelectionRobot || 'none');
+};
+
+robozzle.setDesignSelection = function (color, item, robot) {
+    if (!$('#design-toolbar').is(':visible')) {
+        return;
+    }
+    if (!color && !item && !robot) {
+        return;
+    }
+    console.log('test');
+    robozzle.designSelection = true;
+    robozzle.designSelectionColor = color;
+    robozzle.designSelectionItem = item;
+    robozzle.designSelectionRobot = robot;
+    $('#design-selection').css('visibility', 'visible');
+    robozzle.moveDesignSelection();
+};
+
+robozzle.hideDesignSelection = function (condition, command) {
+    $('#design-selection').css('visibility', 'hidden');
+    robozzle.designSelection = false;
+};
+
+robozzle.displayDesignToolbar = function () {
+    var $toolbar = $('#design-toolbar').empty();
+    var makeColor = function (color, title) {
+        return $('<div/>')
+            .prop('title', title)
+            .addClass('board')
+            .updateClass('board-color', color)
+            .click(function (e) {
+                robozzle.setDesignSelection(color, null, null);
+                e.stopPropagation();
+            });
+    }
+    var makeItem = function (item, title) {
+        return $('<div/>')
+            .prop('title', title)
+            .addClass('board')
+            .addClass('board-icon')
+            .append($('<div/>').addClass('item').updateClass('board', item))
+            .click(function (e) {
+                robozzle.setDesignSelection(null, item, null);
+                e.stopPropagation();
+            });
+    }
+    var makeRobot = function (robot, title) {
+        return $('<div/>')
+            .prop('title', title)
+            .addClass('board')
+            .addClass('board-icon')
+            .append($('<div/>').addClass('robot').updateClass('robot', robot))
+            .click(function (e) {
+                robozzle.setDesignSelection(null, null, robot);
+                e.stopPropagation();
+            });
+    }
+    $toolbar.append(makeColor('R', 'Red tile (r)'));
+    $toolbar.append(makeColor('G', 'Green tile (g)'));
+    $toolbar.append(makeColor('B', 'Blue tile (b)'));
+    $toolbar.append(makeItem('erase', 'Erase (x)'));
+    $toolbar.append(makeItem('star', 'Star (s)'));
+    $toolbar.append(makeRobot('0', 'Robot right'));
+    $toolbar.append(makeRobot('1', 'Robot down'));
+    $toolbar.append(makeRobot('2', 'Robot left'));
+    $toolbar.append(makeRobot('3', 'Robot up'));
+}
+
 robozzle.decodeDesign = function (design) {
     var level = {};
     level.Colors = [
@@ -956,10 +1047,11 @@ robozzle.designGame = function (design, program) {
     $('#menu-makepuzzle').addClass('active');
     $('#content').children().hide();
     $('#content-game').show();
-    $('#program-container').hide();
-    $('#program-toolbar-container').hide();
+    $('#content-game').children().hide();
+    $('#board-container').show();
     $('#design-toolbar-container').show();
     $('#design-panel-container').show();
+    $('#design-selection').show();
 
     var status = $('#statusbar');
     status.find('span.title').text("Designing a puzzle");
@@ -969,6 +1061,7 @@ robozzle.designGame = function (design, program) {
 
     robozzle.design = robozzle.decodeDesign(design)
     robozzle.displayBoard(robozzle.design);
+    robozzle.displayDesignToolbar();
 };
 
 robozzle.moveRobot = function () {
@@ -1728,15 +1821,19 @@ $(document).ready(function () {
     });
     $(document).click(function () {
         robozzle.hideSelection();
+        robozzle.hideDesignSelection();
     });
     $(document).on('keydown', null, 'r', function () {
         robozzle.setSelection('R', null);
+        robozzle.setDesignSelection('R', null, null);
     });
     $(document).on('keydown', null, 'g', function () {
         robozzle.setSelection('G', null);
+        robozzle.setDesignSelection('G', null, null);
     });
     $(document).on('keydown', null, 'b', function () {
         robozzle.setSelection('B', null);
+        robozzle.setDesignSelection('B', null, null);
     });
     $(document).on('keydown', null, 'n', function () {
         robozzle.setSelection('any', null);
@@ -1773,6 +1870,15 @@ $(document).ready(function () {
     });
     $(document).on('keydown', null, 'shift+b', function () {
         robozzle.setSelection(null, 'B');
+    });
+    $('#board-container, #design-toolbar').on('mousemove', function (e) {
+        robozzle.moveDesignSelection(null, e.pageX - 15, e.pageY - 15);
+    });
+    $(document).on('keydown', null, 's', function () {
+        robozzle.setDesignSelection(null, 'star', null);
+    });
+    $(document).on('keydown', null, 'x', function () {
+        robozzle.setDesignSelection(null, 'erase', null);
     });
 
     robozzle.sortKind = -1;

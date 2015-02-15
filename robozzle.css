@@ -271,6 +271,9 @@ div.robot {
     position: absolute;
     transform-origin: 50% 50%;
 }
+div.robot-none {
+    display: none;
+}
 div.robot-0 {
     transform: rotate(0deg);
 }
