@@ -44,7 +44,9 @@ var robozzle = {
     designSelectionColor: null,
     designSelectionItem: null,
     designSelectionRobot: null,
-    designSelectionOffset: null
+    designSelectionOffset: null,
+    designHoverColor: null,
+    designHoverRobot: null,
 };
 
 (function ( $ ) {
@@ -358,6 +360,8 @@ robozzle.displayBoard = function (level) {
             $cell.click(function (e) {
                 if (robozzle.designSelection) {
                     robozzle.clickDesignSelection($(this));
+                    robozzle.hoverDesignSelection($(this));
+                    robozzle.moveDesignSelection($(this));
                     e.stopPropagation();
                 }
             });
@@ -366,9 +370,10 @@ robozzle.displayBoard = function (level) {
                     if (e.buttons & 1) {
                         robozzle.clickDesignSelection($(this));
                     }
-                    // TODO: hoverDesignSelection
-                    //e.stopPropagation();
                 }
+                robozzle.hoverDesignSelection($(this));
+                robozzle.moveDesignSelection($(this));
+                e.stopPropagation();
             });
             $cell.on('mousedown', function (e) {
                 // Prevent dragging the image
@@ -943,11 +948,25 @@ robozzle.setGame = function (id, program) {
     });
 };
 
+robozzle.hoverDesignSelection = function ($src) {
+    if ($src) {
+        robozzle.designHoverColor = $src.getClass('board-color');
+        if ($src.attr('data-col') == robozzle.robotCol && $src.attr('data-row') == robozzle.robotRow) {
+            robozzle.designHoverRobot = robozzle.robotDir;
+        } else {
+            robozzle.designHoverRobot = null;
+        }
+    } else {
+        robozzle.designHoverColor = 'none'; // Hack to avoid error style
+        robozzle.designHoverRobot = null;
+    }
+};
+
 robozzle.moveDesignSelection = function ($src, x, y) {
     if ($src) {
         robozzle.designSelectionOffset = $src.offset();
-        robozzle.designSelectionOffset.left--;
-        robozzle.designSelectionOffset.top--;
+        robozzle.designSelectionOffset.left -= 2;
+        robozzle.designSelectionOffset.top -= 2;
         $('#design-selection').addClass('design-selection-highlight');
     } else if (x || y) {
         robozzle.designSelectionOffset = { left: x, top: y };
@@ -956,13 +975,31 @@ robozzle.moveDesignSelection = function ($src, x, y) {
         robozzle.designSelectionOffset = $('#design-toolbar-container').offset();
     }
     $('#design-selection').offset(robozzle.designSelectionOffset);
-    $('#design-selection').updateClass('board-color', robozzle.designSelectionColor);
-    $('#design-selection .item').updateClass('board', robozzle.designSelectionItem);
-    if (robozzle.designSelectionRobot === null) {
-        $('#design-selection .robot').updateClass('robot', 'none');
-    } else {
-        $('#design-selection .robot').updateClass('robot', robozzle.designSelectionRobot);
+
+    var color = robozzle.designSelectionColor || robozzle.designHoverColor;
+    var item = robozzle.designSelectionItem;
+    var robot = robozzle.designSelectionRobot;
+    if (robot === null) robot = robozzle.designHoverRobot;
+    if (robot === null) robot = 'none';
+
+    if (item === 'star' && (color === null || robot !== 'none')) {
+        // Can't put star on empty tile or robot
+        color = 'error';
     }
+
+    if (item === 'erase' && robot !== 'none') {
+        // Can't erase robot
+        color = 'error';
+    }
+
+    if (robot !== 'none' && color === null) {
+        // Can't put robot on empty tile
+        color = 'error';
+    }
+
+    $('#design-selection').updateClass('board-color', color);
+    $('#design-selection .robot').updateClass('robot', robot);
+    $('#design-selection .item').updateClass('board', item);
 };
 
 robozzle.setDesignSelection = function (color, item, robot) {
@@ -1931,6 +1968,7 @@ $(document).ready(function () {
         robozzle.setSelection(null, 'B');
     });
     $('#board-container, #design-toolbar').on('mousemove', function (e) {
+        robozzle.hoverDesignSelection(null);
         robozzle.moveDesignSelection(null, e.pageX - 15, e.pageY - 15);
     });
     $(document).on('keydown', null, 's', function () {

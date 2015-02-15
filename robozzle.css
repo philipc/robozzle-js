@@ -263,6 +263,10 @@ table.board {
     width: 40px;
     height: 40px;
 }
+.board-color-error {
+    background-color: red;
+    opacity: 0.5;
+}
 div.item, div.robot {
     width: 40px;
     height: 40px;
@@ -272,8 +276,8 @@ div.robot {
     position: absolute;
     transform-origin: 50% 50%;
 }
-div.robot-none {
-    display: none;
+div.robot.robot-none {
+    background: none;
 }
 div.robot-0 {
     transform: rotate(0deg);
@@ -389,7 +393,7 @@ div.robot-3 {
     pointer-events: none;
 }
 .design-selection-highlight {
-    border: 1px yellow solid;
+    border: 2px yellow solid;
 }
 .icon-group {
     padding: 5px;
