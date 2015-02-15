@@ -357,39 +357,22 @@ robozzle.displayBoard = function (level) {
             }
             $cell.click(function (e) {
                 if (robozzle.designSelection) {
-                    if (robozzle.designSelectionColor !== null) {
-                        $(this).updateClass('board-color', robozzle.designSelectionColor);
-                        $(this).find('.item').updateClass('board', null);
-                    } else if (robozzle.designSelectionRobot !== null) {
-                        if ($(this).getClass('board-color')) {
-                            $(this).find('.item').updateClass('board', null);
-                            robozzle.robotCol = parseInt($(this).attr('data-col'));
-                            robozzle.robotRow = parseInt($(this).attr('data-row'));
-                            robozzle.robotDir = robozzle.designSelectionRobot;
-                            robozzle.robotDeg = robozzle.robotDir * 90;
-                            robozzle.robotAnimation = {
-                                left: robozzle.robotCol * 40,
-                                top: robozzle.robotRow * 40,
-                                deg: robozzle.robotDeg,
-                                scale: 1.0
-                            };
-                            robozzle.displayRobot();
-                        }
-                    } else if ($(this).attr('data-col') != robozzle.robotCol
-                                || $(this).attr('data-row') != robozzle.robotRow) {
-                        if (robozzle.designSelectionItem == 'star') {
-                            if ($(this).getClass('board-color')) {
-                                $(this).find('.item').updateClass('board', 'star');
-                            }
-                        } else if (robozzle.designSelectionItem == 'erase') {
-                            $(this).updateClass('board-color', null);
-                            $(this).find('.item').updateClass('board', null);
-                        }
-                    }
-                    // TODO: update URL
-                    // TODO: update design hover
+                    robozzle.clickDesignSelection($(this));
                     e.stopPropagation();
                 }
+            });
+            $cell.on('mousemove', function (e) {
+                if (robozzle.designSelection) {
+                    if (e.buttons & 1) {
+                        robozzle.clickDesignSelection($(this));
+                    }
+                    // TODO: hoverDesignSelection
+                    //e.stopPropagation();
+                }
+            });
+            $cell.on('mousedown', function (e) {
+                // Prevent dragging the image
+                e.preventDefault();
             });
             row.push($cell);
             $row.append($cell);
@@ -1000,6 +983,39 @@ robozzle.setDesignSelection = function (color, item, robot) {
 robozzle.hideDesignSelection = function (condition, command) {
     $('#design-selection').css('visibility', 'hidden');
     robozzle.designSelection = false;
+};
+
+robozzle.clickDesignSelection = function ($cell) {
+    if (robozzle.designSelectionColor !== null) {
+        $cell.updateClass('board-color', robozzle.designSelectionColor);
+        $cell.find('.item').updateClass('board', null);
+    } else if (robozzle.designSelectionRobot !== null) {
+        if ($cell.getClass('board-color')) {
+            $cell.find('.item').updateClass('board', null);
+            robozzle.robotCol = parseInt($cell.attr('data-col'));
+            robozzle.robotRow = parseInt($cell.attr('data-row'));
+            robozzle.robotDir = robozzle.designSelectionRobot;
+            robozzle.robotDeg = robozzle.robotDir * 90;
+            robozzle.robotAnimation = {
+                left: robozzle.robotCol * 40,
+                top: robozzle.robotRow * 40,
+                deg: robozzle.robotDeg,
+                scale: 1.0
+            };
+            robozzle.displayRobot();
+        }
+    } else if ($cell.attr('data-col') != robozzle.robotCol || $cell.attr('data-row') != robozzle.robotRow) {
+        if (robozzle.designSelectionItem == 'star') {
+            if ($cell.getClass('board-color')) {
+                $cell.find('.item').updateClass('board', 'star');
+            }
+        } else if (robozzle.designSelectionItem == 'erase') {
+            $cell.updateClass('board-color', null);
+            $cell.find('.item').updateClass('board', null);
+        }
+    }
+    // TODO: update URL
+    // TODO: update design hover
 };
 
 robozzle.displayDesignToolbar = function () {
