@@ -358,6 +358,9 @@ robozzle.displayBoard = function (level) {
                 }
             }
             $cell.click(function (e) {
+                e.stopPropagation();
+            });
+            $cell.on('mousedown', function (e) {
                 if (robozzle.designSelection) {
                     robozzle.clickDesignSelection($(this));
                     robozzle.hoverDesignSelection($(this));
