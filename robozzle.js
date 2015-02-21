@@ -895,7 +895,7 @@ robozzle.displayProgramToolbar = function (level) {
             .append(makeCondition('any', 'No condition (n)'),
                     makeCondition('R', 'Red condition (r)'),
                     makeCondition('G', 'Green condition (g)'),
-                    makeCondition('B', 'Blue condution (b)')));
+                    makeCondition('B', 'Blue condition (b)')));
 }
 
 robozzle.displayGame = function (level, program) {
