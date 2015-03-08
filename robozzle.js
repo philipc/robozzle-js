@@ -551,7 +551,7 @@ robozzle.encodeCommand = function (encodeState, cond, cmd) {
     }
 };
 
-robozzle.encodeProgram = function (level) {
+robozzle.encodeProgram = function () {
     var encodeState = {
         output: '',
         val: 0,
@@ -1054,7 +1054,8 @@ robozzle.clickDesignSelection = function ($cell) {
             $cell.find('.item').updateClass('board', null);
         }
     }
-    // TODO: update URL
+    robozzle.design = robozzle.readDesign();
+    robozzle.setDesignUrl(robozzle.encodeDesign(robozzle.design));
     // TODO: update design hover
 };
 
@@ -1101,9 +1102,116 @@ robozzle.displayDesignToolbar = function () {
     $toolbar.append(makeRobot(1, 'Robot down'));
     $toolbar.append(makeRobot(2, 'Robot left'));
     $toolbar.append(makeRobot(3, 'Robot up'));
-}
+};
 
-robozzle.decodeDesign = function (design) {
+robozzle.encodeDesign = function (level) {
+    var encodeState = {
+        output: '',
+        val: 0,
+        bits: 0
+    };
+    var i, j;
+
+    robozzle.encodeBits(encodeState, 0, 3); // Version number = 0
+    for (j = 0; j < level.Colors.length; j++) {
+        var colors = level.Colors[j];
+        var items = level.Items[j];
+        for (i = 0; i < colors.length; i++) {
+            var val = 0;
+            if (items[i] != '#') {
+                if (colors[i] == 'R') {
+                    val = 1;
+                } else if (colors[i] == 'G') {
+                    val = 2;
+                } else if (colors[i] == 'B') {
+                    val = 3;
+                }
+                if (items[i] == '*') {
+                    val = val + 3;
+                }
+            }
+            robozzle.encodeBits(encodeState, val, 3);
+        }
+    }
+    robozzle.encodeBits(encodeState, level.RobotRow, 4);
+    robozzle.encodeBits(encodeState, level.RobotCol, 4);
+    robozzle.encodeBits(encodeState, level.RobotDir, 2);
+    for (i = 0; i < level.SubLengths.length; i++) {
+        robozzle.encodeBits(encodeState, level.SubLengths[i], 4);
+    }
+    robozzle.encodeBits(encodeState, level.AllowedCommands, 3);
+
+    robozzle.encodeBits(encodeState, 0, 5); // Flush
+    return encodeState.output;
+};
+
+robozzle.decodeDesign = function (input) {
+    if (!input) {
+        return null;
+    }
+
+    var decodeState = {
+        input: input,
+        index: 0,
+        val: 0,
+        bits: 0
+    };
+    var i, j;
+
+    var version = robozzle.decodeBits(decodeState, 3);
+    if (version != 0) {
+        return null;
+    }
+
+    var level = {
+        Colors: [],
+        Items: [],
+        SubLengths: []
+    };
+
+    for (j = 0; j < 12; j++) {
+        var colors = '';
+        var items = '';
+        for (i = 0; i < 16; i++) {
+            var val = robozzle.decodeBits(decodeState, 3);
+            if (val == 0) {
+                colors += ' ';
+                items += '#';
+            } else {
+                if (val > 3) {
+                    items += '*';
+                    val = val - 3;
+                } else {
+                    items += ' ';
+                }
+                if (val == 1) {
+                    colors += 'R';
+                } else if (val == 2) {
+                    colors += 'G';
+                } else if (val == 3) {
+                    colors += 'B';
+                } else {
+                    return null;
+                }
+            }
+        }
+        level.Colors.push(colors);
+        level.Items.push(items);
+    }
+    level.RobotRow = robozzle.decodeBits(decodeState, 4);
+    level.RobotCol = robozzle.decodeBits(decodeState, 4);
+    level.RobotDir = robozzle.decodeBits(decodeState, 2);
+    for (i = 0; i < 5; i++) {
+        level.SubLengths.push(robozzle.decodeBits(decodeState, 4));
+    }
+    level.AllowedCommands = robozzle.decodeBits(decodeState, 3);
+    level.Title = '';
+    level.About = '';
+
+    return level;
+};
+
+robozzle.defaultDesign = function () {
     var level = {};
     level.Colors = [
         "                ",
@@ -1138,6 +1246,62 @@ robozzle.decodeDesign = function (design) {
     level.RobotRow = 5;
     level.AllowedCommands = 0;
     level.SubLengths = [ 10, 10, 10, 10, 10 ];
+    level.Title = '';
+    level.About = '';
+    return level;
+};
+
+robozzle.readDesign = function () {
+    var level = {
+        Colors: [],
+        Items: [],
+        SubLengths: []
+    };
+    var i, j;
+
+    for (j = 0; j < robozzle.board.length; j++) {
+        var colors = [];
+        var items = [];
+        var row = robozzle.board[j];
+        for (i = 0; i < row.length; i++) {
+            var $cell = row[i];
+
+            var color = $cell.getClass('board-color');
+            if (!color) {
+                colors.push(' ');
+                items.push('#');
+            } else {
+                colors.push(color);
+
+                var $item = $cell.find('.item');
+                if ($item.hasClass('board-star')) {
+                    items.push('*');
+                } else {
+                    items.push(' ');
+                }
+            }
+        }
+        level.Colors.push(colors);
+        level.Items.push(items);
+    }
+    level.RobotDir = robozzle.robotDir;
+    level.RobotCol = robozzle.robotCol;
+    level.RobotRow = robozzle.robotRow;
+    level.AllowedCommands = 0;
+    if ($('#design-red').prop('checked')) {
+        level.AllowedCommands += 1;
+    }
+    if ($('#design-green').prop('checked')) {
+        level.AllowedCommands += 2;
+    }
+    if ($('#design-blue').prop('checked')) {
+        level.AllowedCommands += 4;
+    }
+    for (i = 0; i < 5; i++) {
+        level.SubLengths.push(parseInt($('#design-f' + (i + 1)).val()));
+    }
+    level.Title = $('#design-title').val();
+    level.About = $('#design-about').val();;
     return level;
 };
 
@@ -1158,8 +1322,13 @@ robozzle.designGame = function (design, program) {
     status.find('a.stats').hide();
     status.find('a.comments').hide();
 
-    robozzle.design = robozzle.decodeDesign(design)
+    robozzle.design = robozzle.decodeDesign(design);
+    if (!robozzle.design) {
+        robozzle.design = robozzle.defaultDesign();
+    }
     robozzle.displayBoard(robozzle.design);
+    $('#design-title').val(robozzle.design.Title);
+    $('#design-about').val(robozzle.design.About);
     for (var i = 0; i < 5; i++) {
         $('#design-f' + (i + 1)).val(robozzle.design.SubLengths[i]);
     }
@@ -1860,8 +2029,12 @@ robozzle.navigateDesign = function () {
     robozzle.parseUrl();
 };
 
-robozzle.setPuzzleUrl= function (id, program) {
+robozzle.setPuzzleUrl = function (id, program) {
     history.replaceState({ }, "", "index.html?puzzle=" + id + "&program=" + program);
+};
+
+robozzle.setDesignUrl = function (design) {
+    history.replaceState({ }, "", "index.html?design=" + design);
 };
 
 $(document).ready(function () {
