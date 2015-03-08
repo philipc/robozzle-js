@@ -441,7 +441,7 @@ robozzle.allowedCommand = function (command) {
         return allowedCommands & 2;
     }
     if (command == 'B') {
-        return allowedCommands & 3;
+        return allowedCommands & 4;
     }
 
     return false;
