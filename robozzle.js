@@ -1160,6 +1160,12 @@ robozzle.designGame = function (design, program) {
 
     robozzle.design = robozzle.decodeDesign(design)
     robozzle.displayBoard(robozzle.design);
+    for (var i = 0; i < 5; i++) {
+        $('#design-f' + (i + 1)).val(robozzle.design.SubLengths[i]);
+    }
+    $('#design-red').prop('checked', robozzle.design.AllowedCommands & 1);
+    $('#design-green').prop('checked', robozzle.design.AllowedCommands & 2);
+    $('#design-blue').prop('checked', robozzle.design.AllowedCommands & 4);
     robozzle.displayDesignToolbar();
 };
 
