@@ -1,4 +1,7 @@
 var robozzle = {
+    urlCallback: null,
+    urlTimeout: null,
+
     // level list info
     levelLoading: false,
     levelReload: false,
@@ -722,7 +725,9 @@ robozzle.displayProgram = function (level, commands) {
                     }
                     robozzle.hoverSelection($(this).getClass('condition'),
                                             $(this).find('.command').getClass('command'));
-                    robozzle.setPuzzleUrl(robozzle.level.Id, robozzle.encodeProgram());
+                    robozzle.setPuzzleUrl(robozzle.level.Id, function () {
+                        return robozzle.encodeProgram();
+                    });
                     e.stopPropagation();
                 });
             var $command = $('<div/>').addClass('command');
@@ -1054,8 +1059,9 @@ robozzle.clickDesignSelection = function ($cell) {
             $cell.find('.item').updateClass('board', null);
         }
     }
-    robozzle.design = robozzle.readDesign();
-    robozzle.setDesignUrl(robozzle.encodeDesign(robozzle.design));
+    robozzle.setDesignUrl(function () {
+        return robozzle.encodeDesign(robozzle.readDesign());
+    });
     // TODO: update design hover
 };
 
@@ -2014,27 +2020,54 @@ robozzle.parseUrl = function () {
     }
 };
 
-robozzle.navigateIndex = function () {
-    history.pushState({ }, "", "index.html");
+robozzle.navigateUrl = function (url) {
+    if (robozzle.urlTimeout) {
+        window.clearTimeout(robozzle.urlTimeout);
+        robozzle.urlCallback();
+        robozzle.urlTimeout = null;
+        robozzle.urlCallback = null;
+    }
+
+    history.pushState({ }, "", url);
     robozzle.parseUrl();
+};
+
+robozzle.setUrl = function (callback) {
+    if (robozzle.urlTimeout) {
+        window.clearTimeout(robozzle.urlTimeout);
+    }
+    robozzle.urlCallback = function () {
+        history.replaceState({ }, "", callback());
+    };
+    robozzle.urlTimeout = window.setTimeout(function () {
+        robozzle.urlCallback();
+        robozzle.urlTimeout = null;
+        robozzle.urlCallback = null;
+    }, 1000);
+};
+
+robozzle.navigateIndex = function () {
+    robozzle.navigateUrl("index.html");
 };
 
 robozzle.navigatePuzzle = function (id) {
-    history.pushState({ }, "", "index.html?puzzle=" + id);
-    robozzle.parseUrl();
+    robozzle.navigateUrl("index.html?puzzle=" + id);
 };
 
 robozzle.navigateDesign = function () {
-    history.pushState({ }, "", "index.html?design=");
-    robozzle.parseUrl();
+    robozzle.navigateUrl("index.html?design=");
 };
 
 robozzle.setPuzzleUrl = function (id, program) {
-    history.replaceState({ }, "", "index.html?puzzle=" + id + "&program=" + program);
+    robozzle.setUrl(function () {
+        return "index.html?puzzle=" + id + "&program=" + program();
+    });
 };
 
 robozzle.setDesignUrl = function (design) {
-    history.replaceState({ }, "", "index.html?design=" + design);
+    robozzle.setUrl(function () {
+        return "index.html?design=" + design();
+    });
 };
 
 $(document).ready(function () {
