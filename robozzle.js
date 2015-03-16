@@ -1124,15 +1124,15 @@ robozzle.encodeDesign = function (level) {
         var items = level.Items[j];
         for (i = 0; i < colors.length; i++) {
             var val = 0;
-            if (items[i] != '#') {
-                if (colors[i] == 'R') {
+            if (items.charAt(i) != '#') {
+                if (colors.charAt(i) == 'R') {
                     val = 1;
-                } else if (colors[i] == 'G') {
+                } else if (colors.charAt(i) == 'G') {
                     val = 2;
-                } else if (colors[i] == 'B') {
+                } else if (colors.charAt(i) == 'B') {
                     val = 3;
                 }
-                if (items[i] == '*') {
+                if (items.charAt(i) == '*') {
                     val = val + 3;
                 }
             }
@@ -1266,24 +1266,24 @@ robozzle.readDesign = function () {
     var i, j;
 
     for (j = 0; j < robozzle.board.length; j++) {
-        var colors = [];
-        var items = [];
+        var colors = '';
+        var items = '';
         var row = robozzle.board[j];
         for (i = 0; i < row.length; i++) {
             var $cell = row[i];
 
             var color = $cell.getClass('board-color');
             if (!color) {
-                colors.push(' ');
-                items.push('#');
+                colors += ' ';
+                items += '#';
             } else {
-                colors.push(color);
+                colors += color;
 
                 var $item = $cell.find('.item');
                 if ($item.hasClass('board-star')) {
-                    items.push('*');
+                    items += '*';
                 } else {
-                    items.push(' ');
+                    items += ' ';
                 }
             }
         }
