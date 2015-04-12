@@ -394,6 +394,7 @@ robozzle.displayBoard = function (level) {
     var $robot = $('<div/>').attr('id', 'robot').addClass('robot');
     $('#board').empty().append($board).append($robot);
     robozzle.board = board;
+    robozzle.starsMax = stars;
     robozzle.stars = stars;
     robozzle.steps = 0;
     robozzle.stack = [ { sub: 0, cmd: 0 } ];
@@ -1457,7 +1458,7 @@ robozzle.stepWait = function () {
     if (robozzle.robotState == robozzle.robotStates.finished) {
         return;
     }
-    if (robozzle.stars == 0) {
+    if (robozzle.starsMax > 0 && robozzle.stars == 0) {
         $(robozzle.robotAnimation).queue(function () {
             robozzle.submitSolution();
             robozzle.showSolved();
