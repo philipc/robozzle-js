@@ -725,9 +725,17 @@ robozzle.displayProgram = function (level, commands) {
                     }
                     robozzle.hoverSelection($(this).getClass('condition'),
                                             $(this).find('.command').getClass('command'));
-                    robozzle.setPuzzleUrl(robozzle.level.Id, function () {
-                        return robozzle.encodeProgram();
-                    });
+                    if (robozzle.level.Id) {
+                        robozzle.setPuzzleUrl(robozzle.level.Id, function () {
+                            return robozzle.encodeProgram();
+                        });
+                    } else {
+                        robozzle.setDesignUrl(function () {
+                            return robozzle.encodeDesign(robozzle.design);
+                        }, function () {
+                            return robozzle.encodeProgram();
+                        });
+                    }
                     e.stopPropagation();
                 });
             var $command = $('<div/>').addClass('command');
@@ -759,6 +767,23 @@ robozzle.displayProgram = function (level, commands) {
 };
 
 robozzle.readProgram = function () {
+    var program = [];
+    for (var j = 0; j < robozzle.program.length; j++) {
+        var $sub = robozzle.program[j];
+        var sub = [];
+        for (var i = 0; i < $sub.length; i++) {
+            var $cmd = $sub[i];
+            var cond = $cmd.getClass('condition');
+            var cmd = $cmd.find('.command').getClass('command');
+            sub.push([cond, cmd]);
+        }
+        program.push(sub);
+    }
+
+    return program;
+};
+
+robozzle.encodeSolution = function () {
     var program = '';
     for (var j = 0; j < robozzle.program.length; j++) {
         var sub = robozzle.program[j];
@@ -803,7 +828,7 @@ robozzle.submitSolution = function () {
         levelId: robozzle.level.Id,
         userName: robozzle.userName,
         password: robozzle.password,
-        solution: robozzle.readProgram()
+        solution: robozzle.encodeSolution()
     };
     robozzle.service('SubmitSolution', request, function (result, response) {
         // console.log(response.SubmitSolutionResult);
@@ -915,22 +940,28 @@ robozzle.displayGame = function (level, program) {
 
     robozzle.level = level;
 
-    var status = $('#statusbar');
-    status.find('span.title').text(level.Title);
-    if (!jQuery.isEmptyObject(level.About) && level.About !== null) {
-        status.find('div.about').text(level.About).show();
+    if (robozzle.level.Id) {
+        $('#program-edit').hide();
+
+        var status = $('#statusbar');
+        status.find('span.title').text(level.Title);
+        if (!jQuery.isEmptyObject(level.About) && level.About !== null) {
+            status.find('div.about').text(level.About).show();
+        } else {
+            status.find('div.about').hide();
+        }
+        status.find('a.stats')
+            .attr('href', 'puzzle.aspx?id=' + level.Id)
+            .attr('target', '_blank')
+            .show();
+        status.find('a.comments')
+            .text(level.CommentCount + ' comments')
+            .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
+            .attr('target', '_blank')
+            .show();
     } else {
-        status.find('div.about').hide();
+        $('#program-edit').show();
     }
-    status.find('a.stats')
-        .attr('href', 'puzzle.aspx?id=' + level.Id)
-        .attr('target', '_blank')
-        .show();
-    status.find('a.comments')
-        .text(level.CommentCount + ' comments')
-        .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
-        .attr('target', '_blank')
-        .show();
 
     robozzle.displayBoard(level);
     robozzle.displayProgram(level, program);
@@ -938,6 +969,7 @@ robozzle.displayGame = function (level, program) {
 };
 
 robozzle.setGame = function (id, program) {
+    robozzle.design = null;
     if (robozzle.levels !== null) {
         var level;
         for (var i = 0; i < robozzle.levels.length; i++) {
@@ -1061,6 +1093,8 @@ robozzle.clickDesignSelection = function ($cell) {
     }
     robozzle.setDesignUrl(function () {
         return robozzle.encodeDesign(robozzle.readDesign());
+    }, function () {
+        return robozzle.encodeProgram();
     });
     // TODO: update design hover
 };
@@ -1311,7 +1345,7 @@ robozzle.readDesign = function () {
     return level;
 };
 
-robozzle.designGame = function (design, program) {
+robozzle.displayDesign = function () {
     $('#menu li').removeClass('active');
     $('#menu-makepuzzle').addClass('active');
     $('#content').children().hide();
@@ -1328,7 +1362,6 @@ robozzle.designGame = function (design, program) {
     status.find('a.stats').hide();
     status.find('a.comments').hide();
 
-    robozzle.design = robozzle.decodeDesign(design);
     if (!robozzle.design) {
         robozzle.design = robozzle.defaultDesign();
     }
@@ -2014,7 +2047,9 @@ robozzle.parseUrl = function () {
     if ('puzzle' in urlParams) {
         robozzle.setGame(urlParams['puzzle'], robozzle.decodeProgram(urlParams['program']));
     } else if ('design' in urlParams) {
-        robozzle.designGame(urlParams['design'], robozzle.decodeProgram(urlParams['program']));
+        robozzle.designProgram = robozzle.decodeProgram(urlParams['program']);
+        robozzle.design = robozzle.decodeDesign(urlParams['design']);
+        robozzle.displayDesign();
     } else {
         robozzle.getLevels(false);
     }
@@ -2064,9 +2099,9 @@ robozzle.setPuzzleUrl = function (id, program) {
     });
 };
 
-robozzle.setDesignUrl = function (design) {
+robozzle.setDesignUrl = function (design, program) {
     robozzle.setUrl(function () {
-        return "index.html?design=" + design();
+        return "index.html?design=" + design() + '&program=' + program();
     });
 };
 
@@ -2126,9 +2161,21 @@ $(document).ready(function () {
             robozzle.robotState = robozzle.robotStates.stepping;
         }
     });
+    $('#design-solve').click(function () {
+        robozzle.design = robozzle.readDesign();
+        robozzle.displayGame(robozzle.design, robozzle.designProgram);
+    });
+    $('#program-edit').click(function () {
+        robozzle.designProgram = robozzle.readProgram();
+        robozzle.displayDesign();
+    });
     $('#program-container, #program-toolbar').on('mousemove', function (e) {
         robozzle.hoverSelection(null, null);
         robozzle.moveSelection(null, e.pageX - 15, e.pageY - 15);
+    });
+    $('#board-container, #design-toolbar').on('mousemove', function (e) {
+        robozzle.hoverDesignSelection(null);
+        robozzle.moveDesignSelection(null, e.pageX - 15, e.pageY - 15);
     });
     $(document).click(function () {
         robozzle.hideSelection();
@@ -2181,10 +2228,6 @@ $(document).ready(function () {
     });
     $(document).on('keydown', null, 'shift+b', function () {
         robozzle.setSelection(null, 'B');
-    });
-    $('#board-container, #design-toolbar').on('mousemove', function (e) {
-        robozzle.hoverDesignSelection(null);
-        robozzle.moveDesignSelection(null, e.pageX - 15, e.pageY - 15);
     });
     $(document).on('keydown', null, 's', function () {
         robozzle.setDesignSelection(null, 'star', null);
