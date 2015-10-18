@@ -72,9 +72,9 @@ $.fn.getClass = function (classBase) {
 })(jQuery);
 
 robozzle.parseXML = function (node) {
-    if (node.nodeType == 3) {
+    if (node.nodeType == Node.TEXT_NODE) {
         return node.nodeValue.replace(/^\s+/,'').replace(/\s+$/,'');
-    } else if (node.nodeType == 1) {
+    } else if (node.nodeType == Node.ELEMENT_NODE) {
         if (node.getAttributeNS('http://www.w3.org/2001/XMLSchema-instance', 'nil') === 'true') {
             return null;
         }
@@ -82,7 +82,7 @@ robozzle.parseXML = function (node) {
         for (var childNode = node.firstChild; childNode; childNode = childNode.nextSibling) {
             //console.log([childNode.nodeName, childNode.nodeType, childNode.namespaceURI]);
             var childVal = robozzle.parseXML(childNode);
-            if (childNode.nodeType == 3) {
+            if (childNode.nodeType == Node.TEXT_NODE) {
                 return childVal;
             }
             var childName = childNode.localName;
@@ -101,24 +101,69 @@ robozzle.parseXML = function (node) {
             }
         }
         return obj;
-    } else if (node.nodeType == 9) {
+    } else if (node.nodeType == Node.DOCUMENT_NODE) {
         return robozzle.parseXML(node.documentElement);
     } else {
         return null;
     }
 };
 
-robozzle.service = function (method, data, success) {
+robozzle.encodeSOAPObject = function (SOAPObject, prefix, name, data, depth) {
+    var soapObject = new SOAPObject(prefix + name);
+
+    var childObject;
+    var childName;
+    if (data === null) {
+        soapObject.attr('xsi:nil', 'true');
+    } else if ($.isArray(data)) {
+        prefix = 'ns' + depth;
+        soapObject.attr('xmlns:' + prefix, 'http://schemas.microsoft.com/2003/10/Serialization/Arrays');
+        for (var i = 0; i < data.length; i++) {
+            childName = typeof data[i] == 'number' ? 'int' : 'string';
+            childObject = robozzle.encodeSOAPObject(SOAPObject, prefix + ':', childName, data[i], depth + 1);
+            soapObject.appendChild(childObject);
+        }
+    } else if (typeof data == 'object') {
+        prefix = 'ns' + depth;
+        soapObject.attr('xmlns:' + prefix, 'http://schemas.datacontract.org/2004/07/RoboCoder.GameState');
+        for (childName in data) {
+            childObject = robozzle.encodeSOAPObject(SOAPObject, prefix + ':', childName, data[childName], depth + 1);
+            soapObject.appendChild(childObject);
+        }
+    } else {
+        soapObject.val('' + data); // the ''+ is added to fix issues with falsey values.
+    }
+    return soapObject;
+};
+
+robozzle.encodeSOAP = function (SOAPObject, method, data) {
+    var soapObject = new SOAPObject(method);
+    soapObject.attr('xmlns', 'http://tempuri.org/');
+
+    var childObject;
+    var prefix = '';
+    var depth = 1;
+    for (var childName in data) {
+            childObject = robozzle.encodeSOAPObject(SOAPObject, prefix, childName, data[childName], depth);
+            soapObject.appendChild(childObject);
+    }
+    return soapObject;
+};
+
+robozzle.service = function (method, data, success, error) {
     $.soap({
         url: '/RobozzleService.svc',
         appendMethodToURL: false,
         namespaceURL: 'http://tempuri.org/',
         SOAPAction: 'http://tempuri.org/IRobozzleService/' + method,
         method: method,
-        data: data,
+        data: function (SOAPObject) { return robozzle.encodeSOAP(SOAPObject, method, data); },
         success: function (soapResponse) {
             var response = robozzle.parseXML(soapResponse.toXML()).Body[method + 'Response'];
             success(response[method + 'Result'], response);
+        },
+        error: function (soapResponse) {
+            if (error) error();
         }
     });
 };
@@ -1216,14 +1261,14 @@ robozzle.decodeDesign = function (input) {
         for (i = 0; i < 16; i++) {
             var val = robozzle.decodeBits(decodeState, 3);
             if (val == 0) {
-                colors += ' ';
+                colors += 'B';
                 items += '#';
             } else {
                 if (val > 3) {
                     items += '*';
                     val = val - 3;
                 } else {
-                    items += ' ';
+                    items += '.';
                 }
                 if (val == 1) {
                     colors += 'R';
@@ -1252,21 +1297,59 @@ robozzle.decodeDesign = function (input) {
     return level;
 };
 
+robozzle.submitDesign = function (callback) {
+    if (!robozzle.design) {
+        callback('Invalid puzzle.');
+        return;
+    }
+
+    if (!robozzle.design.Title) {
+        callback('The puzzle title cannot be blank.');
+        return;
+    }
+
+    if (!robozzle.userName || !robozzle.password) {
+        callback('You must sign in to submit puzzles.');
+        return;
+    }
+
+    var request = {
+        level2: {
+            About: robozzle.design.About,
+            AllowedCommands: robozzle.design.AllowedCommands,
+            Colors: robozzle.design.Colors,
+            Items: robozzle.design.Items,
+            RobotCol: robozzle.design.RobotCol,
+            RobotDir: robozzle.design.RobotDir,
+            RobotRow: robozzle.design.RobotRow,
+            SubLengths: robozzle.design.SubLengths,
+            Title: robozzle.design.Title
+        },
+        userName: robozzle.userName,
+        pwd: robozzle.password,
+        solution: robozzle.encodeSolution()
+    };
+    robozzle.service('SubmitLevel2', request, function (result, response) {
+        callback(result);
+    }, function () {
+        callback('Server request failed.');
+    });
+};
+
 robozzle.defaultDesign = function () {
     var level = {};
     level.Colors = [
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "       BB       ",
-        "       BB       ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
-        "                ",
+        "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
         ];
     level.Items = [
         "################",
@@ -1309,7 +1392,7 @@ robozzle.readDesign = function () {
 
             var color = $cell.getClass('board-color');
             if (!color) {
-                colors += ' ';
+                colors += 'B';
                 items += '#';
             } else {
                 colors += color;
@@ -1318,7 +1401,7 @@ robozzle.readDesign = function () {
                 if ($item.hasClass('board-star')) {
                     items += '*';
                 } else {
-                    items += ' ';
+                    items += '.';
                 }
             }
         }
@@ -1460,8 +1543,12 @@ robozzle.stepWait = function () {
     }
     if (robozzle.starsMax > 0 && robozzle.stars == 0) {
         $(robozzle.robotAnimation).queue(function () {
-            robozzle.submitSolution();
-            robozzle.showSolved();
+            if (robozzle.level.Id) {
+                robozzle.submitSolution();
+                robozzle.showSolved();
+            } else {
+                robozzle.showDesignSolved();
+            }
             $(this).dequeue();
         });
         robozzle.setRobotState(robozzle.robotStates.finished);
@@ -1762,6 +1849,40 @@ robozzle.initSolved = function () {
             $('#dialog-solved-like').prop('checked', false);
         }
     });
+};
+
+robozzle.showDesignSolved = function () {
+    var $dialog = $('#dialog-design-solved');
+    $dialog.find(':input').prop('disabled', false);
+    $('#dialog-design-solved-error').hide();
+    robozzle.showDialog($dialog);
+};
+
+robozzle.submitDesignSolved = function (event) {
+    event.preventDefault();
+    var $dialog = $('#dialog-design-solved');
+    $dialog.find(':input').prop('disabled', true);
+    $('#dialog-design-solved-edit').prop('disabled', false);
+    robozzle.submitDesign(
+            function (result) {
+                $dialog.find(':input').prop('disabled', false);
+                if (result === null) {
+                    robozzle.hideDialog($dialog);
+                    robozzle.navigateIndex();
+                } else {
+                    $('#dialog-design-solved-error').text(result).show();
+                }
+            });
+};
+
+robozzle.cancelDesignSolved = function (event) {
+    event.preventDefault();
+    robozzle.hideDialog($('#dialog-design-solved'));
+};
+
+robozzle.initDesignSolved = function () {
+    $('#dialog-design-solved').find('form').on('submit', robozzle.submitDesignSolved);
+    $('#dialog-design-solved-edit').on('click', robozzle.cancelDesignSolved);
 };
 
 robozzle.css = function (selector, property, value) {
@@ -2244,6 +2365,7 @@ $(document).ready(function () {
     robozzle.initMessage();
     robozzle.initSignin();
     robozzle.initSolved();
+    robozzle.initDesignSolved();
 
     $('#menu-signin').on('click', robozzle.showSignin);
     $('#menu-signout').on('click', robozzle.logOut);

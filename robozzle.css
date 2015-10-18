@@ -518,6 +518,10 @@ div.sub-grid {
     width: 400px;
     margin: 250px auto 0;
 }
+#dialog-design-solved {
+    width: 400px;
+    margin: 250px auto 0;
+}
 .dialog .difficulty {
     position: relative;
     display: inline-block;
