@@ -275,8 +275,8 @@ robozzle.clampPageIndex = function () {
 };
 
 robozzle.getLevels = function (force) {
-    $('#menu li').removeClass('active');
-    $('#menu-levels').addClass('active');
+    $('.page-menu__item').removeClass('page-menu__item--active');
+    $('#menu-levels').addClass('page-menu__item--active');
     $('.page-content__tab').hide();
     $('#content-levels').show();
 
@@ -975,7 +975,7 @@ robozzle.displayProgramToolbar = function (level) {
 }
 
 robozzle.displayGame = function (level, program) {
-    $('#menu li').removeClass('active');
+    $('.page-menu__item').removeClass('page-menu__item--active');
     $('.page-content__tab').hide();
     $('#content-game').show();
     $('#content-game').children().hide();
@@ -1430,8 +1430,8 @@ robozzle.readDesign = function () {
 };
 
 robozzle.displayDesign = function () {
-    $('#menu li').removeClass('active');
-    $('#menu-makepuzzle').addClass('active');
+    $('.page-menu__item').removeClass('page-menu__item--active');
+    $('#menu-makepuzzle').addClass('page-menu__item--active');
     $('.page-content__tab').hide();
     $('#content-game').show();
     $('#content-game').children().hide();
@@ -2390,8 +2390,8 @@ $(document).ready(function () {
 
     window.onpopstate = robozzle.parseUrl;
 
-    $('#menu li').removeClass('active');
-    $('#menu-levels').addClass('active');
+    $('.page-menu__item').removeClass('page-menu__item--active');
+    $('#menu-levels').removeClass('page-menu__item--active');
     $('.page-content__tab').hide();
     $('#content-levels').show();
 
