@@ -46,12 +46,9 @@ body {
 .page-menu__item:hover {
     background-color: #a0a0a0;
 }
-.page-menu__item--active {
+.page-menu__item--active, .page-menu__item--active:hover {
     background-color: #707070;
     color: white;
-}
-.page-menu__item--active:hover {
-    background-color: #707070;
 }
 .page-menu__item > a {
     color: #505050;
@@ -70,12 +67,12 @@ body {
     width: 520px;
     margin: 0 auto;
 }
-ul.tabbar {
+.level-menu {
     list-style: none;
     margin: 0;
     padding: 0;
 }
-ul.tabbar li {
+.level-menu__item {
     display: inline-block;
     margin: 3px 0px 3px 3px;
     padding: 2px 5px;
@@ -83,10 +80,10 @@ ul.tabbar li {
     color: white;
     cursor: pointer;
 }
-ul.tabbar li:hover {
+.level-menu__item:hover {
     background-color: #404040;
 }
-ul.tabbar li.active {
+.level-menu__item--active, .level-menu__item--active:hover {
     background-color: #909090;
 }
 #levellist-container {

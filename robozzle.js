@@ -5,7 +5,7 @@ var robozzle = {
     // level list info
     levelLoading: false,
     levelReload: false,
-    sortKind: 1, /* Easy to hard */
+    sortKind: 0, /* Campaign */
     blockIndex: 0,
     blockSize: 64,
     pageIndex: 0,
@@ -342,12 +342,8 @@ robozzle.setPageIndex = function (index) {
 };
 
 robozzle.setSortKind = function (sortKind) {
-    if (robozzle.sortKind == sortKind) {
-        return;
-    }
-
-    $('#levelmenu li').removeClass('active');
-    $('#levelmenu li[data-kind="' + sortKind + '"]').addClass('active');
+    $('.level-menu__item').removeClass('level-menu__item--active');
+    $('.level-menu__item[data-kind="' + sortKind + '"]').addClass('level-menu__item--active');
     robozzle.sortKind = sortKind;
 };
 
@@ -2258,7 +2254,7 @@ $(document).ready(function () {
         localStorage.setItem('hideSolved', robozzle.hideSolved);
         robozzle.getLevels(true);
     });
-    $('#levelmenu li').click(function () {
+    $('.level-menu__item').click(function () {
         robozzle.setSortKind(parseInt($(this).attr('data-kind')));
         robozzle.getLevels(true);
     });
@@ -2363,9 +2359,6 @@ $(document).ready(function () {
         robozzle.setDesignSelection(null, 'erase', null);
     });
 
-    robozzle.sortKind = -1;
-    robozzle.setSortKind(0);
-
     robozzle.initMessage();
     robozzle.initSignin();
     robozzle.initSolved();
@@ -2395,6 +2388,7 @@ $(document).ready(function () {
     window.onpopstate = robozzle.parseUrl;
 
     robozzle.setPageTab('levels');
+    robozzle.setSortKind(0);
 
     var userName = localStorage.getItem('userName');
     var password = localStorage.getItem('password');
