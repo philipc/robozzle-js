@@ -12,123 +12,121 @@
         <script type='text/javascript' src='robozzle.js'></script>
     </head>
     <body>
-        <div id="horizon">
-            <div id="border">
-                <header>
-                    <h1>RoboZZle</h1>
-                    <h2>a social puzzle game</h2>
-                </header>
-                <ul id="menu">
-                    <li id="menu-levels" class="active" style="width: 100px">Puzzles</li>
-                    <li id="menu-makepuzzle" style="width: 100px">Make a Puzzle</li>
-                    <li id="menu-forums" style="width: 70px"><a href="/forums/" target="_blank">Forums</a></li>
-                    <li id="menu-wiki" style="width: 70px"><a href="/wiki/" target="_blank">Wiki</a></li>
-                    <li id="menu-chat" style="width: 70px"><a href="/irc/" target="_blank">Chat</a></li>
-                    <li id="menu-user" style="width: 66px; float: right"><a href="#" target="_blank">name</a></li>
-                    <li id="menu-register" style="width: 66px; float: right">Register</li>
-                    <li id="menu-signin" style="width: 66px; float: right">Sign In</li>
-                    <li id="menu-signout" style="width: 66px; float: right">Sign Out</li>
-                </ul>
-                <div id="content">
-                    <div id="content-levels">
-                        <div id="levels">
-                            <ul class="tabbar" id="levelmenu">
-                                <li data-kind="0">Campaign</li><li data-kind="3">Popular</li><li data-kind="1">Easy to hard</li><li data-kind="2">New to old</li>
+        <div id="border">
+            <header>
+                <h1>RoboZZle</h1>
+                <h2>a social puzzle game</h2>
+            </header>
+            <ul id="menu">
+                <li id="menu-levels" class="active" style="width: 100px">Puzzles</li>
+                <li id="menu-makepuzzle" style="width: 100px">Make a Puzzle</li>
+                <li id="menu-forums" style="width: 70px"><a href="/forums/" target="_blank">Forums</a></li>
+                <li id="menu-wiki" style="width: 70px"><a href="/wiki/" target="_blank">Wiki</a></li>
+                <li id="menu-chat" style="width: 70px"><a href="/irc/" target="_blank">Chat</a></li>
+                <li id="menu-user" style="width: 66px; float: right"><a href="#" target="_blank">name</a></li>
+                <li id="menu-register" style="width: 66px; float: right">Register</li>
+                <li id="menu-signin" style="width: 66px; float: right">Sign In</li>
+                <li id="menu-signout" style="width: 66px; float: right">Sign Out</li>
+            </ul>
+            <div id="content">
+                <div id="content-levels">
+                    <div id="levels">
+                        <ul class="tabbar" id="levelmenu">
+                            <li data-kind="0">Campaign</li><li data-kind="3">Popular</li><li data-kind="1">Easy to hard</li><li data-kind="2">New to old</li>
+                        </ul>
+                        <div id="levellist-container">
+                            <ul id="levellist">
                             </ul>
-                            <div id="levellist-container">
-                                <ul id="levellist">
-                                </ul>
-                                <div id="levellist-spinner">
-                                </div>
-                                <button id="refresh">Refresh</button>
-                                <div id="pagecontrol"><div>
-                                    <button id="pagefirst">First</button><button id="pageprev">Prev</button><input type="text" id="pagecurrent" value="1"></input>/<span id="pagemax">1</span><button id="pagenext">Next</button><button id="pagelast">Last</button>
-                                </div></div>
-                                <div id="hidesolved-container">
-                                    <input type="checkbox" id="hidesolved"><label for="hidesolved">Hide solved</label>
-                                </div>
+                            <div id="levellist-spinner">
                             </div>
-                        </div>
-                        <div id="scoreboard">
-                            <h1>Most Puzzles Solved</h1>
-                            <table id="topsolvers">
-                            </table>
-                            <h1>Most Solved Today</h1>
-                            <table id="topsolverstoday">
-                            </table>
-                            <a href="scoreboard.aspx" target="_blank">Full scoreboard</a>
+                            <button id="refresh">Refresh</button>
+                            <div id="pagecontrol"><div>
+                                <button id="pagefirst">First</button><button id="pageprev">Prev</button><input type="text" id="pagecurrent" value="1"></input>/<span id="pagemax">1</span><button id="pagenext">Next</button><button id="pagelast">Last</button>
+                            </div></div>
+                            <div id="hidesolved-container">
+                                <input type="checkbox" id="hidesolved"><label for="hidesolved">Hide solved</label>
+                            </div>
                         </div>
                     </div>
-                    <div id="content-game" class="table-container">
-                        <div id="board-container" class="table-column">
-                            <div id="statusbar">
-                                <div class="title">
-                                    <span class="title"></span>
-                                    <a class="comments">comments</a>
-                                    <a class="stats">stats</a>
+                    <div id="scoreboard">
+                        <h1>Most Puzzles Solved</h1>
+                        <table id="topsolvers">
+                        </table>
+                        <h1>Most Solved Today</h1>
+                        <table id="topsolverstoday">
+                        </table>
+                        <a href="scoreboard.aspx" target="_blank">Full scoreboard</a>
+                    </div>
+                </div>
+                <div id="content-game" class="table-container">
+                    <div id="board-container" class="table-column">
+                        <div id="statusbar">
+                            <div class="title">
+                                <span class="title"></span>
+                                <a class="comments">comments</a>
+                                <a class="stats">stats</a>
+                            </div>
+                            <div class="about"></div>
+                        </div>
+                        <div id="board">
+                        </div>
+                    </div>
+                    <div id="program-container" class="table-column">
+                        <div id="program">
+                            <div id="sub-list">
+                            </div>
+                            <div id="program-control">
+                                <div>
+                                    <button id="program-go" class="button">Go!</button><button id="program-step" class="button">Step</button>
                                 </div>
-                                <div class="about"></div>
-                            </div>
-                            <div id="board">
-                            </div>
-                        </div>
-                        <div id="program-container" class="table-column">
-                            <div id="program">
-                                <div id="sub-list">
-                                </div>
-                                <div id="program-control">
-                                    <div>
-                                        <button id="program-go" class="button">Go!</button><button id="program-step" class="button">Step</button>
-                                    </div>
-                                    <button id="program-edit" class="button">Edit Puzzle</button>
-                                    <div id="program-speed-container" class="table-container">
-                                        <div class="table-column">Slow</div>
-                                        <div class="table-column"><input id="program-speed" type="range" min="0" max="10" value="5" /></div>
-                                        <div class="table-column">Fast</div>
-                                    </div>
+                                <button id="program-edit" class="button">Edit Puzzle</button>
+                                <div id="program-speed-container" class="table-container">
+                                    <div class="table-column">Slow</div>
+                                    <div class="table-column"><input id="program-speed" type="range" min="0" max="10" value="5" /></div>
+                                    <div class="table-column">Fast</div>
                                 </div>
                             </div>
                         </div>
-                        <div id="program-toolbar-container" class="table-column">
-                            <div id="program-toolbar">
-                            </div>
+                    </div>
+                    <div id="program-toolbar-container" class="table-column">
+                        <div id="program-toolbar">
                         </div>
-                        <div id="design-toolbar-container" class="table-column">
-                            <div id="design-toolbar">
-                            </div>
+                    </div>
+                    <div id="design-toolbar-container" class="table-column">
+                        <div id="design-toolbar">
                         </div>
-                        <div id="design-panel-container" class="table-column">
-                            <div id="design-panel">
+                    </div>
+                    <div id="design-panel-container" class="table-column">
+                        <div id="design-panel">
+                            <ul>
+                                <li><label for="design-title">Title:</label><input type="text" id="design-title"></li>
+                                <li><label for="design-about">Description:</label><input type="text" id="design-about"></li>
+                                <li><label class="label-number" for="design-f1">F1 commands:</label><input type="number" min="2" max="10" id="design-f1"></li>
+                                <li><label class="label-number" for="design-f2">F2 commands:</label><input type="number" min="0" max="10" id="design-f2"></li>
+                                <li><label class="label-number" for="design-f3">F3 commands:</label><input type="number" min="0" max="10" id="design-f3"></li>
+                                <li><label class="label-number" for="design-f4">F4 commands:</label><input type="number" min="0" max="10" id="design-f4"></li>
+                                <li><label class="label-number" for="design-f5">F5 commands:</label><input type="number" min="0" max="10" id="design-f5"></li>
+                            </ul>
+                            <fieldset>
+                                <legend>Allow special commands</legend>
                                 <ul>
-                                    <li><label for="design-title">Title:</label><input type="text" id="design-title"></li>
-                                    <li><label for="design-about">Description:</label><input type="text" id="design-about"></li>
-                                    <li><label class="label-number" for="design-f1">F1 commands:</label><input type="number" min="2" max="10" id="design-f1"></li>
-                                    <li><label class="label-number" for="design-f2">F2 commands:</label><input type="number" min="0" max="10" id="design-f2"></li>
-                                    <li><label class="label-number" for="design-f3">F3 commands:</label><input type="number" min="0" max="10" id="design-f3"></li>
-                                    <li><label class="label-number" for="design-f4">F4 commands:</label><input type="number" min="0" max="10" id="design-f4"></li>
-                                    <li><label class="label-number" for="design-f5">F5 commands:</label><input type="number" min="0" max="10" id="design-f5"></li>
+                                    <li><input type="checkbox" id="design-red"><label for="design-red">Paint tile red</label></li>
+                                    <li><input type="checkbox" id="design-green"><label for="design-green">Paint tile green</label></li>
+                                    <li><input type="checkbox" id="design-blue"><label for="design-blue">Paint tile blue</label></li>
                                 </ul>
-                                <fieldset>
-                                    <legend>Allow special commands</legend>
-                                    <ul>
-                                        <li><input type="checkbox" id="design-red"><label for="design-red">Paint tile red</label></li>
-                                        <li><input type="checkbox" id="design-green"><label for="design-green">Paint tile green</label></li>
-                                        <li><input type="checkbox" id="design-blue"><label for="design-blue">Paint tile blue</label></li>
-                                    </ul>
-                                </fieldset>
-                                <button id="design-solve" class="button">Provide Solution</button>
-                            </div>
+                            </fieldset>
+                            <button id="design-solve" class="button">Provide Solution</button>
                         </div>
                     </div>
-                    <div id="content-tutorial"></div>
-                    <div id="program-selection" class="condition">
-                        <div class="command">
-                        </div>
+                </div>
+                <div id="content-tutorial"></div>
+                <div id="program-selection" class="condition">
+                    <div class="command">
                     </div>
-                    <div id="design-selection" class="board">
-                        <div class="robot">
-                            <div class="item">
-                            </div>
+                </div>
+                <div id="design-selection" class="board">
+                    <div class="robot">
+                        <div class="item">
                         </div>
                     </div>
                 </div>
