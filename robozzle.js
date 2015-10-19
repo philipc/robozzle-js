@@ -275,10 +275,7 @@ robozzle.clampPageIndex = function () {
 };
 
 robozzle.getLevels = function (force) {
-    $('.page-menu__item').removeClass('page-menu__item--active');
-    $('#menu-levels').addClass('page-menu__item--active');
-    $('.page-content__tab').hide();
-    $('#content-levels').show();
+    robozzle.setPageTab('levels');
 
     // Prevent multiple requests
     if (robozzle.levelLoading) {
@@ -975,8 +972,7 @@ robozzle.displayProgramToolbar = function (level) {
 }
 
 robozzle.displayGame = function (level, program) {
-    $('.page-menu__item').removeClass('page-menu__item--active');
-    $('.page-content__tab').hide();
+    robozzle.setPageTab(null);
     $('#content-game').show();
     $('#content-game').children().hide();
     $('#board-container').show();
@@ -1431,9 +1427,7 @@ robozzle.readDesign = function () {
 };
 
 robozzle.displayDesign = function () {
-    $('.page-menu__item').removeClass('page-menu__item--active');
-    $('#menu-makepuzzle').addClass('page-menu__item--active');
-    $('.page-content__tab').hide();
+    robozzle.setPageTab('makepuzzle');
     $('#content-game').show();
     $('#content-game').children().hide();
     $('#board-container').show();
@@ -2229,6 +2223,15 @@ robozzle.setDesignUrl = function (design, program) {
     });
 };
 
+robozzle.setPageTab = function (name) {
+    $('.page-menu__item').removeClass('page-menu__item--active');
+    $('.page-content__tab').hide();
+    if (name) {
+        $('#menu-' + name).addClass('page-menu__item--active');
+        $('#content-' + name).show();
+    }
+};
+
 $(document).ready(function () {
     robozzle.loadSVG();
 
@@ -2392,10 +2395,7 @@ $(document).ready(function () {
 
     window.onpopstate = robozzle.parseUrl;
 
-    $('.page-menu__item').removeClass('page-menu__item--active');
-    $('#menu-levels').removeClass('page-menu__item--active');
-    $('.page-content__tab').hide();
-    $('#content-levels').show();
+    robozzle.setPageTab('levels');
 
     var userName = localStorage.getItem('userName');
     var password = localStorage.getItem('password');
