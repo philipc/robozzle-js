@@ -2365,7 +2365,6 @@ $(document).ready(function () {
 
     robozzle.sortKind = -1;
     robozzle.setSortKind(0);
-    robozzle.topSolvers();
 
     robozzle.initMessage();
     robozzle.initSignin();
@@ -2404,8 +2403,10 @@ $(document).ready(function () {
         robozzle.logIn(userName, password, function (result) {
             spinner.stop();
             robozzle.parseUrl();
+            robozzle.topSolvers();
         });
     } else {
         robozzle.parseUrl();
+        robozzle.topSolvers();
     }
 });
