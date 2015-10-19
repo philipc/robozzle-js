@@ -277,7 +277,7 @@ robozzle.clampPageIndex = function () {
 robozzle.getLevels = function (force) {
     $('#menu li').removeClass('active');
     $('#menu-levels').addClass('active');
-    $('#content').children().hide();
+    $('.page-content__tab').hide();
     $('#content-levels').show();
 
     // Prevent multiple requests
@@ -976,7 +976,7 @@ robozzle.displayProgramToolbar = function (level) {
 
 robozzle.displayGame = function (level, program) {
     $('#menu li').removeClass('active');
-    $('#content').children().hide();
+    $('.page-content__tab').hide();
     $('#content-game').show();
     $('#content-game').children().hide();
     $('#board-container').show();
@@ -1432,7 +1432,7 @@ robozzle.readDesign = function () {
 robozzle.displayDesign = function () {
     $('#menu li').removeClass('active');
     $('#menu-makepuzzle').addClass('active');
-    $('#content').children().hide();
+    $('.page-content__tab').hide();
     $('#content-game').show();
     $('#content-game').children().hide();
     $('#board-container').show();
@@ -2392,7 +2392,7 @@ $(document).ready(function () {
 
     $('#menu li').removeClass('active');
     $('#menu-levels').addClass('active');
-    $('#content').children().hide();
+    $('.page-content__tab').hide();
     $('#content-levels').show();
 
     var userName = localStorage.getItem('userName');

@@ -12,10 +12,10 @@
         <script type='text/javascript' src='robozzle.js'></script>
     </head>
     <body>
-        <div id="border">
-            <header>
-                <h1>RoboZZle</h1>
-                <h2>a social puzzle game</h2>
+        <div class="page-border">
+            <header class="page-head">
+                <h1 class="page-head__title">RoboZZle</h1>
+                <h2 class="page-head__subtitle">a social puzzle game</h2>
             </header>
             <ul id="menu">
                 <li id="menu-levels" class="active" style="width: 100px">Puzzles</li>
@@ -28,8 +28,8 @@
                 <li id="menu-signin" style="width: 66px; float: right">Sign In</li>
                 <li id="menu-signout" style="width: 66px; float: right">Sign Out</li>
             </ul>
-            <div id="content">
-                <div id="content-levels">
+            <div id="content" class="page-content">
+                <div id="content-levels" class="page-content__tab">
                     <div id="levels">
                         <ul class="tabbar" id="levelmenu">
                             <li data-kind="0">Campaign</li><li data-kind="3">Popular</li><li data-kind="1">Easy to hard</li><li data-kind="2">New to old</li>
@@ -58,7 +58,7 @@
                         <a href="scoreboard.aspx" target="_blank">Full scoreboard</a>
                     </div>
                 </div>
-                <div id="content-game" class="table-container">
+                <div id="content-game" class="page-content__tab table-container">
                     <div id="board-container" class="table-column">
                         <div id="statusbar">
                             <div class="title">

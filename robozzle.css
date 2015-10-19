@@ -3,22 +3,22 @@ body {
     font-family: Verdana, sans-serif;
     font-size: 12px;
 }
-#border {
+.page-border {
     width: 920px;
     margin: 0 auto;
     background-color: #b8b8b8;
 }
-header {
+.page-head {
     padding: 23px 23px 10px;
 }
-header h1 {
+.page-head__title {
     padding: 0;
     margin: 0;
     color: #404040;
     font-size: 24px;
     font-weight: bold;
 }
-header h2 {
+.page-head__subtitle {
     padding-left: 2px;
     margin: 0;
     color: #707070;
@@ -54,10 +54,13 @@ header h2 {
     color: #505050;
     text-decoration: none;
 }
-#content {
+.page-content {
     position: relative;
     padding: 10px;
     background-color: #303030;
+}
+.page-content__tab {
+    display: none;
 }
 #levels {
     position: relative;
@@ -328,6 +331,7 @@ div.robot-3 {
     margin: 5px;
 }
 #program-selection {
+    display: none;
     visibility: hidden;
     position: absolute;
     pointer-events: none;
@@ -380,6 +384,7 @@ div.robot-3 {
     width: 100%;
 }
 #design-selection {
+    display: none;
     visibility: hidden;
     position: absolute;
     pointer-events: none;
@@ -429,9 +434,6 @@ div.sub-grid {
     vertical-align: middle;
     color: #707070;
     font-size: 12px;
-}
-#content > div {
-    display: none;
 }
 #menu-signout, #menu-user {
     display: none;
