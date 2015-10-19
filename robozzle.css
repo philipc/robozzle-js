@@ -111,6 +111,7 @@ li.levelitem {
     border-style: solid;
     border-width: 1px;
     background-color: #b0b080;
+    cursor: pointer;
 }
 li.levelitem:hover {
     background-color: #c0c090;
