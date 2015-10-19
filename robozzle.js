@@ -1350,6 +1350,7 @@ robozzle.defaultDesign = function () {
         "BBBBBBBBBBBBBBBB",
         "BBBBBBBBBBBBBBBB",
         "BBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBB",
         ];
     level.Items = [
         "################",
@@ -1450,6 +1451,7 @@ robozzle.displayDesign = function () {
         robozzle.design = robozzle.defaultDesign();
     }
     robozzle.displayBoard(robozzle.design);
+    robozzle.displayProgram(robozzle.design, robozzle.designProgram);
     $('#design-title').val(robozzle.design.Title);
     $('#design-about').val(robozzle.design.About);
     for (var i = 0; i < 5; i++) {
