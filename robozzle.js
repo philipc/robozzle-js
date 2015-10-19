@@ -1357,8 +1357,8 @@ robozzle.defaultDesign = function () {
         "################",
         "################",
         "################",
-        "#######  #######",
-        "#######  #######",
+        "#######..#######",
+        "#######.*#######",
         "################",
         "################",
         "################",
@@ -1367,7 +1367,7 @@ robozzle.defaultDesign = function () {
         ];
     level.RobotDir = 0;
     level.RobotCol = 7;
-    level.RobotRow = 5;
+    level.RobotRow = 6;
     level.AllowedCommands = 0;
     level.SubLengths = [ 10, 10, 10, 10, 10 ];
     level.Title = '';
