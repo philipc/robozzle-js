@@ -2011,7 +2011,15 @@ $(document).ready(function () {
         robozzle.navigateIndex();
     });
     $('#menu-makepuzzle').click(function () {
-        robozzle.navigateDesign();
+        var levels_to_design = 40;
+        var msg = "Only registered users with at least " + levels_to_design + " solved puzzles can submit new puzzles."
+        if (!robozzle.userName) {
+            robozzle.showMessage('Please sign in.', msg);
+        } else if (Object.keys(robozzle.solvedLevels).length < levels_to_design) {
+            robozzle.showMessage('Please solve a few levels first.', msg);
+        } else {
+            robozzle.navigateDesign();
+        }
     });
     $('#program-go').click(function () {
         if (robozzle.robotState == robozzle.robotStates.reset
