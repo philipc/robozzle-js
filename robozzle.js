@@ -38,7 +38,8 @@ var robozzle = {
         reset: 0,
         stopped: 1,
         started: 2,
-        stepping: 3
+        stepping: 3,
+        finished: 4
     },
     robotState: 0,
 
@@ -447,7 +448,7 @@ robozzle.displayBoard = function (level) {
         scale: 1.0
     };
     robozzle.displayRobot();
-    robozzle.setRobotState(robozzle.robotStates.stopped);
+    robozzle.setRobotState(robozzle.robotStates.reset);
 };
 
 robozzle.allowedCommand = function (command) {
@@ -1949,6 +1950,7 @@ robozzle.setDesignUrl = function (design, program) {
 };
 
 robozzle.setPageTab = function (name) {
+    robozzle.stepReset();
     $('.page-menu__item').removeClass('page-menu__item--active');
     $('.page-content__tab').hide();
     if (name) {
