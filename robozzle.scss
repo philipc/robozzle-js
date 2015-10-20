@@ -452,6 +452,8 @@ div.sub-grid {
     display: none;
     z-index: 101;
     position: absolute;
+    top: 0px;
+    left: 0px;
     width: 100%;
 }
 .dialog {
@@ -513,7 +515,7 @@ div.sub-grid {
     margin: 250px auto 0;
 }
 #dialog-design-solved {
-    width: 400px;
+    width: 500px;
     margin: 250px auto 0;
 }
 .dialog .difficulty {
