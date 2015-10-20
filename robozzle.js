@@ -976,6 +976,7 @@ robozzle.displayGame = function (level, program) {
     $('#program-container').show();
     $('#program-toolbar-container').show();
     $('#program-selection').show();
+    $('#program-highlight').show();
 
     robozzle.level = level;
 
@@ -1526,6 +1527,7 @@ robozzle.callSub = function (calls, sub) {
 robozzle.stepReset = function () {
     if (robozzle.robotState != robozzle.robotStates.reset) {
         $(robozzle.robotAnimation).stop(true, false);
+        $('#program-highlight').css('visibility', 'hidden');
         robozzle.displayBoard(robozzle.level);
     }
 };
@@ -1584,6 +1586,13 @@ robozzle.stepExecute = function (calls) {
     var color = $cell.getClass('board-color');
     robozzle.stack[0].cmd++;
     if (cond == 'any' || cond == color) {
+        var highlightOffset = $cmd.offset();
+        highlightOffset.left--;
+        highlightOffset.top--;
+        $(robozzle.robotAnimation).queue(function () {
+            $('#program-highlight').offset(highlightOffset).css('visibility', 'visible');
+            $(this).dequeue();
+        });
         switch (cmd) {
         case 'f': robozzle.moveRobot(); robozzle.stepWait(); break;
         case 'l': robozzle.turnRobot(false); robozzle.stepWait(); break;
@@ -1597,6 +1606,10 @@ robozzle.stepExecute = function (calls) {
         case 'G': $cell.updateClass('board-color', 'G'); robozzle.stepWait(); break;
         case 'B': $cell.updateClass('board-color', 'B'); robozzle.stepWait(); break;
         }
+        $(robozzle.robotAnimation).queue(function () {
+            $('#program-highlight').css('visibility', 'hidden');
+            $(this).dequeue();
+        });
     } else {
         robozzle.stepExecute(calls);
     }

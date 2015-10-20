@@ -330,6 +330,15 @@ div.robot-3 {
     padding: 5px;
     margin: 5px;
 }
+#program-highlight {
+    display: none;
+    visibility: hidden;
+    position: absolute;
+    pointer-events: none;
+    width: 30px;
+    height: 30px;
+    border: 1px yellow solid;
+}
 #program-selection {
     display: none;
     visibility: hidden;
