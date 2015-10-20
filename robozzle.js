@@ -177,7 +177,7 @@ robozzle.topSolversResponse = function (table, solved, names) {
                 $('<td/>').append(
                     $('<a/>')
                         .text(names[i])
-                        .attr('href', 'user.aspx?name=' + names[i])
+                        .attr('href', 'user.aspx?name=' + encodeURIComponent(names[i]))
                         .attr('target', '_blank')
                 )
             )
@@ -229,7 +229,7 @@ robozzle.displayLevel = function (level) {
     if (level.SubmittedBy != null) {
         html.find('a.author')
             .text(level.SubmittedBy)
-            .attr('href', 'user.aspx?name=' + level.SubmittedBy)
+            .attr('href', 'user.aspx?name=' + encodeURIComponent(level.SubmittedBy))
             .attr('target', '_blank');
     } else {
         html.find('span.author').hide();
@@ -1656,7 +1656,7 @@ robozzle.logIn = function (userName, password, callback) {
             $('#menu-register').hide();
             $('#menu-user').show()
                 .find('a')
-                .attr('href', 'user.aspx?name=' + userName)
+                .attr('href', 'user.aspx?name=' + encodeURIComponent(userName))
                 .text(userName);
             $('#menu-signout').show();
             robozzle.displayLevels();
