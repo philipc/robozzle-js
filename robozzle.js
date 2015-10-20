@@ -507,7 +507,7 @@ robozzle.moveSelection = function ($src, x, y) {
     } else if (!robozzle.selectionOffset) {
         robozzle.selectionOffset = $('#program-container').offset();
     }
-    $('#program-selection').offset(robozzle.selectionOffset);
+    $('#program-selection').filter(':visible').offset(robozzle.selectionOffset);
     $('#program-selection').updateClass('condition', robozzle.selectionCondition || robozzle.hoverCondition || 'any');
     $('#program-selection .command').updateClass('command', robozzle.selectionCommand || robozzle.hoverCommand || null);
 };
@@ -1054,7 +1054,7 @@ robozzle.moveDesignSelection = function ($src, x, y) {
     } else if (!robozzle.designSelectionOffset) {
         robozzle.designSelectionOffset = $('#design-toolbar-container').offset();
     }
-    $('#design-selection').offset(robozzle.designSelectionOffset);
+    $('#design-selection').filter(':visible').offset(robozzle.designSelectionOffset);
 
     var color = robozzle.designSelectionColor || robozzle.designHoverColor;
     var item = robozzle.designSelectionItem;
