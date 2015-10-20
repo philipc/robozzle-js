@@ -765,17 +765,7 @@ robozzle.displayProgram = function (level, commands) {
                     }
                     robozzle.hoverSelection($(this).getClass('condition'),
                                             $(this).find('.command').getClass('command'));
-                    if (robozzle.level.Id) {
-                        robozzle.setPuzzleUrl(robozzle.level.Id, function () {
-                            return robozzle.encodeProgram();
-                        });
-                    } else {
-                        robozzle.setDesignUrl(function () {
-                            return robozzle.encodeDesign(robozzle.design);
-                        }, function () {
-                            return robozzle.encodeProgram();
-                        });
-                    }
+                    robozzle.updatePuzzleUrl();
                     e.stopPropagation();
                 });
             var $command = $('<div/>').addClass('command');
@@ -1131,12 +1121,7 @@ robozzle.clickDesignSelection = function ($cell) {
             $cell.find('.item').updateClass('board', null);
         }
     }
-    robozzle.setDesignUrl(function () {
-        return robozzle.encodeDesign(robozzle.readDesign());
-    }, function () {
-        return robozzle.encodeProgram();
-    });
-    // TODO: update design hover
+    robozzle.updateDesignUrl();
 };
 
 robozzle.displayDesignToolbar = function () {
@@ -1962,6 +1947,28 @@ robozzle.setDesignUrl = function (design, program) {
     });
 };
 
+robozzle.updatePuzzleUrl = function () {
+    if (robozzle.level.Id) {
+        robozzle.setPuzzleUrl(robozzle.level.Id, function () {
+            return robozzle.encodeProgram();
+        });
+    } else {
+        robozzle.setDesignUrl(function () {
+            return robozzle.encodeDesign(robozzle.design);
+        }, function () {
+            return robozzle.encodeProgram();
+        });
+    }
+};
+
+robozzle.updateDesignUrl = function () {
+    robozzle.setDesignUrl(function () {
+        return robozzle.encodeDesign(robozzle.readDesign());
+    }, function () {
+        return robozzle.encodeProgram();
+    });
+};
+
 robozzle.setPageTab = function (name) {
     robozzle.stepReset();
     $('.page-menu__item').removeClass('page-menu__item--active');
@@ -2025,6 +2032,14 @@ $(document).ready(function () {
         } else if (robozzle.robotState == robozzle.robotStates.started) {
             robozzle.robotState = robozzle.robotStates.stepping;
         }
+    });
+    for (i = 0; i < 5; i++) {
+        $('#design-f' + (i + 1)).change(function () {
+            robozzle.updateDesignUrl();
+        });
+    }
+    $('#design-red, #design-green, #design-blue').change(function () {
+        robozzle.updateDesignUrl();
     });
     $('#design-solve').click(function () {
         robozzle.design = robozzle.readDesign();
