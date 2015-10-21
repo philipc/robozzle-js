@@ -146,6 +146,38 @@
                     </div>
                 </form>
             </div>
+            <div id="dialog-register" class="dialog">
+                <div class="dialog-title">
+                    <span>Register</span>
+                </div>
+                <div id="dialog-register-error" class="dialog-error">
+                    <span>Server request failed.</span>
+                </div>
+                <form>
+                    <table>
+                        <tr>
+                            <td><label for="name">Username:</label></td>
+                            <td><input type="text" name="name"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="password">Password:</label></td>
+                            <td><input type="password" name="password"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="password2">Password again:</label></td>
+                            <td><input type="password" name="password2"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="email">Email (optional):</label></td>
+                            <td><input type="text" name="email"></td>
+                        </tr>
+                    </table>
+                    <div class="dialog-button">
+                        <button id="dialog-register-submit" type="submit">Register</button>
+                        <button id="dialog-register-cancel">Cancel</button>
+                    </div>
+                </form>
+            </div>
             <div id="dialog-signin" class="dialog">
                 <div class="dialog-title">
                     <span>Sign In</span>

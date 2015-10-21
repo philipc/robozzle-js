@@ -1605,6 +1605,60 @@ robozzle.hashPassword = function (password) {
     return CryptoJS.SHA1(password + salt).toString();
 };
 
+robozzle.setUserName = function (userName, password, solvedLevels, votes) {
+    // Store the response
+    robozzle.userName = userName;
+    robozzle.password = password;
+    robozzle.solvedLevels = {};
+    $.each(solvedLevels, function (index, value) {
+        robozzle.solvedLevels[parseInt(value)] = true;
+    });
+    robozzle.likeVotes = {};
+    robozzle.difficultyVotes = {};
+    $.each(votes, function (index, value) {
+        if (value.VoteKind === '0') {
+            robozzle.likeVotes[value.LevelId] = value.Vote;
+        } else if (value.VoteKind === '1') {
+            robozzle.difficultyVotes[value.LevelId] = value.Vote;
+        }
+    });
+
+    localStorage.setItem('userName', userName);
+    localStorage.setItem('password', password);
+
+    // Update the display
+    $('#menu-signin').hide();
+    $('#menu-register').hide();
+    $('#menu-user').show()
+        .find('a')
+        .attr('href', 'user.aspx?name=' + encodeURIComponent(userName))
+        .text(userName);
+    $('#menu-signout').show();
+    robozzle.displayLevels();
+};
+
+/*
+ * TODO:
+ * <solvedLevels xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:i="http://www.w3.org/2001/XMLSchema-instance"><d4p1:KeyValueOfintstring><d4p1:Key>27</d4p1:Key><d4p1:Value>_F_L_F_R_1|||||</d4p1:Value></d4p1:KeyValueOfintstring></solvedLevels>
+*/
+
+robozzle.register = function (userName, password, email, callback) {
+    var request = {
+        userName: userName,
+        password: password,
+        email: email,
+        solvedLevels: []
+    };
+    robozzle.service('RegisterUser2', request, function (result, response) {
+        if (result === null) {
+            robozzle.setUserName(userName, password, [], []);
+        }
+        callback(result);
+    }, function () {
+        callback('Server request failed.');
+    });
+};
+
 robozzle.logIn = function (userName, password, callback) {
     // Build the request
     var request = {
@@ -1616,35 +1670,7 @@ robozzle.logIn = function (userName, password, callback) {
     var callbacks = $.Callbacks();
     callbacks.add(function (result, response) {
         if (result === 'true') {
-            // Store the response
-            robozzle.userName = userName;
-            robozzle.password = password;
-            robozzle.solvedLevels = {};
-            $.each(response.solvedLevels, function (index, value) {
-                robozzle.solvedLevels[parseInt(value)] = true;
-            });
-            robozzle.likeVotes = {};
-            robozzle.difficultyVotes = {};
-            $.each(response.votes.LevelVoteInfo, function (index, value) {
-                if (value.VoteKind === '0') {
-                    robozzle.likeVotes[value.LevelId] = value.Vote;
-                } else if (value.VoteKind === '1') {
-                    robozzle.difficultyVotes[value.LevelId] = value.Vote;
-                }
-            });
-
-            localStorage.setItem('userName', userName);
-            localStorage.setItem('password', password);
-
-            // Update the display
-            $('#menu-signin').hide();
-            $('#menu-register').hide();
-            $('#menu-user').show()
-                .find('a')
-                .attr('href', 'user.aspx?name=' + encodeURIComponent(userName))
-                .text(userName);
-            $('#menu-signout').show();
-            robozzle.displayLevels();
+            robozzle.setUserName(userName, password, response.solvedLevels, response.votes.LevelVoteInfo);
             callback(true);
         } else {
             callback(false);
@@ -1654,6 +1680,8 @@ robozzle.logIn = function (userName, password, callback) {
     // Send the request
     robozzle.service('LogIn', request, function (result, response) {
         callbacks.fire(result, response).empty();
+    }, function () {
+        callbacks.fire(false, null).empty();
     });
     robozzle.logInCallbacks = callbacks;
 };
@@ -1709,6 +1737,50 @@ robozzle.submitMessage = function (event) {
 
 robozzle.initMessage = function () {
     $('#dialog-message').find('form').on('submit', robozzle.submitMessage);
+};
+
+robozzle.showRegister = function () {
+    var $register = $('#dialog-register');
+    $register.find(':input').prop('disabled', false);
+    $('#dialog-register-error').hide();
+    robozzle.showDialog($register);
+};
+
+robozzle.hideRegister = function () {
+    var $register = $('#dialog-register');
+    robozzle.hideDialog($register);
+    $register.find('input[name="name"]').val('');
+    $register.find('input[name="password"]').val('');
+    $register.find('input[name="password2"]').val('');
+    $register.find('input[name="email"]').val('');
+};
+
+robozzle.submitRegister = function (event) {
+    event.preventDefault();
+    var $register = $('#dialog-register');
+    $register.find(':input').prop('disabled', true);
+    robozzle.register(
+            $register.find('input[name="name"]').val(),
+            robozzle.hashPassword($register.find('input[name="password"]').val()),
+            $register.find('input[name="email"]').val(),
+            function (result) {
+                $register.find(':input').prop('disabled', false);
+                if (result === null) {
+                    robozzle.hideRegister();
+                } else {
+                    $('#dialog-register-error').text(result).show();
+                }
+            });
+};
+
+robozzle.cancelRegister = function (event) {
+    event.preventDefault();
+    robozzle.hideRegister();
+};
+
+robozzle.initRegister = function () {
+    $('#dialog-register').find('form').on('submit', robozzle.submitRegister);
+    $('#dialog-register-cancel').on('click', robozzle.cancelRegister);
 };
 
 robozzle.showSignin = function () {
@@ -2125,10 +2197,12 @@ $(document).ready(function () {
     });
 
     robozzle.initMessage();
+    robozzle.initRegister();
     robozzle.initSignin();
     robozzle.initSolved();
     robozzle.initDesignSolved();
 
+    $('#menu-register').on('click', robozzle.showRegister);
     $('#menu-signin').on('click', robozzle.showSignin);
     $('#menu-signout').on('click', robozzle.logOut);
 
