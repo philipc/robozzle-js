@@ -1758,11 +1758,33 @@ robozzle.hideRegister = function () {
 robozzle.submitRegister = function (event) {
     event.preventDefault();
     var $register = $('#dialog-register');
+
+    var name = $register.find('input[name="name"]').val();
+    if (name.length < 4 || name.length > 14) {
+        $('#dialog-register-error').text('Username must be 4-14 characters long.').show();
+        return;
+    }
+    if (/[^A-Za-z0-9_]/.exec(name)) {
+        $('#dialog-register-error').text('Username characers alllowed: A-Z, 0-9, _.').show();
+        return;
+    }
+
+    var password = $register.find('input[name="password"]').val();
+    if (password.length < 4 || password.length > 20) {
+        $('#dialog-register-error').text('Password must be 4-20 characters long.').show();
+        return;
+    }
+
+    var password2 = $register.find('input[name="password2"]').val();
+    if (password !== password2) {
+        $('#dialog-register-error').text('Passwords do not match.').show();
+        return;
+    }
+
+    var email = $register.find('input[name="email"]').val();
+
     $register.find(':input').prop('disabled', true);
-    robozzle.register(
-            $register.find('input[name="name"]').val(),
-            robozzle.hashPassword($register.find('input[name="password"]').val()),
-            $register.find('input[name="email"]').val(),
+    robozzle.register(name, robozzle.hashPassword(password), email,
             function (result) {
                 $register.find(':input').prop('disabled', false);
                 if (result === null) {
