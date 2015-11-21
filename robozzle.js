@@ -1402,7 +1402,14 @@ robozzle.readDesign = function () {
         level.AllowedCommands += 4;
     }
     for (i = 0; i < 5; i++) {
-        level.SubLengths.push(parseInt($('#design-f' + (i + 1)).val()));
+        var min = i == 0 ? 1 : 0;
+        var val = parseInt($('#design-f' + (i + 1)).val());
+        if (val < min) {
+            val = min;
+        } else if (val > 10) {
+            val = 10;
+        }
+        level.SubLengths.push(val);
     }
     level.Title = $('#design-title').val();
     level.About = $('#design-about').val();;
