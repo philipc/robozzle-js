@@ -5,7 +5,7 @@ var robozzle = {
     // level list info
     levelLoading: false,
     levelReload: false,
-    sortKind: 0, /* Campaign */
+    sortKind: -1, /* Tutorial */
     blockIndex: 0,
     blockSize: 64,
     pageIndex: 0,
@@ -218,24 +218,30 @@ robozzle.displayLevel = function (level) {
     var html = $('#templates .levelitem').clone();
     html.attr('data-level-id', level.Id);
     html.find('div.title').text(level.Title);
-    robozzle.displayDifficulty(level, html);
-    html.find('a.stats')
-        .attr('href', 'puzzle.aspx?id=' + level.Id)
-        .attr('target', '_blank');
-    html.find('a.comments')
-        .text(level.CommentCount + ' comments')
-        .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
-        .attr('target', '_blank');
-    if (level.SubmittedBy != null) {
-        html.find('a.author')
-            .text(level.SubmittedBy)
-            .attr('href', 'user.aspx?name=' + encodeURIComponent(level.SubmittedBy))
-            .attr('target', '_blank');
+    if (robozzle.isTutorialLevel(level.Id)) {
+        html.find('div.difficulty').hide();
+        html.find('div.stats').hide();
+        html.find('div.votes').hide();
     } else {
-        html.find('span.author').hide();
+        robozzle.displayDifficulty(level, html);
+        html.find('a.stats')
+            .attr('href', 'puzzle.aspx?id=' + level.Id)
+            .attr('target', '_blank');
+        html.find('a.comments')
+            .text(level.CommentCount + ' comments')
+            .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
+            .attr('target', '_blank');
+        if (level.SubmittedBy != null) {
+            html.find('a.author')
+                .text(level.SubmittedBy)
+                .attr('href', 'user.aspx?name=' + encodeURIComponent(level.SubmittedBy))
+                .attr('target', '_blank');
+        } else {
+            html.find('span.author').hide();
+        }
+        html.find('span.liked').text('+' + level.Liked);
+        html.find('span.disliked').text('-' + level.Disliked);
     }
-    html.find('span.liked').text('+' + level.Liked);
-    html.find('span.disliked').text('-' + level.Disliked);
     if (robozzle.solvedLevels[level.Id]) {
         html.addClass('solved');
     }
@@ -275,6 +281,34 @@ robozzle.clampPageIndex = function () {
     robozzle.pageIndex = robozzle.pageIndex - (robozzle.pageIndex % robozzle.pageSize);
 };
 
+robozzle.getLevelsPaged = function (success) {
+    if (robozzle.sortKind < 0) {
+        var response = {
+            totalCount: robozzle.tutorialLevels.length,
+            GetLevelsPagedResult: {
+                LevelInfo2: robozzle.tutorialLevels
+            }
+        }
+        success(null, response);
+        return;
+    }
+
+    // Build the request
+    robozzle.blockIndex = robozzle.pageIndex - (robozzle.pageIndex % robozzle.blockSize);
+    var request = {
+        blockIndex: robozzle.blockIndex / robozzle.blockSize,
+        blockSize: robozzle.blockSize,
+        sortKind: robozzle.sortKind,
+        unsolvedByUser: null
+    };
+    if (robozzle.userName && robozzle.hideSolved) {
+        request.unsolvedByUser = robozzle.userName;
+    }
+
+    // Send the request
+    robozzle.service('GetLevelsPaged', request, success);
+}
+
 robozzle.getLevels = function (force) {
     robozzle.setPageTab('levels');
 
@@ -298,20 +332,7 @@ robozzle.getLevels = function (force) {
     $('#levellist').empty();
     var spinner = new Spinner().spin($('#levellist-spinner')[0]);
 
-    // Build the request
-    robozzle.blockIndex = robozzle.pageIndex - (robozzle.pageIndex % robozzle.blockSize);
-    var request = {
-        blockIndex: robozzle.blockIndex / robozzle.blockSize,
-        blockSize: robozzle.blockSize,
-        sortKind: robozzle.sortKind,
-        unsolvedByUser: null
-    };
-    if (robozzle.userName && robozzle.hideSolved) {
-        request.unsolvedByUser = robozzle.userName;
-    }
-
-    // Send the request
-    robozzle.service('GetLevelsPaged', request, function (result, response) {
+    robozzle.getLevelsPaged(function (result, response) {
         // Store the response
         robozzle.levelCount = parseInt(response.totalCount, 10);
         robozzle.levels = response.GetLevelsPagedResult.LevelInfo2;
@@ -374,6 +395,157 @@ robozzle.animateRobot = function (props) {
         easing: "linear",
         progress: robozzle.displayRobot
     });
+};
+
+robozzle.tutorialLevels = [
+    {
+        Id: "-1",
+        NextId: "-2",
+        Colors: [
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+        ],
+        Items: [
+            "################",
+            "################",
+            "################",
+            "#####.....######",
+            "####.......#####",
+            "####.*...*.#####",
+            "####.......#####",
+            "#####.....######",
+            "################",
+            "################",
+            "################",
+            "################",
+        ],
+        RobotRow: 5, RobotCol: 7, RobotDir: 0,
+        AllowedCommands: 0,
+        DisallowSubs: true,
+        DisallowColors: true,
+        Title: "Tutorial: Part 1", About: "",
+        SubLengths: [ 10, 0, 0, 0, 0 ]
+    }, {
+        Id: "-2",
+        NextId: "-3",
+        Colors: [
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+        ],
+        Items: [
+            "################",
+            "################",
+            "################",
+            "#####.....######",
+            "####.......#####",
+            "####.*...*.#####",
+            "####.......#####",
+            "#####.....######",
+            "################",
+            "################",
+            "################",
+            "################",
+        ],
+        RobotRow: 5, RobotCol: 7, RobotDir: 0,
+        AllowedCommands: 0,
+        DisallowColors: true,
+        Title: "Tutorial: Part 2", About: "",
+        SubLengths: [ 5, 2, 0, 0, 0 ]
+    }, {
+        Id: "-3",
+        NextId: "-4",
+        Colors: [
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+            "BBBBBBBBBBBBBBBB",
+        ],
+        Items: [
+            "################",
+            "################",
+            "################",
+            "################",
+            "###..........###",
+            "###.********.###",
+            "###..........###",
+            "################",
+            "################",
+            "################",
+            "################",
+            "################"
+        ],
+        RobotRow: 5, RobotCol: 3, RobotDir: 0,
+        AllowedCommands: 0,
+        DisallowColors: true,
+        Title: "Tutorial: Part 3", About: "",
+        SubLengths: [ 2, 0, 0, 0, 0 ]
+    }, {
+        Id: "-4",
+        Colors: [
+            "RRRRRRRRRRRRRRRR",
+            "RRRRRRRRRRRRRRRR",
+            "RRRRRRRRRRRBRRRR",
+            "RRRRRRRRRRRRRRRR",
+            "RRRRRRRRRRRRRRRR",
+            "RRRRRRRRRRRRRRRR",
+            "RRRRRRRRRRRRRRRR",
+            "RRRRRRRRRRRRRRRR",
+            "RRRRRRRRRRRRRRRR",
+            "RRRRRRRRRRRRRRRR",
+            "RRRRRRRRRRRRRRRR",
+            "RRRRRRRRRRRRRRRR",
+        ],
+        Items: [
+            "################",
+            "################",
+            "####.*******####",
+            "###########*####",
+            "###########*####",
+            "###########*####",
+            "###########*####",
+            "###########*####",
+            "###########*####",
+            "################",
+            "################",
+            "################"
+        ],
+        RobotRow: 2, RobotCol: 4, RobotDir: 0,
+        AllowedCommands: 0,
+        Title: "Tutorial: Part 4", About: "",
+        SubLengths: [ 3, 0, 0, 0, 0 ]
+    }
+];
+
+robozzle.isTutorialLevel = function (id) {
+    return parseInt(id) < 0;
 };
 
 robozzle.displayBoard = function (level) {
@@ -927,13 +1099,15 @@ robozzle.displayProgramToolbar = function (level) {
                     makeCommand('l', 'Turn left (q)'),
                     makeCommand('r', 'Turn right (e)')));
 
-    var $group = $('<div/>').addClass('icon-group');
-    for (var i = 0; i < 5; i++) {
-        if (parseInt(level.SubLengths[i])) {
-            $group.append(makeCommand(i + 1, 'Call F' + (i + 1) + ' (' + (i + 1) + ')'));
+    if (!level.DisallowSubs) {
+        var $group = $('<div/>').addClass('icon-group');
+        for (var i = 0; i < 5; i++) {
+            if (parseInt(level.SubLengths[i])) {
+                $group.append(makeCommand(i + 1, 'Call F' + (i + 1) + ' (' + (i + 1) + ')'));
+            }
         }
+        $toolbar.append($group);
     }
-    $toolbar.append($group);
 
     var allowedCommands = parseInt(level.AllowedCommands);
     if (allowedCommands) {
@@ -950,15 +1124,22 @@ robozzle.displayProgramToolbar = function (level) {
         $toolbar.append($group);
     }
 
-    $toolbar.append(
-            $('<div/>').addClass('icon-group')
-            .append(makeCondition('any', 'No condition (n)'),
-                    makeCondition('R', 'Red condition (r)'),
-                    makeCondition('G', 'Green condition (g)'),
-                    makeCondition('B', 'Blue condition (b)')));
+    if (!level.DisallowColors) {
+        $toolbar.append(
+                $('<div/>').addClass('icon-group')
+                .append(makeCondition('any', 'No condition (n)'),
+                        makeCondition('R', 'Red condition (r)'),
+                        makeCondition('G', 'Green condition (g)'),
+                        makeCondition('B', 'Blue condition (b)')));
+    }
 }
 
 robozzle.displayGame = function (level, program) {
+    if (!level) {
+        robozzle.navigateIndex();
+        return;
+    }
+
     robozzle.setPageTab(null);
     $('#content-game').show();
     $('#content-game').children().hide();
@@ -980,15 +1161,20 @@ robozzle.displayGame = function (level, program) {
         } else {
             status.find('div.about').hide();
         }
-        status.find('a.stats')
-            .attr('href', 'puzzle.aspx?id=' + level.Id)
-            .attr('target', '_blank')
-            .show();
-        status.find('a.comments')
-            .text(level.CommentCount + ' comments')
-            .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
-            .attr('target', '_blank')
-            .show();
+        if (robozzle.isTutorialLevel(level.Id)) {
+            status.find('a.stats').hide();
+            status.find('a.comments').hide();
+        } else {
+            status.find('a.stats')
+                .attr('href', 'puzzle.aspx?id=' + level.Id)
+                .attr('target', '_blank')
+                .show();
+            status.find('a.comments')
+                .text(level.CommentCount + ' comments')
+                .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
+                .attr('target', '_blank')
+                .show();
+        }
     } else {
         $('#program-edit').show();
     }
@@ -1000,11 +1186,15 @@ robozzle.displayGame = function (level, program) {
 
 robozzle.setGame = function (id, program) {
     robozzle.design = null;
-    if (robozzle.levels !== null) {
+    var levels = robozzle.levels;
+    if (robozzle.isTutorialLevel(id)) {
+        levels = robozzle.tutorialLevels;
+    }
+    if (levels !== null) {
         var level;
-        for (var i = 0; i < robozzle.levels.length; i++) {
-            level = robozzle.levels[i];
-            if (robozzle.levels[i].Id === id) {
+        for (var i = 0; i < levels.length; i++) {
+            level = levels[i];
+            if (level.Id === id) {
                 robozzle.displayGame(level, program);
                 return;
             }
@@ -1532,7 +1722,11 @@ robozzle.stepWait = function () {
         $(robozzle.robotAnimation).queue(function () {
             if (robozzle.level.Id) {
                 robozzle.submitSolution();
-                robozzle.showSolved();
+                if (robozzle.isTutorialLevel(robozzle.level.Id)) {
+                    robozzle.showTutorialSolved();
+                } else {
+                    robozzle.showSolved();
+                }
             } else {
                 robozzle.showDesignSolved();
             }
@@ -1977,6 +2171,38 @@ robozzle.initDesignSolved = function () {
     $('#dialog-design-solved-edit').on('click', robozzle.cancelDesignSolved);
 };
 
+robozzle.showTutorialSolved = function () {
+    var $dialog = $('#dialog-tutorial-solved');
+    var title, message;
+    if (robozzle.level.NextId) {
+        title = "Congratulations!";
+        message = "You got it! Let's move on to the next part of the tutorial.";
+    } else {
+        title = "Tutorial Completed";
+        message = "But, that's just the beginning! The real game is tackling the puzzles submitted by other players.";
+    }
+    $dialog.find('.dialog-title').text(title);
+    $dialog.find('.dialog-message').text(message);
+    robozzle.showDialog($dialog);
+};
+
+robozzle.submitTutorialSolved = function (event) {
+    event.preventDefault();
+    var $dialog = $('#dialog-tutorial-solved');
+    robozzle.hideDialog($dialog);
+    if (robozzle.level.NextId) {
+        robozzle.navigatePuzzle(robozzle.level.NextId);
+    } else {
+        robozzle.setSortKind(0);
+        robozzle.getLevels(true);
+        robozzle.navigateIndex();
+    }
+};
+
+robozzle.initTutorialSolved = function () {
+    $('#dialog-tutorial-solved').find('form').on('submit', robozzle.submitTutorialSolved);
+};
+
 robozzle.parseUrl = function () {
     var urlParams = {};
     var query = window.location.search.substring(1);
@@ -2230,6 +2456,7 @@ $(document).ready(function () {
     robozzle.initSignin();
     robozzle.initSolved();
     robozzle.initDesignSolved();
+    robozzle.initTutorialSolved();
 
     $('#menu-register').on('click', robozzle.showRegister);
     $('#menu-signin').on('click', robozzle.showSignin);
@@ -2256,7 +2483,7 @@ $(document).ready(function () {
     window.onpopstate = robozzle.parseUrl;
 
     robozzle.setPageTab('levels');
-    robozzle.setSortKind(0);
+    robozzle.setSortKind(-1);
 
     var userName = localStorage.getItem('userName');
     var password = localStorage.getItem('password');
