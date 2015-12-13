@@ -2005,25 +2005,36 @@ robozzle.logOut = function () {
     robozzle.displayLevels();
 };
 
-robozzle.showDialog = function ($dialog) {
+robozzle.showDialog = function ($dialog, cancel) {
     $('#dialog-modal').show();
     $('#dialogs').show();
     $dialog.show();
     $dialog.find(":input:first").focus();
     // TODO: prevent focus leaving the dialog
+
+    robozzle.cancelDialogCallback = function () {
+        cancel.click();
+    };
 };
 
 robozzle.hideDialog = function ($dialog) {
     $dialog.hide();
     $('#dialogs').hide();
     $('#dialog-modal').hide();
+    robozzle.cancelDialogCallback = null;
+};
+
+robozzle.cancelDialog = function () {
+    if (robozzle.cancelDialogCallback) {
+        robozzle.cancelDialogCallback();
+    }
 };
 
 robozzle.showMessage = function (title, message) {
     var $dialog = $('#dialog-message');
     $dialog.find('.dialog-title').text(title);
     $dialog.find('.dialog-message').text(message);
-    robozzle.showDialog($dialog);
+    robozzle.showDialog($dialog, $('dialog-message-ok'));
 };
 
 robozzle.submitMessage = function (event) {
@@ -2039,7 +2050,7 @@ robozzle.showRegister = function () {
     var $register = $('#dialog-register');
     $register.find(':input').prop('disabled', false);
     $('#dialog-register-error').hide();
-    robozzle.showDialog($register);
+    robozzle.showDialog($register, $('#dialog-register-cancel'));
 };
 
 robozzle.hideRegister = function () {
@@ -2105,7 +2116,7 @@ robozzle.showSignin = function () {
     var $signin = $('#dialog-signin');
     $signin.find(':input').prop('disabled', false);
     $('#dialog-signin-error').hide();
-    robozzle.showDialog($signin);
+    robozzle.showDialog($signin, $('#dialog-signin-cancel'));
 };
 
 robozzle.hideSignin = function () {
@@ -2192,7 +2203,7 @@ robozzle.showSolved = function () {
     $solved.find('a.comments')
         .attr('href', 'forums/thread.aspx?puzzle=' + robozzle.level.Id)
         .attr('target', '_blank');
-    robozzle.showDialog($solved);
+    robozzle.showDialog($solved, $('#dialog-design-solved-edit'));
 };
 
 robozzle.submitSolved = function (event) {
@@ -2236,7 +2247,7 @@ robozzle.showDesignSolved = function () {
     var $dialog = $('#dialog-design-solved');
     $dialog.find(':input').prop('disabled', false);
     $('#dialog-design-solved-error').hide();
-    robozzle.showDialog($dialog);
+    robozzle.showDialog($dialog, $('#dialog-design-solved-edit'));
 };
 
 robozzle.submitDesignSolved = function (event) {
@@ -2278,7 +2289,7 @@ robozzle.showTutorialSolved = function () {
     }
     $dialog.find('.dialog-title').text(title);
     $dialog.find('.dialog-message').text(message);
-    robozzle.showDialog($dialog);
+    robozzle.showDialog($dialog, $('#dialog-tutorial-solved-continue'));
 };
 
 robozzle.submitTutorialSolved = function (event) {
@@ -2550,6 +2561,11 @@ $(document).ready(function () {
     });
     $(document).on('keydown', null, 'x', function () {
         robozzle.setDesignSelection(null, 'erase', null);
+    });
+    $(document).keydown(function(e) {
+        if (e.keyCode == 27) {
+            robozzle.cancelDialog();
+        }
     });
 
     robozzle.initMessage();
