@@ -1189,7 +1189,7 @@ robozzle.displayTutorial = function (level) {
     $('#tutorial-highlight-sub-f1').hide();
     $('#tutorial-highlight-sub-f2').hide();
 
-    if (!robozzle.isTutorialLevel(level.Id)) {
+    if (!level || !robozzle.isTutorialLevel(level.Id)) {
         $('#tutorial').hide();
         return;
     }
@@ -1730,6 +1730,7 @@ robozzle.displayDesign = function () {
     $('#design-green').prop('checked', robozzle.design.AllowedCommands & 2);
     $('#design-blue').prop('checked', robozzle.design.AllowedCommands & 4);
     robozzle.displayDesignToolbar();
+    robozzle.displayTutorial(null);
 };
 
 robozzle.moveRobot = function () {
