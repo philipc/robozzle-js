@@ -43,6 +43,9 @@ var robozzle = {
     },
     robotState: 0,
 
+    // tutorial info
+    tutorialStage: 0,
+
     // design info
     designSelection: false,
     designSelectionColor: null,
@@ -434,7 +437,13 @@ robozzle.tutorialLevels = [
         DisallowSubs: true,
         DisallowColors: true,
         Title: "Tutorial: Part 1", About: "",
-        SubLengths: [ 10, 0, 0, 0, 0 ]
+        SubLengths: [ 10, 0, 0, 0, 0 ],
+        Tutorial: [
+            '<b>Welcome to Robozzle!</b><br><br>Your task is to program a robot to pick up all stars in a level.',
+            'In this puzzle, you get to use three commands: go straight, turn left, turn right (see bottom right).',
+            'You will program the robot by placing the commands into the program slots (see bottom right).',
+            'Now, go ahead and program the robot! When you think that your program will work, press the "Go!" button.'
+        ]
     }, {
         Id: "-2",
         NextId: "-3",
@@ -470,7 +479,12 @@ robozzle.tutorialLevels = [
         AllowedCommands: 0,
         DisallowColors: true,
         Title: "Tutorial: Part 2", About: "",
-        SubLengths: [ 5, 2, 0, 0, 0 ]
+        SubLengths: [ 5, 2, 0, 0, 0 ],
+        Tutorial: [
+            'In this puzzle, you have command slots available for a helper subroutine F2 (see bottom right).',
+            'When you use the F2 command, the robot will execute the commands from the F2 slots.',
+            'In this puzzle, you\'ll want to put two "go straight" commands into F2. Then, any time you use the F2 command, the robot will go forward twice. See if you can solve it.'
+        ]
     }, {
         Id: "-3",
         NextId: "-4",
@@ -506,7 +520,10 @@ robozzle.tutorialLevels = [
         AllowedCommands: 0,
         DisallowColors: true,
         Title: "Tutorial: Part 3", About: "",
-        SubLengths: [ 2, 0, 0, 0, 0 ]
+        SubLengths: [ 2, 0, 0, 0, 0 ],
+        Tutorial: [
+            'See if you can figure out how to solve this puzzle. You need to use the F1 command.'
+        ]
     }, {
         Id: "-4",
         Colors: [
@@ -540,7 +557,12 @@ robozzle.tutorialLevels = [
         RobotRow: 2, RobotCol: 4, RobotDir: 0,
         AllowedCommands: 0,
         Title: "Tutorial: Part 4", About: "",
-        SubLengths: [ 3, 0, 0, 0, 0 ]
+        SubLengths: [ 3, 0, 0, 0, 0 ],
+        Tutorial: [
+            'Let\'s make things even more interesting. You can mark a command with a particular color, and then the command will be skipped if the robot stands on a tile with a different color.',
+            'For example, a blue right turn command will cause the robot to turn right if it is on a blue tile, but it will be skipped if the robot is on a green or a red tile.',
+            'In this puzzle, you need to combine a blue right turn with the trick you saw in the previous puzzle. Go for it!'
+        ]
     }
 ];
 
@@ -1132,7 +1154,39 @@ robozzle.displayProgramToolbar = function (level) {
                         makeCondition('G', 'Green condition (g)'),
                         makeCondition('B', 'Blue condition (b)')));
     }
-}
+};
+
+robozzle.tutorialBack = function () {
+    robozzle.tutorialStage--;
+    robozzle.displayTutorial(robozzle.level);
+};
+
+robozzle.tutorialContinue = function () {
+    robozzle.tutorialStage++;
+    robozzle.displayTutorial(robozzle.level);
+};
+
+robozzle.displayTutorial = function (level) {
+    if (!robozzle.isTutorialLevel(level.Id)) {
+        $('#tutorial').hide();
+        return;
+    }
+
+    $('#tutorial').show();
+    $('#tutorial-message').html(level.Tutorial[robozzle.tutorialStage]);
+    if (robozzle.tutorialStage <= 0) {
+        $('#tutorial-back').hide();
+    } else {
+        $('#tutorial-back').show();
+    }
+    if (robozzle.tutorialStage === level.Tutorial.length - 1) {
+        $('#tutorial-continue').hide();
+        $('#tutorial-solve').prop('disabled', true).show();
+    } else {
+        $('#tutorial-continue').show();
+        $('#tutorial-solve').hide();
+    }
+};
 
 robozzle.displayGame = function (level, program) {
     if (!level) {
@@ -1144,16 +1198,19 @@ robozzle.displayGame = function (level, program) {
     $('#content-game').show();
     $('#content-game').children().hide();
     $('#board-container').show();
+    $('#statusbar').show();
     $('#program-container').show();
     $('#program-toolbar-container').show();
     $('#program-selection').show();
     $('#program-highlight').show();
+    $('#program-edit').hide();
 
     robozzle.level = level;
+    robozzle.tutorialStage = 0;
 
-    if (robozzle.level.Id) {
-        $('#program-edit').hide();
-
+    if (robozzle.isTutorialLevel(level.Id)) {
+        $('#statusbar').hide();
+    } else if (robozzle.level.Id) {
         var status = $('#statusbar');
         status.find('span.title').text(level.Title);
         if (!jQuery.isEmptyObject(level.About) && level.About !== null) {
@@ -1161,24 +1218,20 @@ robozzle.displayGame = function (level, program) {
         } else {
             status.find('div.about').hide();
         }
-        if (robozzle.isTutorialLevel(level.Id)) {
-            status.find('a.stats').hide();
-            status.find('a.comments').hide();
-        } else {
-            status.find('a.stats')
-                .attr('href', 'puzzle.aspx?id=' + level.Id)
-                .attr('target', '_blank')
-                .show();
-            status.find('a.comments')
-                .text(level.CommentCount + ' comments')
-                .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
-                .attr('target', '_blank')
-                .show();
-        }
+        status.find('a.stats')
+            .attr('href', 'puzzle.aspx?id=' + level.Id)
+            .attr('target', '_blank')
+            .show();
+        status.find('a.comments')
+            .text(level.CommentCount + ' comments')
+            .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
+            .attr('target', '_blank')
+            .show();
     } else {
         $('#program-edit').show();
     }
 
+    robozzle.displayTutorial(level);
     robozzle.displayBoard(level);
     robozzle.displayProgram(level, program);
     robozzle.displayProgramToolbar(level);
@@ -2347,6 +2400,12 @@ $(document).ready(function () {
         } else {
             robozzle.navigateDesign();
         }
+    });
+    $('#tutorial-back').click(function () {
+        robozzle.tutorialBack();
+    });
+    $('#tutorial-continue').click(function () {
+        robozzle.tutorialContinue();
     });
     $('#program-go').click(function () {
         if (robozzle.robotState == robozzle.robotStates.reset
