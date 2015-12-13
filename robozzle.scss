@@ -76,6 +76,7 @@ body {
     display: inline-block;
     margin: 3px 0px 3px 3px;
     padding: 2px 5px;
+    border-radius: 3px;
     background-color: #606060;
     color: white;
     cursor: pointer;
@@ -89,6 +90,7 @@ body {
 #levellist-container {
     padding: 10px 0 40px 0;
     min-height: 480px;
+    border-radius: 0px 0px 4px 4px;
     background-color: #808080;
 }
 #levellist {
@@ -101,6 +103,7 @@ li.levelitem {
     width: 500px;
     height: 52px;
     margin: 5px auto;
+    border-radius: 4px;
     border-color: black;
     border-style: solid;
     border-width: 1px;
@@ -183,6 +186,7 @@ li.levelitem div.votes {
     right: 0px;
     width: 180px;
     margin: 50px 10px 0px;
+    border-radius: 4px;
     padding-bottom: 10px;
     background-color: #808080;
     color: white;
@@ -225,6 +229,8 @@ li.levelitem div.votes {
 #statusbar {
     width: 620px;
     padding: 3px 10px 10px;
+    margin-bottom: 5px;
+    border-radius: 4px;
     background-color: #707070;
     color: white;
 }
@@ -263,6 +269,7 @@ li.levelitem div.votes {
     width: 400px;
     height: 80px;
     padding: 10px;
+    border-radius: 4px;
     background-color: #707070;
     color: white;
 }
@@ -334,6 +341,7 @@ div.robot-3 {
     padding: 5px;
     margin: 5px;
     width: 200px;
+    border-radius: 4px;
     background-color: #707070;
     color: white;
 }
@@ -366,6 +374,7 @@ div.robot-3 {
     background-color: #707070;
     padding: 5px;
     margin: 5px;
+    border-radius: 4px;
 }
 #program-highlight {
     display: none;
@@ -390,8 +399,9 @@ div.robot-3 {
 }
 #design-toolbar {
     background-color: #707070;
+    padding: 5px;
     margin: 5px;
-    padding: 5px 0px 5px;
+    border-radius: 4px;
 }
 #design-toolbar .board {
     margin: 5px;
@@ -403,7 +413,8 @@ div.robot-3 {
 #design-panel {
     padding: 5px;
     margin: 5px;
-    width: 200px;
+    width: 190px;
+    border-radius: 4px;
     background-color: #707070;
     color: white;
 }
