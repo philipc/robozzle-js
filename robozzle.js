@@ -1044,10 +1044,13 @@ robozzle.encodeSolution = function () {
 };
 
 robozzle.submitSolution = function () {
-    if (!robozzle.level || !robozzle.userName || !robozzle.password)
+    if (!robozzle.level || !robozzle.level.Id)
         return;
 
     robozzle.solvedLevels[robozzle.level.Id] = true;
+
+    if (!robozzle.userName || !robozzle.password)
+        return;
 
     var request = {
         levelId: robozzle.level.Id,
