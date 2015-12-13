@@ -710,6 +710,9 @@ robozzle.setSelection = function (condition, command) {
     if (!$('#program-toolbar').is(':visible')) {
         return;
     }
+    if ($('#dialog-modal').is(':visible')) {
+        return;
+    }
     if (!condition && !command) {
         return;
     }
@@ -1353,6 +1356,9 @@ robozzle.moveDesignSelection = function ($src, x, y) {
 
 robozzle.setDesignSelection = function (color, item, robot) {
     if (!$('#design-toolbar').is(':visible')) {
+        return;
+    }
+    if ($('#dialog-modal').is(':visible')) {
         return;
     }
     if (color === null && item === null && robot === null) {
