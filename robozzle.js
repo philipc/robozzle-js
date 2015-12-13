@@ -1182,9 +1182,11 @@ robozzle.displayTutorial = function (level) {
     if (robozzle.tutorialStage === level.Tutorial.length - 1) {
         $('#tutorial-continue').hide();
         $('#tutorial-solve').prop('disabled', true).show();
+        $('#tutorial-modal').hide();
     } else {
         $('#tutorial-continue').show();
         $('#tutorial-solve').hide();
+        $('#tutorial-modal').show();
     }
 };
 
