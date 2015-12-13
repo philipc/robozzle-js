@@ -271,6 +271,19 @@ li.levelitem div.votes {
     bottom: 10px;
     right: 10px;
 }
+.tutorial-highlight {
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: -5px;
+    border: 5px solid yellow;
+}
+#tutorial-highlight-sub-f2 {
+    width: 60px;
+};
 #board {
     position: relative;
 }
@@ -426,9 +439,11 @@ div.robot-3 {
     border: 2px yellow solid;
 }
 .icon-group {
+    position: relative;
     padding: 5px;
 }
 .icon {
+    position: relative;
     display: block;
     outline: none;
     width: 32px;
@@ -454,6 +469,7 @@ div.sub-label {
     font-size: 14px;
 }
 div.sub-grid {
+    position: relative;
     white-space: nowrap;
 }
 .condition, .command {
