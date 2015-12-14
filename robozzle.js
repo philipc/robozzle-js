@@ -180,7 +180,7 @@ robozzle.topSolversResponse = function (table, solved, names) {
                 $('<td/>').append(
                     $('<a/>')
                         .text(names[i])
-                        .attr('href', 'user.aspx?name=' + encodeURIComponent(names[i]))
+                        .attr('href', '/user.aspx?name=' + encodeURIComponent(names[i]))
                         .attr('target', '_blank')
                 )
             )
@@ -228,16 +228,16 @@ robozzle.displayLevel = function (level) {
     } else {
         robozzle.displayDifficulty(level, html);
         html.find('a.stats')
-            .attr('href', 'puzzle.aspx?id=' + level.Id)
+            .attr('href', '/puzzle.aspx?id=' + level.Id)
             .attr('target', '_blank');
         html.find('a.comments')
             .text(level.CommentCount + ' comments')
-            .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
+            .attr('href', '/forums/thread.aspx?puzzle=' + level.Id)
             .attr('target', '_blank');
         if (level.SubmittedBy != null) {
             html.find('a.author')
                 .text(level.SubmittedBy)
-                .attr('href', 'user.aspx?name=' + encodeURIComponent(level.SubmittedBy))
+                .attr('href', '/user.aspx?name=' + encodeURIComponent(level.SubmittedBy))
                 .attr('target', '_blank');
         } else {
             html.find('span.author').hide();
@@ -1256,12 +1256,12 @@ robozzle.displayGame = function (level, program) {
             status.find('div.about').hide();
         }
         status.find('a.stats')
-            .attr('href', 'puzzle.aspx?id=' + level.Id)
+            .attr('href', '/puzzle.aspx?id=' + level.Id)
             .attr('target', '_blank')
             .show();
         status.find('a.comments')
             .text(level.CommentCount + ' comments')
-            .attr('href', 'forums/thread.aspx?puzzle=' + level.Id)
+            .attr('href', '/forums/thread.aspx?puzzle=' + level.Id)
             .attr('target', '_blank')
             .show();
     } else {
@@ -1926,7 +1926,7 @@ robozzle.setUserName = function (userName, password, solvedLevels, votes) {
     $('#menu-register').hide();
     $('#menu-user').show()
         .find('a')
-        .attr('href', 'user.aspx?name=' + encodeURIComponent(userName))
+        .attr('href', '/user.aspx?name=' + encodeURIComponent(userName))
         .text(userName);
     $('#menu-signout').show();
     robozzle.displayLevels();
@@ -2215,10 +2215,10 @@ robozzle.showSolved = function () {
         $('#dialog-solved-form').hide();
     }
     $solved.find('a.stats')
-        .attr('href', 'puzzle.aspx?id=' + robozzle.level.Id)
+        .attr('href', '/puzzle.aspx?id=' + robozzle.level.Id)
         .attr('target', '_blank');
     $solved.find('a.comments')
-        .attr('href', 'forums/thread.aspx?puzzle=' + robozzle.level.Id)
+        .attr('href', '/forums/thread.aspx?puzzle=' + robozzle.level.Id)
         .attr('target', '_blank');
     robozzle.showDialog($solved, $('#dialog-design-solved-edit'));
 };
