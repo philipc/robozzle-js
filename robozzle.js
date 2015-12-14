@@ -2163,6 +2163,26 @@ robozzle.displaySolvedVote = function () {
     $('#dialog-solved-difficulty-label').text(text);
 };
 
+robozzle.displaySolvedLiked = function () {
+    var $solved = $('#dialog-solved');
+    var liked = robozzle.level.Liked;
+    var disliked = robozzle.level.Disliked;
+    vote = robozzle.likeVotes[robozzle.level.Id];
+    if (vote == '1') {
+        liked--;
+    } else if (vote == '-1') {
+        disliked++;
+    }
+    if ($('#dialog-solved-like').prop('checked')) {
+        liked++;
+    }
+    if ($('#dialog-solved-dislike').prop('checked')) {
+        disliked++;
+    }
+    $solved.find('span.liked').text('+' + liked);
+    $solved.find('span.disliked').text('-' + disliked);
+};
+
 robozzle.showSolved = function () {
     var $solved = $('#dialog-solved');
     if (robozzle.userName) {
@@ -2186,9 +2206,7 @@ robozzle.showSolved = function () {
         }
 
         robozzle.displaySolvedVote();
-
-        $solved.find('span.liked').text('+' + robozzle.level.Liked);
-        $solved.find('span.disliked').text('-' + robozzle.level.Disliked);
+        robozzle.displaySolvedLiked();
 
         $('#dialog-solved-message').hide();
         $('#dialog-solved-form').show();
@@ -2234,11 +2252,13 @@ robozzle.initSolved = function () {
         if ($(this).prop('checked')) {
             $('#dialog-solved-dislike').prop('checked', false);
         }
+        robozzle.displaySolvedLiked();
     });
     $('#dialog-solved-dislike').change(function () {
         if ($(this).prop('checked')) {
             $('#dialog-solved-like').prop('checked', false);
         }
+        robozzle.displaySolvedLiked();
     });
 };
 
