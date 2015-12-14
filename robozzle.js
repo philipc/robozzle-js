@@ -1187,6 +1187,7 @@ robozzle.displayTutorial = function (level) {
     $('#tutorial-highlight-sub-f2').hide();
 
     if (!level || !robozzle.isTutorialLevel(level.Id)) {
+        $('#tutorial-modal').hide();
         $('#tutorial').hide();
         return;
     }
