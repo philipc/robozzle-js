@@ -593,9 +593,6 @@ robozzle.displayBoard = function (level) {
                     stars++;
                 }
             }
-            $cell.click(function (e) {
-                e.stopPropagation();
-            });
             $cell.on('mousedown', function (e) {
                 if (robozzle.designSelection) {
                     robozzle.clickDesignSelection($(this));
@@ -2504,6 +2501,10 @@ $(document).ready(function () {
     $('#board-container, #design-toolbar').on('mousemove', function (e) {
         robozzle.hoverDesignSelection(null);
         robozzle.moveDesignSelection(null, e.pageX - 15, e.pageY - 15);
+    });
+    $('#board').click(function (e) {
+        robozzle.hideSelection();
+        e.stopPropagation();
     });
     $(document).click(function () {
         robozzle.hideSelection();
