@@ -3,16 +3,23 @@ var robozzle = {
     urlTimeout: null,
 
     // level list info
-    levelLoading: false,
-    levelReload: false,
-    sortKind: -1, /* Tutorial */
-    blockIndex: 0,
-    blockSize: 64,
-    pageIndex: 0,
-    pageSize: 8,
-    levels: null,
-    levelCount: 1,
-    hideSolved: false,
+    levelLoading: null,         // Handle of ajax request
+    levelReload: false,         // A new request is needed
+
+    sortKind: -1,               // Currently selected level tab - Tutorial
+    hideSolved: false,          // Currently hide solved option
+
+    blockSortKind: -1,          // Sort kind for last request
+    blockHideSolved: false,     // Hide solved option for last request
+    blockUserName: false,       // Username for last request
+
+    blockIndex: 0,              // Index of first entry of levels
+    blockSize: 64,              // Number of levels to download at a time
+    pageIndex: 0,               // Index of first displayed level
+    pageSize: 8,                // Number of levels to display at a time
+
+    levels: null,               // Downloaded levels
+    levelCount: 1,              // Server reported number of levels
 
     // user info
     userName: null,
@@ -155,7 +162,7 @@ robozzle.encodeSOAP = function (SOAPObject, method, data) {
 };
 
 robozzle.service = function (method, data, success, error) {
-    $.soap({
+    return $.soap({
         url: '/RobozzleService.svc',
         appendMethodToURL: false,
         namespaceURL: 'http://tempuri.org/',
@@ -284,7 +291,7 @@ robozzle.clampPageIndex = function () {
     robozzle.pageIndex = robozzle.pageIndex - (robozzle.pageIndex % robozzle.pageSize);
 };
 
-robozzle.getLevelsPaged = function (success) {
+robozzle.getLevelsPaged = function (success, error) {
     if (robozzle.sortKind < 0) {
         var response = {
             totalCount: robozzle.tutorialLevels.length,
@@ -296,8 +303,13 @@ robozzle.getLevelsPaged = function (success) {
         return;
     }
 
-    // Build the request
+    // Record info so we know when we need to reload
     robozzle.blockIndex = robozzle.pageIndex - (robozzle.pageIndex % robozzle.blockSize);
+    robozzle.blockSortKind = robozzle.sortKind;
+    robozzle.blockHideSolved = robozzle.hideSolved;
+    robozzle.blockUserName = robozzle.userName;
+
+    // Build the request
     var request = {
         blockIndex: robozzle.blockIndex / robozzle.blockSize,
         blockSize: robozzle.blockSize,
@@ -309,7 +321,7 @@ robozzle.getLevelsPaged = function (success) {
     }
 
     // Send the request
-    robozzle.service('GetLevelsPaged', request, success);
+    return robozzle.service('GetLevelsPaged', request, success, error);
 }
 
 robozzle.getLevels = function (force) {
@@ -318,25 +330,32 @@ robozzle.getLevels = function (force) {
     // Prevent multiple requests
     if (robozzle.levelLoading) {
         robozzle.levelReload = true;
+        if (force) {
+            robozzle.levelLoading.abort();
+        }
         return;
     }
     robozzle.levelReload = false;
 
     // Check if we need to fetch levels
     robozzle.clampPageIndex();
-    if (!force && robozzle.levels && robozzle.pageIndex >= robozzle.blockIndex
+    if (!force && robozzle.levels
+            && robozzle.sortKind === robozzle.blockSortKind
+            && robozzle.hideSolved === robozzle.blockHideSolved
+            && robozzle.userName === robozzle.blockUserName
+            && robozzle.pageIndex >= robozzle.blockIndex
             && robozzle.pageIndex < robozzle.blockIndex + robozzle.blockSize) {
         robozzle.displayLevels();
         return;
     }
 
     // Hide levels and show spinner
-    robozzle.levelLoading = true;
     $('#levellist').empty();
     var spinner = new Spinner().spin($('#levellist-spinner')[0]);
 
-    robozzle.getLevelsPaged(function (result, response) {
+    robozzle.levelLoading = robozzle.getLevelsPaged(function (result, response) {
         // Store the response
+        robozzle.levelLoading = null;
         robozzle.levelCount = parseInt(response.totalCount, 10);
         robozzle.levels = response.GetLevelsPagedResult.LevelInfo2;
         if (!$.isArray(robozzle.levels)) {
@@ -346,15 +365,25 @@ robozzle.getLevels = function (force) {
 
         // Hide the spinner
         spinner.stop();
-        robozzle.levelLoading = false;
 
         // Update the display
         if (robozzle.levelReload) {
-            robozzle.getLevels();
+            robozzle.getLevels(false);
         } else if (robozzle.blockIndex >= robozzle.levelCount) {
             robozzle.setPageIndex(robozzle.levelCount);
         } else {
-            robozzle.displayLevels();
+            robozzle.displayLevels(false);
+        }
+    }, function () {
+        robozzle.levelLoading = null;
+        robozzle.levelCount = 0;
+        robozzle.levels = null;
+
+        // Hide the spinner
+        spinner.stop();
+
+        if (robozzle.levelReload) {
+            robozzle.getLevels(false);
         }
     });
 };
@@ -362,7 +391,7 @@ robozzle.getLevels = function (force) {
 robozzle.setPageIndex = function (index) {
     if (robozzle.pageIndex != index) {
         robozzle.pageIndex = index;
-        robozzle.getLevels();
+        robozzle.getLevels(false);
     }
 };
 
@@ -2319,7 +2348,7 @@ robozzle.submitTutorialSolved = function (event) {
         robozzle.navigatePuzzle(robozzle.level.NextId);
     } else {
         robozzle.setSortKind(0);
-        robozzle.getLevels(true);
+        robozzle.getLevels(false);
         robozzle.navigateIndex();
     }
 };
@@ -2453,11 +2482,11 @@ $(document).ready(function () {
     $('#hidesolved').click(function () {
         robozzle.hideSolved = $(this).prop('checked');
         localStorage.setItem('hideSolved', robozzle.hideSolved);
-        robozzle.getLevels(true);
+        robozzle.getLevels(false);
     });
     $('.level-menu__item').click(function () {
         robozzle.setSortKind(parseInt($(this).attr('data-kind')));
-        robozzle.getLevels(true);
+        robozzle.getLevels(false);
     });
     $('#menu-levels').click(function () {
         robozzle.navigateIndex();
