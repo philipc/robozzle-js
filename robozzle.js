@@ -82,6 +82,26 @@ $.fn.getClass = function (classBase) {
 };
 })(jQuery);
 
+(function ( $ ) {
+$.fn.pointerEventsNone = function () {
+    this.addClass('pointer-events-none').css('pointer-events', 'none');
+    var fixTarget = function (oldTarget, e) {
+        oldTarget.hide();
+        e.target = document.elementFromPoint(e.clientX, e.clientY);
+        if ($(e.target).hasClass('pointer-events-none')) {
+            fixTarget($(e.target), e);
+        }
+        oldTarget.show();
+    };
+    this.on('click mousedown mouseup mousemove', function (e) {
+        fixTarget($(this), e);
+        $(e.target).trigger(e);
+        return false;
+    });
+    return this;
+};
+})(jQuery);
+
 robozzle.parseXML = function (node) {
     if (node.nodeType == Node.TEXT_NODE) {
         return node.nodeValue.replace(/^\s+/,'').replace(/\s+$/,'');
@@ -650,7 +670,7 @@ robozzle.displayBoard = function (level) {
         board.push(row);
         $board.append($row);
     }
-    var $robot = $('<div/>').attr('id', 'robot').addClass('robot');
+    var $robot = $('<div/>').attr('id', 'robot').addClass('robot').pointerEventsNone();
     $('#board').empty().append($board).append($robot);
     robozzle.board = board;
     robozzle.starsMax = stars;
@@ -2552,6 +2572,7 @@ $(document).ready(function () {
         robozzle.hoverDesignSelection(null);
         robozzle.moveDesignSelection(null, e.pageX - 15, e.pageY - 15);
     });
+    $('#program-selection, #design-selection').pointerEventsNone();
     $('#board').click(function (e) {
         robozzle.hideSelection();
         e.stopPropagation();
