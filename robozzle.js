@@ -371,7 +371,7 @@ robozzle.getLevels = function (force) {
 
     // Hide levels and show spinner
     $('#levellist').empty();
-    var spinner = new Spinner().spin($('#levellist-spinner')[0]);
+    var spinner = new Spinner({ zIndex: 99 }).spin($('#levellist-spinner')[0]);
 
     robozzle.levelLoading = robozzle.getLevelsPaged(function (result, response) {
         // Store the response
@@ -2348,15 +2348,25 @@ robozzle.initDesignSolved = function () {
 robozzle.showTutorialSolved = function () {
     var $dialog = $('#dialog-tutorial-solved');
     var title, message;
+    var register = false;
     if (robozzle.level.NextId) {
         title = "Congratulations!";
         message = "You got it! Let's move on to the next part of the tutorial.";
     } else {
         title = "Tutorial Completed";
         message = "But, that's just the beginning! The real game is tackling the puzzles submitted by other players.";
+        if (!robozzle.userName) {
+            message += '<br><br>Now, it is a good time to register. Only takes seconds, and will track puzzles you solved, add you to the scoreboard, and allow you to vote on puzzles.'
+            register = true;
+        }
     }
     $dialog.find('.dialog-title').text(title);
-    $dialog.find('.dialog-message').text(message);
+    $dialog.find('.dialog-message').html(message);
+    if (register) {
+        $('#dialog-tutorial-solved-register').show();
+    } else {
+        $('#dialog-tutorial-solved-register').hide();
+    }
     robozzle.showDialog($dialog, $('#dialog-tutorial-solved-continue'));
 };
 
@@ -2368,13 +2378,18 @@ robozzle.submitTutorialSolved = function (event) {
         robozzle.navigatePuzzle(robozzle.level.NextId);
     } else {
         robozzle.setSortKind(0);
-        robozzle.getLevels(false);
         robozzle.navigateIndex();
     }
 };
 
+robozzle.registerTutorialSolved = function (event) {
+    robozzle.submitTutorialSolved(event);
+    robozzle.showRegister();
+};
+
 robozzle.initTutorialSolved = function () {
     $('#dialog-tutorial-solved').find('form').on('submit', robozzle.submitTutorialSolved);
+    $('#dialog-tutorial-solved-register').on('click', robozzle.registerTutorialSolved);
 };
 
 robozzle.parseUrl = function () {
@@ -2678,7 +2693,7 @@ $(document).ready(function () {
     var userName = localStorage.getItem('userName');
     var password = localStorage.getItem('password');
     if (userName !== null && password !== null) {
-        var spinner = new Spinner().spin($('#levellist-spinner')[0]);
+        var spinner = new Spinner({ zIndex: 99 }).spin($('#levellist-spinner')[0]);
         robozzle.logIn(userName, password, function (result) {
             spinner.stop();
             robozzle.parseUrl();
