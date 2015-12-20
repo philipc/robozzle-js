@@ -671,6 +671,8 @@ robozzle.displayBoard = function (level, design) {
             $cell.on('mousedown', function (e) {
                 // Prevent dragging the image
                 e.preventDefault();
+                // Clear focus (the default handling would have done this)
+                document.activeElement.blur();
             });
             row.push($cell);
             $row.append($cell);
