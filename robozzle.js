@@ -49,6 +49,7 @@ var robozzle = {
         finished: 4
     },
     robotState: 0,
+    boardBreakPoint: null,
 
     // tutorial info
     tutorialStage: 0,
@@ -619,7 +620,7 @@ robozzle.isTutorialLevel = function (id) {
     return parseInt(id) < 0;
 };
 
-robozzle.displayBoard = function (level) {
+robozzle.displayBoard = function (level, design) {
     var stars = 0;
     var board = [];
     var $board = $('<table/>').addClass('board');
@@ -640,6 +641,13 @@ robozzle.displayBoard = function (level) {
                 if (items.charAt(i) === '*') {
                     $item.addClass('board-star');
                     stars++;
+                }
+                if (!design) {
+                    (function (row, col) {
+                        $cell.on('click', function (e) {
+                            robozzle.setBoardBreakpoint(row, col);
+                        });
+                    })(j, i);
                 }
             }
             $cell.on('mousedown', function (e) {
@@ -677,16 +685,17 @@ robozzle.displayBoard = function (level) {
     robozzle.stars = stars;
     robozzle.steps = 0;
     robozzle.stack = [ { sub: 0, cmd: 0 } ];
-    robozzle.robotDir = level.RobotDir;
-    robozzle.robotDeg = level.RobotDir * 90;
-    robozzle.robotCol = level.RobotCol;
-    robozzle.robotRow = level.RobotRow;
+    robozzle.robotDir = parseInt(level.RobotDir);
+    robozzle.robotDeg = parseInt(level.RobotDir) * 90;
+    robozzle.robotCol = parseInt(level.RobotCol);
+    robozzle.robotRow = parseInt(level.RobotRow);
     robozzle.robotAnimation = {
         left: robozzle.robotCol * 40,
         top: robozzle.robotRow * 40,
         deg: robozzle.robotDeg,
         scale: 1.0
     };
+    robozzle.boardBreakpoint = null;
     robozzle.displayRobot();
     robozzle.setRobotState(robozzle.robotStates.reset);
 };
@@ -1324,7 +1333,7 @@ robozzle.displayGame = function (level, program) {
         $('#program-edit').show();
     }
 
-    robozzle.displayBoard(level);
+    robozzle.displayBoard(level, false);
     robozzle.displayProgram(level, program);
     robozzle.displayProgramToolbar(level);
     robozzle.displayTutorial(level);
@@ -1773,7 +1782,7 @@ robozzle.displayDesign = function () {
     if (!robozzle.design) {
         robozzle.design = robozzle.defaultDesign();
     }
-    robozzle.displayBoard(robozzle.design);
+    robozzle.displayBoard(robozzle.design, true);
     robozzle.displayProgram(robozzle.design, robozzle.designProgram);
     $('#design-title').val(robozzle.design.Title);
     $('#design-about').val(robozzle.design.About);
@@ -1829,6 +1838,10 @@ robozzle.moveRobot = function () {
     if (crash) {
         robozzle.animateRobot({ scale: 0.0 });
         robozzle.setRobotState(robozzle.robotStates.finished);
+    } else if (robozzle.boardBreakpoint
+            && robozzle.robotCol === robozzle.boardBreakpoint.col
+            && robozzle.robotRow === robozzle.boardBreakpoint.row) {
+        robozzle.setRobotState(robozzle.robotStates.stepping);
     }
 };
 
@@ -1860,7 +1873,7 @@ robozzle.stepReset = function () {
     if (robozzle.robotState != robozzle.robotStates.reset) {
         $(robozzle.robotAnimation).stop(true, false);
         $('#program-highlight').css('visibility', 'hidden');
-        robozzle.displayBoard(robozzle.level);
+        robozzle.displayBoard(robozzle.level, false);
     }
 };
 
@@ -1948,6 +1961,15 @@ robozzle.stepExecute = function (calls) {
         });
     } else {
         robozzle.stepExecute(calls);
+    }
+};
+
+robozzle.setBoardBreakpoint = function (row, col) {
+    robozzle.boardBreakpoint = { row: row, col: col };
+    if (robozzle.robotState == robozzle.robotStates.reset
+            || robozzle.robotState == robozzle.robotStates.stopped) {
+        robozzle.setRobotState(robozzle.robotStates.started);
+        robozzle.stepExecute(0);
     }
 };
 
