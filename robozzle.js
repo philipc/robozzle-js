@@ -988,6 +988,8 @@ robozzle.displayProgram = function (level, commands) {
                     e.stopPropagation();
                 })
                 .click(function (e) {
+                    var condition = $(this).getClass('condition');
+                    var command = $(this).find('.command').getClass('command');
                     if (robozzle.selection) {
                         if (robozzle.selectionCondition) {
                             $(this).updateClass('condition', robozzle.selectionCondition);
@@ -999,13 +1001,18 @@ robozzle.displayProgram = function (level, commands) {
                         }
                         $(this).find('span').hide();
                         robozzle.hideSelection();
-                    } else {
-                        robozzle.setSelection($(this).getClass('condition'),
-                                              $(this).find('.command').getClass('command'));
 
+                        // If the selection came from the program (not the toolbar),
+                        // then change the selection to the command it replaced.
+                        // This makes it easier to reorder existing commands.
+                        if (robozzle.selectionCondition && robozzle.selectionCommand) {
+                            robozzle.setSelection(condition, command);
+                        }
+                    } else {
                         $(this).updateClass('condition', null);
                         $(this).find('.command').updateClass('command', null);
                         $(this).find('span').show();
+                        robozzle.setSelection(condition, command);
                     }
                     robozzle.hoverSelection($(this).getClass('condition'),
                                             $(this).find('.command').getClass('command'));
