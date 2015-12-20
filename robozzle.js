@@ -19,7 +19,7 @@ var robozzle = {
     pageSize: 8,                // Number of levels to display at a time
 
     levels: null,               // Downloaded levels
-    levelCount: 1,              // Server reported number of levels
+    levelCount: 0,              // Server reported number of levels
 
     // user info
     userName: null,
@@ -391,6 +391,7 @@ robozzle.getLevels = function (force) {
             robozzle.getLevels(false);
         } else if (robozzle.blockIndex >= robozzle.levelCount) {
             robozzle.setPageIndex(robozzle.levelCount);
+            robozzle.getLevels(false);
         } else {
             robozzle.displayLevels(false);
         }
@@ -409,16 +410,15 @@ robozzle.getLevels = function (force) {
 };
 
 robozzle.setPageIndex = function (index) {
-    if (robozzle.pageIndex != index) {
-        robozzle.pageIndex = index;
-        robozzle.getLevels(false);
-    }
+    robozzle.pageIndex = index;
+    localStorage.setItem('pageIndex', index);
 };
 
 robozzle.setSortKind = function (sortKind) {
     $('.level-menu__item').removeClass('level-menu__item--active');
     $('.level-menu__item[data-kind="' + sortKind + '"]').addClass('level-menu__item--active');
     robozzle.sortKind = sortKind;
+    localStorage.setItem('sortKind', sortKind);
 };
 
 robozzle.setRobotState = function (state) {
@@ -2378,6 +2378,7 @@ robozzle.submitTutorialSolved = function (event) {
         robozzle.navigatePuzzle(robozzle.level.NextId);
     } else {
         robozzle.setSortKind(0);
+        robozzle.setPageIndex(0);
         robozzle.navigateIndex();
     }
 };
@@ -2498,18 +2499,23 @@ robozzle.setPageTab = function (name) {
 $(document).ready(function () {
     $('#pagefirst').click(function () {
         robozzle.setPageIndex(0);
+        robozzle.getLevels(false);
     });
     $('#pageprev').click(function () {
         robozzle.setPageIndex(robozzle.pageIndex - robozzle.pageSize);
+        robozzle.getLevels(false);
     });
     $('#pagenext').click(function () {
         robozzle.setPageIndex(robozzle.pageIndex + robozzle.pageSize);
+        robozzle.getLevels(false);
     });
     $('#pagelast').click(function () {
         robozzle.setPageIndex(robozzle.levelCount);
+        robozzle.getLevels(false);
     });
     $('#pagecurrent').change(function () {
         robozzle.setPageIndex(parseInt($(this).val()) * robozzle.pageSize - 1);
+        robozzle.getLevels(false);
     });
     $('#refresh').click(function () {
         robozzle.getLevels(true);
@@ -2521,6 +2527,7 @@ $(document).ready(function () {
     });
     $('.level-menu__item').click(function () {
         robozzle.setSortKind(parseInt($(this).attr('data-kind')));
+        robozzle.setPageIndex(0);
         robozzle.getLevels(false);
     });
     $('#menu-levels').click(function () {
@@ -2688,7 +2695,21 @@ $(document).ready(function () {
     window.onpopstate = robozzle.parseUrl;
 
     robozzle.setPageTab('levels');
-    robozzle.setSortKind(-1);
+
+    var sortKind = localStorage.getItem('sortKind');
+    if (sortKind === null) {
+        sortKind = -1;
+    }
+    robozzle.setSortKind(sortKind);
+
+    var pageIndex = localStorage.getItem('pageIndex');
+    if (pageIndex === null) {
+        pageIndex = 0;
+    }
+    robozzle.setPageIndex(pageIndex);
+
+    // Hack to avoid clamping pageIndex
+    robozzle.levelCount = robozzle.pageIndex * robozzle.pageSize;
 
     var userName = localStorage.getItem('userName');
     var password = localStorage.getItem('password');
