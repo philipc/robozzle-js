@@ -2579,6 +2579,7 @@ $(document).ready(function () {
     $('#tutorial-continue').click(function () {
         robozzle.tutorialContinue();
     });
+    // start/reset button
     $('#program-go').click(function () {
         if (robozzle.robotState == robozzle.robotStates.reset
                 || robozzle.robotState == robozzle.robotStates.stopped) {
@@ -2590,6 +2591,7 @@ $(document).ready(function () {
             robozzle.stepReset();
         }
     });
+    // step button
     $('#program-step').click(function () {
         if (robozzle.robotState == robozzle.robotStates.reset
                 || robozzle.robotState == robozzle.robotStates.stopped) {
@@ -2597,6 +2599,34 @@ $(document).ready(function () {
             robozzle.stepExecute(0);
         } else if (robozzle.robotState == robozzle.robotStates.started) {
             robozzle.robotState = robozzle.robotStates.stepping;
+        }
+    });
+    // start/stop hotkey (x for execute)
+    $(document).on('keydown', null, 'x', function () {
+        if ($('#program-control').is(':visible')) {
+            if (robozzle.robotState == robozzle.robotStates.reset
+                    || robozzle.robotState == robozzle.robotStates.stopped) {
+                robozzle.setRobotState(robozzle.robotStates.started);
+                robozzle.stepExecute(0);
+            } else if (robozzle.robotState == robozzle.robotStates.stepping) {
+                robozzle.setRobotState(robozzle.robotStates.started);
+            } else if (robozzle.robotState == robozzle.robotStates.started) {
+                robozzle.robotState = robozzle.robotStates.stepping;
+            } else {
+                robozzle.stepReset();
+            }
+        }
+    });
+    // step hotkey
+    $(document).on('keydown', null, 's', function () {
+        if ($('#program-control').is(':visible')) {
+            if (robozzle.robotState == robozzle.robotStates.reset
+                    || robozzle.robotState == robozzle.robotStates.stopped) {
+                robozzle.setRobotState(robozzle.robotStates.stepping);
+                robozzle.stepExecute(0);
+            } else if (robozzle.robotState == robozzle.robotStates.started) {
+                robozzle.robotState = robozzle.robotStates.stepping;
+            }
         }
     });
     for (i = 0; i < 5; i++) {
