@@ -66,18 +66,17 @@ body {
     }
 }
 .content-levels {
+    position: relative;
     &__levels-panel {
-        position: relative;
         width: 520px;
         margin: 0 auto;
     }
     &__scoreboard-panel {
         display: none;
         position: absolute;
-        top: 0px;
+        top: 40px;
         right: 0px;
         width: 180px;
-        margin: 50px 10px 0px;
     }
 }
 .content-game {
@@ -122,6 +121,7 @@ body {
     }
 }
 .level-list {
+    position: relative;
     padding: 10px 0 40px 0;
     min-height: 480px;
     border-radius: 0px 0px 4px 4px;
