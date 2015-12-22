@@ -1985,18 +1985,22 @@ robozzle.setUserName = function (userName, password, solvedLevels, votes) {
     robozzle.userName = userName;
     robozzle.password = password;
     robozzle.solvedLevels = {};
-    $.each(solvedLevels, function (index, value) {
-        robozzle.solvedLevels[parseInt(value)] = true;
-    });
+    if (solvedLevels != null) {
+        $.each(solvedLevels, function (index, value) {
+            robozzle.solvedLevels[parseInt(value)] = true;
+        });
+    }
     robozzle.likeVotes = {};
     robozzle.difficultyVotes = {};
-    $.each(votes, function (index, value) {
-        if (value.VoteKind === '0') {
-            robozzle.likeVotes[value.LevelId] = value.Vote;
-        } else if (value.VoteKind === '1') {
-            robozzle.difficultyVotes[value.LevelId] = value.Vote;
-        }
-    });
+    if (votes != null) {
+        $.each(votes, function (index, value) {
+            if (value.VoteKind === '0') {
+                robozzle.likeVotes[value.LevelId] = value.Vote;
+            } else if (value.VoteKind === '1') {
+                robozzle.difficultyVotes[value.LevelId] = value.Vote;
+            }
+        });
+    }
 
     localStorage.setItem('userName', userName);
     localStorage.setItem('password', password);
