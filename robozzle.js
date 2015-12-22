@@ -313,6 +313,12 @@ robozzle.clampPageIndex = function () {
 };
 
 robozzle.getLevelsPaged = function (success, error) {
+    // Record info so we know when we need to reload
+    robozzle.blockIndex = robozzle.pageIndex - (robozzle.pageIndex % robozzle.blockSize);
+    robozzle.blockSortKind = robozzle.sortKind;
+    robozzle.blockHideSolved = robozzle.hideSolved;
+    robozzle.blockUserName = robozzle.userName;
+
     if (robozzle.sortKind < 0) {
         var response = {
             totalCount: robozzle.tutorialLevels.length,
@@ -323,12 +329,6 @@ robozzle.getLevelsPaged = function (success, error) {
         success(null, response);
         return;
     }
-
-    // Record info so we know when we need to reload
-    robozzle.blockIndex = robozzle.pageIndex - (robozzle.pageIndex % robozzle.blockSize);
-    robozzle.blockSortKind = robozzle.sortKind;
-    robozzle.blockHideSolved = robozzle.hideSolved;
-    robozzle.blockUserName = robozzle.userName;
 
     // Build the request
     var request = {
@@ -390,8 +390,7 @@ robozzle.getLevels = function (force) {
         // Update the display
         if (robozzle.levelReload) {
             robozzle.getLevels(false);
-        } else if (robozzle.blockIndex >= robozzle.levelCount) {
-            robozzle.setPageIndex(robozzle.levelCount);
+        } else if (robozzle.pageIndex >= robozzle.levelCount) {
             robozzle.getLevels(false);
         } else {
             robozzle.displayLevels(false);
