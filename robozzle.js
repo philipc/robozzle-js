@@ -427,8 +427,8 @@ robozzle.setSortKind = function (sortKind) {
     if (isNaN(sortKind)) {
         sortKind = -1;
     }
-    $('.level-menu__item').removeClass('-active');
-    $('.level-menu__item[data-kind="' + sortKind + '"]').addClass('-active');
+    $('.level-sort__item').removeClass('-active');
+    $('.level-sort__item[data-kind="' + sortKind + '"]').addClass('-active');
     robozzle.sortKind = sortKind;
     localStorage.setItem('sortKind', sortKind);
 };
@@ -2571,7 +2571,7 @@ $(document).ready(function () {
         localStorage.setItem('hideSolved', robozzle.hideSolved);
         robozzle.getLevels(false);
     });
-    $('.level-menu__item').click(function () {
+    $('.level-sort__item').click(function () {
         robozzle.setSortKind($(this).attr('data-kind'));
         robozzle.setPageIndex(0);
         robozzle.getLevels(false);
