@@ -80,6 +80,28 @@ body {
         margin: 50px 10px 0px;
     }
 }
+.content-game {
+    display: table;
+    &__board-panel {
+        display: table-cell;
+    }
+    &__program-panel {
+        display: table-cell;
+        vertical-align: bottom;
+    }
+    &__program-toolbar-panel {
+        display: table-cell;
+        vertical-align: bottom;
+    }
+    &__design-toolbar-panel {
+        display: table-cell;
+        vertical-align: bottom;
+    }
+    &__design-panel {
+        display: table-cell;
+        vertical-align: bottom;
+    }
+}
 .level-menu {
     list-style: none;
     margin: 0;
@@ -337,10 +359,6 @@ div.robot-3 {
 }
 #program-container {
     cursor: default;
-    vertical-align: bottom;
-}
-#program-toolbar-container {
-    vertical-align: bottom;
 }
 #program {
     padding: 5px;
@@ -397,9 +415,6 @@ div.robot-3 {
 .program-selection-highlight {
     border: 1px yellow solid;
 }
-#design-toolbar-container {
-    vertical-align: bottom;
-}
 #design-toolbar {
     background-color: #707070;
     padding: 5px;
@@ -409,9 +424,6 @@ div.robot-3 {
 #design-toolbar .board {
     margin: 5px;
     border: 1px solid black;
-}
-#design-panel-container {
-    vertical-align: bottom;
 }
 #design-panel {
     padding: 5px;
