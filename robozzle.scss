@@ -32,29 +32,32 @@ body {
     height: 26px;
     background-color: #909090;
     &__item {
-        float: left;
         height: 26px;
         line-height: 26px;
         border-color: #888888;
         border-style: solid;
         border-width: 0 1px;
         text-align: center;
-        color: #505050;
         cursor: pointer;
-    }
-    &__item.-right {
-        float: right;
-    }
-    &__item:hover {
-        background-color: #a0a0a0;
-    }
-    &__item.-active, &__item.-active:hover {
-        background-color: #707070;
-        color: white;
-    }
-    &__item > a {
+
+        float: left;
+        &.-right {
+            float: right; }
+
         color: #505050;
-        text-decoration: none;
+        > a {
+            color: #505050;
+            text-decoration: none;
+        }
+
+        &:hover {
+            background-color: #a0a0a0;
+        }
+        &.-active, &.-active:hover {
+            background-color: #707070;
+            color: white;
+        }
+
     }
 }
 .page-content {
