@@ -65,10 +65,20 @@ body {
         display: none;
     }
 }
-#levels {
-    position: relative;
-    width: 520px;
-    margin: 0 auto;
+.content-levels {
+    &__levels-panel {
+        position: relative;
+        width: 520px;
+        margin: 0 auto;
+    }
+    &__scoreboard-panel {
+        display: none;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 180px;
+        margin: 50px 10px 0px;
+    }
 }
 .level-menu {
     list-style: none;
@@ -182,12 +192,6 @@ li.levelitem div.votes {
     bottom: 10px;
 }
 #scoreboard {
-    display: none;
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 180px;
-    margin: 50px 10px 0px;
     border-radius: 4px;
     padding-bottom: 10px;
     background-color: #808080;
