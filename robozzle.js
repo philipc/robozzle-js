@@ -410,11 +410,19 @@ robozzle.getLevels = function (force) {
 };
 
 robozzle.setPageIndex = function (index) {
+    index = parseInt(index);
+    if (isNaN(index)) {
+        index = 0;
+    }
     robozzle.pageIndex = index;
     localStorage.setItem('pageIndex', index);
 };
 
 robozzle.setSortKind = function (sortKind) {
+    sortKind = parseInt(sortKind);
+    if (isNaN(sortKind)) {
+        sortKind = -1;
+    }
     $('.level-menu__item').removeClass('level-menu__item--active');
     $('.level-menu__item[data-kind="' + sortKind + '"]').addClass('level-menu__item--active');
     robozzle.sortKind = sortKind;
@@ -2560,7 +2568,7 @@ $(document).ready(function () {
         robozzle.getLevels(false);
     });
     $('.level-menu__item').click(function () {
-        robozzle.setSortKind(parseInt($(this).attr('data-kind')));
+        robozzle.setSortKind($(this).attr('data-kind'));
         robozzle.setPageIndex(0);
         robozzle.getLevels(false);
     });
@@ -2744,33 +2752,26 @@ $(document).ready(function () {
         $('#hidesolved').prop('checked', robozzle.hideSolved);
     }
 
-    robozzle.robotSpeed = localStorage.getItem('robotSpeed');
-    if (robozzle.robotSpeed === null) {
-        robozzle.robotSpeed = 5;
-    }
-    // 0 -> 1020, 5 -> 145, 10 -> 20
-    robozzle.robotDelay = Math.pow(10 - robozzle.robotSpeed, 3) + 20;
-    $('#program-speed').val(robozzle.robotSpeed).change(function () {
-        robozzle.robotSpeed = parseInt($(this).val());
+    var setRobotSpeed = function (robotSpeed) {
+        robotSpeed = parseInt(robotSpeed);
+        if (isNaN(robotSpeed) || robotSpeed < 0 || robotSpeed > 10) {
+            robotSpeed = 5;
+        }
+        robozzle.robotSpeed = robotSpeed;
+        // 0 -> 1020, 5 -> 145, 10 -> 20
         robozzle.robotDelay = Math.pow(10 - robozzle.robotSpeed, 3) + 20;
+    };
+    setRobotSpeed(localStorage.getItem('robotSpeed'));
+    $('#program-speed').val(robozzle.robotSpeed).change(function () {
+        setRobotSpeed($(this).val());
         localStorage.setItem('robotSpeed', robozzle.robotSpeed);
     });
 
     window.onpopstate = robozzle.parseUrl;
 
     robozzle.setPageTab('levels');
-
-    var sortKind = localStorage.getItem('sortKind');
-    if (sortKind === null) {
-        sortKind = -1;
-    }
-    robozzle.setSortKind(sortKind);
-
-    var pageIndex = localStorage.getItem('pageIndex');
-    if (pageIndex === null) {
-        pageIndex = 0;
-    }
-    robozzle.setPageIndex(pageIndex);
+    robozzle.setSortKind(localStorage.getItem('sortKind'));
+    robozzle.setPageIndex(localStorage.getItem('pageIndex'));
 
     // Hack to avoid clamping pageIndex
     robozzle.levelCount = robozzle.pageIndex * robozzle.pageSize;
