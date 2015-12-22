@@ -221,36 +221,32 @@ body {
         color: black;
     }
 }
-#scoreboard {
+.scoreboard-panel {
     border-radius: 4px;
     padding-bottom: 10px;
+    text-align: center;
     background-color: #808080;
     color: white;
-    font-weight: normal;
-    text-align: center;
+    a:link, a:visited {
+        color: #d0d0b0;
+    }
+    > h1 {
+        font-size: 12px;
+        font-weight: bold;
+    }
+    &__score-list {
+        margin-left: 20px;
+        margin-bottom: 10px;
+    }
 }
-#scoreboard h1 {
-    font-size: 12px;
-    font-weight: bold;
-    text-align: center;
-}
-#scoreboard table {
-    margin-left: 20px;
-    margin-bottom: 10px;
+.score-item {
     text-align: left;
-}
-#scoreboard .solved {
-    width: 40px;
-}
-#scoreboard > a {
-    text-align: center;
-    margin-bottom: 10px;
-}
-#scoreboard a:link {
-    color: #d0d0b0;
-}
-#scoreboard a:visited {
-    color: #d0d0b0;
+    &__value {
+        width: 40px;
+    }
+    &__name {
+        width: 40px;
+    }
 }
 .table-container {
     display: table;

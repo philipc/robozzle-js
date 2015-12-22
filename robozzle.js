@@ -205,18 +205,15 @@ robozzle.service = function (method, data, success, error) {
 };
 
 robozzle.topSolversResponse = function (table, solved, names) {
+    var item;
     for (var i = 0; i < solved.length; i++) {
-        table.append(
-            $('<tr/>').append(
-                $('<td/>').addClass('solved').text(solved[i]),
-                $('<td/>').append(
-                    $('<a/>')
-                        .text(names[i])
-                        .attr('href', '/user.aspx?name=' + encodeURIComponent(names[i]))
-                        .attr('target', '_blank')
-                )
-            )
-        );
+        item = $('#templates .score-item').clone();
+        item.find('.score-item__value').text(solved[i]);
+        item.find('.score-item__name').append(
+                $('<a target="_blank"/>')
+                    .text(names[i])
+                    .attr('href', '/user.aspx?name=' + encodeURIComponent(names[i])));
+        table.append(item);
     }
 };
 
