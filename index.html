@@ -34,16 +34,16 @@
                         <ul class="level-sort">
                             <li class="level-sort__item" data-kind="-1">Tutorial</li><li class="level-sort__item" data-kind="0">Campaign</li><li class="level-sort__item" data-kind="3">Popular</li><li class="level-sort__item" data-kind="1">Easy to hard</li><li class="level-sort__item" data-kind="2">New to old</li>
                         </ul>
-                        <div id="levellist-container">
-                            <ul id="levellist">
+                        <div class="level-list">
+                            <ul id="level-page" class="level-list__level-page">
                             </ul>
-                            <div id="levellist-spinner">
+                            <div id="level-list-spinner" class="level-list__spinner">
                             </div>
-                            <button id="refresh">Refresh</button>
-                            <div id="pagecontrol"><div>
-                                <button id="pagefirst">First</button><button id="pageprev">Prev</button><input type="text" id="pagecurrent" value="1">/<span id="pagemax">1</span><button id="pagenext">Next</button><button id="pagelast">Last</button>
+                            <button id="level-list-refresh" class="level-list__refresh">Refresh</button>
+                            <div class="level-list__page-control"><div>
+                                <button id="pagefirst">First</button><button id="pageprev">Prev</button><input type="text" id="pagecurrent" class="level-list__page-control__current" value="1">/<span id="pagemax" class="level-list__page-control__max" >1</span><button id="pagenext">Next</button><button id="pagelast">Last</button>
                             </div></div>
-                            <div id="hidesolved-container">
+                            <div class="level-list__hide-solved">
                                 <input type="checkbox" id="hidesolved"><label for="hidesolved">Hide solved</label>
                             </div>
                         </div>
@@ -301,23 +301,25 @@
         </div>
         <div id="templates">
             <ul>
-                <li class="levelitem">
-                    <div class="title">
+                <li class="level-item level-list__level-item">
+                    <div class="level-item__level-title">
                     </div>
-                    <div class="difficulty">
-                        <div class="difficulty-val"></div>
-                        <div class="difficulty-val"></div>
-                        <div class="difficulty-val"></div>
-                        <div class="difficulty-val"></div>
-                        <div class="difficulty-val"></div>
+                    <div class="difficulty level-item__level-difficulty">
+                        <div class="difficulty-val level-item__level-difficulty-val"></div>
+                        <div class="difficulty-val level-item__level-difficulty-val"></div>
+                        <div class="difficulty-val level-item__level-difficulty-val"></div>
+                        <div class="difficulty-val level-item__level-difficulty-val"></div>
+                        <div class="difficulty-val level-item__level-difficulty-val"></div>
                     </div>
-                    <div class="stats">
-                        <a class="stats">stats</a>
-                        <a class="comments">comments</a>
-                        <span class="author">author: <a class="author">author</a></span>
+                    <div class="stats level-item__level-details">
+                        <a class="stats level-item__level-stats">stats</a>
+                        <a class="comments level-item__level-comments">comments</a>
+                        <span class="level-item__level-author">author:
+                            <a class="level-item__level-author-name">author</a>
+                        </span>
                     </div>
-                    <div class="votes">
-                        <span class="liked">+</span>/<span class="disliked">-</span>
+                    <div class="level-item__level-votes">
+                        <span class="level-item__level-votes-liked">+</span>/<span class="level-item__level-votes-disliked">-</span>
                     </div>
                 </li>
             </ul>

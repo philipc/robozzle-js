@@ -249,41 +249,41 @@ robozzle.displayDifficulty = function (level, html) {
     }
 };
 
-robozzle.displayLevel = function (level) {
-    var html = $('#templates .levelitem').clone();
+robozzle.displayLevelItem = function (level) {
+    var html = $('#templates .level-item').clone();
     html.attr('data-level-id', level.Id);
-    html.find('div.title').text(level.Title);
+    html.find('.level-item__level-title').text(level.Title);
     if (robozzle.isTutorialLevel(level.Id)) {
-        html.find('div.difficulty').hide();
-        html.find('div.stats').hide();
-        html.find('div.votes').hide();
+        html.find('.level-item__level-difficulty').hide();
+        html.find('.level-item__level-details').hide();
+        html.find('.level-item__level-votes').hide();
     } else {
         robozzle.displayDifficulty(level, html);
-        html.find('a.stats')
+        html.find('.level-item__level-stats')
             .attr('href', '/puzzle.aspx?id=' + level.Id)
             .attr('target', '_blank');
-        html.find('a.comments')
+        html.find('.level-item__level-comments')
             .text(level.CommentCount + ' comments')
             .attr('href', '/forums/thread.aspx?puzzle=' + level.Id)
             .attr('target', '_blank');
         if (level.SubmittedBy != null) {
-            html.find('a.author')
+            html.find('.level-item__level-author-name')
                 .text(level.SubmittedBy)
                 .attr('href', '/user.aspx?name=' + encodeURIComponent(level.SubmittedBy))
                 .attr('target', '_blank');
         } else {
-            html.find('span.author').hide();
+            html.find('.level-item__level-author').hide();
         }
-        html.find('span.liked').text('+' + level.Liked);
-        html.find('span.disliked').text('-' + level.Disliked);
+        html.find('.level-item__level-votes-liked').text('+' + level.Liked);
+        html.find('.level-item__level-votes-disliked').text('-' + level.Disliked);
     }
     if (robozzle.solvedLevels[level.Id]) {
-        html.addClass('solved');
+        html.addClass('-solved');
     }
     html.click(function () {
         robozzle.navigatePuzzle($(this).attr('data-level-id'));
     });
-    html.find('.stats').click(function (e) {
+    html.find('.level-item__level-details').click(function (e) {
         e.stopPropagation();
     });
     return html;
@@ -293,13 +293,13 @@ robozzle.displayLevels = function () {
     if (!robozzle.levels || robozzle.levelLoading) {
         return;
     }
-    var levellist = $('#levellist');
-    levellist.empty();
+    var levelpage = $('#level-page');
+    levelpage.empty();
     for (var i = 0; i < robozzle.pageSize; i++) {
         var index = robozzle.pageIndex + i;
         if (index < robozzle.levelCount) {
             var level = robozzle.levels[index - robozzle.blockIndex];
-            levellist.append(robozzle.displayLevel(level));
+            levelpage.append(robozzle.displayLevelItem(level));
         }
     }
     $('#pagecurrent').val(robozzle.pageIndex / robozzle.pageSize + 1);
@@ -375,8 +375,8 @@ robozzle.getLevels = function (force) {
     }
 
     // Hide levels and show spinner
-    $('#levellist').empty();
-    var spinner = new Spinner({ zIndex: 99 }).spin($('#levellist-spinner')[0]);
+    $('#level-page').empty();
+    var spinner = new Spinner({ zIndex: 99 }).spin($('#level-list-spinner')[0]);
 
     robozzle.levelLoading = robozzle.getLevelsPaged(function (result, response) {
         // Store the response
@@ -2563,7 +2563,7 @@ $(document).ready(function () {
         robozzle.setPageIndex(parseInt($(this).val()) * robozzle.pageSize - 1);
         robozzle.getLevels(false);
     });
-    $('#refresh').click(function () {
+    $('#level-list-refresh').click(function () {
         robozzle.getLevels(true);
     });
     $('#hidesolved').click(function () {
@@ -2786,7 +2786,7 @@ $(document).ready(function () {
     var userName = localStorage.getItem('userName');
     var password = localStorage.getItem('password');
     if (userName !== null && password !== null) {
-        var spinner = new Spinner({ zIndex: 99 }).spin($('#levellist-spinner')[0]);
+        var spinner = new Spinner({ zIndex: 99 }).spin($('#level-list-spinner')[0]);
         robozzle.logIn(userName, password, function (result) {
             spinner.stop();
             robozzle.parseUrl();

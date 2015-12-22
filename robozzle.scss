@@ -121,97 +121,102 @@ body {
             background-color: #909090; }
     }
 }
-#levellist-container {
+.level-list {
     padding: 10px 0 40px 0;
     min-height: 480px;
     border-radius: 0px 0px 4px 4px;
     background-color: #808080;
+    &__level-page {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    &__level-item {
+        width: 500px;
+        height: 52px;
+        margin: 5px auto;
+    }
+    &__refresh {
+        position: absolute;
+        left: 10px;
+        bottom: 10px;
+    }
+    &__page-control {
+        position: absolute;
+        left: 50%;
+        bottom: 10px;
+        white-space: nowrap;
+        > div {
+            width: 100%;
+            margin-left: -50%;
+        }
+        &__current {
+            width: 2em;
+            text-align: right;
+        }
+        &__max {
+            padding-right: 5px;
+        }
+    }
+    &__hide-solved {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+    }
 }
-#levellist {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-li.levelitem {
+.level-item {
     position: relative;
-    width: 500px;
-    height: 52px;
-    margin: 5px auto;
     border-radius: 4px;
     border-color: black;
     border-style: solid;
     border-width: 1px;
-    background-color: #b0b080;
     cursor: pointer;
-}
-li.levelitem:hover {
-    background-color: #c0c090;
-}
-li.levelitem.solved {
-    background-color: #707070;
-}
-li.levelitem.solved:hover {
-    background-color: #808080;
-}
-li.levelitem div.title {
-    position: absolute;
-    top: 5px;
-    left: 8px;
-    font-size: 14px;
-    font-weight: bold;
-}
-li.levelitem div.difficulty {
-    position: absolute;
-    top: 5px;
-    right: 8px;
-}
-li.levelitem div.difficulty-val {
-    float: left;
-    width: 16px;
-    height: 16px;
-}
-li.levelitem div.stats {
-    position: absolute;
-    bottom: 5px;
-    left: 8px;
-}
-li.levelitem div.votes {
-    position: absolute;
-    bottom: 5px;
-    right: 8px;
-}
-#levellist a:link {
-    color: black;
-}
-#levellist a:visited {
-    color: black;
-}
-#refresh {
-    position: absolute;
-    left: 10px;
-    bottom: 10px;
-}
-#pagecontrol {
-    position: absolute;
-    left: 50%;
-    bottom: 10px;
-    white-space: nowrap;
-}
-#pagecontrol > div {
-    width: 100%;
-    margin-left: -50%;
-}
-#pagecurrent {
-    width: 2em;
-    text-align: right;
-}
-#pagemax {
-    padding-right: 5px;
-}
-#hidesolved-container {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
+
+    background-color: #b0b080;
+    &:hover {
+        background-color: #c0c090; }
+    &.-solved {
+        background-color: #707070; }
+    &.-solved:hover {
+        background-color: #808080; }
+
+    &__level-title {
+        position: absolute;
+        top: 5px;
+        left: 8px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    &__level-difficulty {
+        position: absolute;
+        top: 5px;
+        right: 8px;
+    }
+    &__level-difficulty-val {
+        float: left;
+        width: 16px;
+        height: 16px;
+    }
+    &__level-details {
+        position: absolute;
+        bottom: 5px;
+        left: 8px;
+    }
+    &__level-votes {
+        position: absolute;
+        bottom: 5px;
+        right: 8px;
+        font-weight: bold;
+    }
+    &__level-votes-liked {
+        color: darkgreen;
+    }
+    &__level-votes-disliked {
+        color: darkred;
+    }
+    a:link, a:visited {
+        color: black;
+    }
 }
 #scoreboard {
     border-radius: 4px;
