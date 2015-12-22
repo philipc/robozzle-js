@@ -1310,7 +1310,7 @@ robozzle.displayGame = function (level, program) {
     $('#content-game').show();
     $('#content-game').children().hide();
     $('#board-container').show();
-    $('#statusbar').show();
+    $('#board-status').show();
     $('#program-container').show();
     $('#program-toolbar-container').show();
     $('#program-selection').show();
@@ -1321,20 +1321,20 @@ robozzle.displayGame = function (level, program) {
     robozzle.tutorialStage = 0;
 
     if (robozzle.isTutorialLevel(level.Id)) {
-        $('#statusbar').hide();
+        $('#board-status').hide();
     } else if (robozzle.level.Id) {
-        var status = $('#statusbar');
-        status.find('span.title').text(level.Title);
+        var status = $('#board-status');
+        status.find('.board-status__title').text(level.Title);
         if (!jQuery.isEmptyObject(level.About) && level.About !== null) {
-            status.find('div.about').text(level.About).show();
+            status.find('.board-status__about').text(level.About).show();
         } else {
-            status.find('div.about').hide();
+            status.find('.board-status__about').hide();
         }
-        status.find('a.stats')
+        status.find('.board-status__stats')
             .attr('href', '/puzzle.aspx?id=' + level.Id)
             .attr('target', '_blank')
             .show();
-        status.find('a.comments')
+        status.find('.board-status__comments')
             .text(level.CommentCount + ' comments')
             .attr('href', '/forums/thread.aspx?puzzle=' + level.Id)
             .attr('target', '_blank')
@@ -1783,11 +1783,11 @@ robozzle.displayDesign = function () {
     $('#design-panel-container').show();
     $('#design-selection').show();
 
-    var status = $('#statusbar');
-    status.find('span.title').text("Designing a puzzle");
-    status.find('div.about').text("Design a puzzle, solve it, and then submit it to challenge others.").show();
-    status.find('a.stats').hide();
-    status.find('a.comments').hide();
+    var status = $('#board-status');
+    status.find('.board-status__title').text("Designing a puzzle");
+    status.find('.board-status__about').text("Design a puzzle, solve it, and then submit it to challenge others.").show();
+    status.find('.board-status__stats').hide();
+    status.find('.board-status__comments').hide();
 
     if (!robozzle.design) {
         robozzle.design = robozzle.defaultDesign();
