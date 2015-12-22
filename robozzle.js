@@ -427,8 +427,8 @@ robozzle.setSortKind = function (sortKind) {
     if (isNaN(sortKind)) {
         sortKind = -1;
     }
-    $('.level-menu__item').removeClass('level-menu__item--active');
-    $('.level-menu__item[data-kind="' + sortKind + '"]').addClass('level-menu__item--active');
+    $('.level-menu__item').removeClass('-active');
+    $('.level-menu__item[data-kind="' + sortKind + '"]').addClass('-active');
     robozzle.sortKind = sortKind;
     localStorage.setItem('sortKind', sortKind);
 };
@@ -2534,10 +2534,10 @@ robozzle.updateDesignUrl = function () {
 
 robozzle.setPageTab = function (name) {
     robozzle.stepReset();
-    $('.page-menu__item').removeClass('page-menu__item--active');
+    $('.page-menu__item').removeClass('-active');
     $('.page-content__tab').hide();
     if (name) {
-        $('#menu-' + name).addClass('page-menu__item--active');
+        $('#menu-' + name).addClass('-active');
         $('#content-' + name).show();
     }
 };

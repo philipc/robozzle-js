@@ -45,7 +45,7 @@ body {
     &__item:hover {
         background-color: #a0a0a0;
     }
-    &__item--active, &__item--active:hover {
+    &__item.-active, &__item.-active:hover {
         background-color: #707070;
         color: white;
     }
@@ -82,7 +82,7 @@ body {
         background-color: #606060;
         &:hover {
             background-color: #404040; }
-        &--active, &--active:hover {
+        &.-active, &.-active:hover {
             background-color: #909090; }
     }
 }
