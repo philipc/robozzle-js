@@ -631,23 +631,22 @@ robozzle.isTutorialLevel = function (id) {
 robozzle.displayBoard = function (level, design) {
     var stars = 0;
     var board = [];
-    var $board = $('<table/>').addClass('board');
+    var $board = $('<table class="board__grid"/>');
     for (var j = 0; j < level.Colors.length; j++) {
         var colors = level.Colors[j];
         var items = level.Items[j];
         var row = [];
         var $row = $('<tr/>');
         for (var i = 0; i < colors.length; i++) {
-            var $item = $('<div/>').addClass('item');
-            var $cell = $('<td/>')
+            var $item = $('<div class="tile__item"/>');
+            var $cell = $('<td class="board__tile tile"/>')
                 .attr('data-col', i)
                 .attr('data-row', j)
-                .addClass('board')
                 .append($item);
             if (items.charAt(i) !== '#') {
-                $cell.updateClass('board-color', colors.charAt(i));
+                $cell.updateClass('-color', colors.charAt(i));
                 if (items.charAt(i) === '*') {
-                    $item.addClass('board-star');
+                    $item.updateClass('-item', 'star');
                     stars++;
                 }
                 if (!design) {
@@ -688,7 +687,8 @@ robozzle.displayBoard = function (level, design) {
         board.push(row);
         $board.append($row);
     }
-    var $robot = $('<div/>').attr('id', 'robot').addClass('robot').pointerEventsNone();
+    var $robot = $('<div id="robot" class="board__robot tile"/>').pointerEventsNone()
+            .append($('<div class="tile__robot"/>'));
     $('#board').empty().append($board).append($robot);
     robozzle.board = board;
     robozzle.starsMax = stars;
@@ -1375,7 +1375,7 @@ robozzle.setGame = function (id, program) {
 
 robozzle.hoverDesignSelection = function ($src) {
     if ($src) {
-        robozzle.designHoverColor = $src.getClass('board-color');
+        robozzle.designHoverColor = $src.getClass('-color');
         if ($src.attr('data-col') == robozzle.robotCol && $src.attr('data-row') == robozzle.robotRow) {
             robozzle.designHoverRobot = robozzle.robotDir;
         } else {
@@ -1422,9 +1422,9 @@ robozzle.moveDesignSelection = function ($src, x, y) {
         color = 'error';
     }
 
-    $('#design-selection').updateClass('board-color', color);
-    $('#design-selection .robot').updateClass('robot', robot);
-    $('#design-selection .item').updateClass('board', item);
+    $('#design-selection').updateClass('-color', color);
+    $('#design-selection .tile__robot').updateClass('-robot', robot);
+    $('#design-selection .tile__item').updateClass('-item', item);
 };
 
 robozzle.setDesignSelection = function (color, item, robot) {
@@ -1452,11 +1452,11 @@ robozzle.hideDesignSelection = function (condition, command) {
 
 robozzle.clickDesignSelection = function ($cell) {
     if (robozzle.designSelectionColor !== null) {
-        $cell.updateClass('board-color', robozzle.designSelectionColor);
-        $cell.find('.item').updateClass('board', null);
+        $cell.updateClass('-color', robozzle.designSelectionColor);
+        $cell.find('.tile__item').updateClass('-item', null);
     } else if (robozzle.designSelectionRobot !== null) {
-        if ($cell.getClass('board-color')) {
-            $cell.find('.item').updateClass('board', null);
+        if ($cell.getClass('-color')) {
+            $cell.find('.tile__item').updateClass('-item', null);
             robozzle.robotCol = parseInt($cell.attr('data-col'));
             robozzle.robotRow = parseInt($cell.attr('data-row'));
             robozzle.robotDir = robozzle.designSelectionRobot;
@@ -1471,12 +1471,12 @@ robozzle.clickDesignSelection = function ($cell) {
         }
     } else if ($cell.attr('data-col') != robozzle.robotCol || $cell.attr('data-row') != robozzle.robotRow) {
         if (robozzle.designSelectionItem == 'star') {
-            if ($cell.getClass('board-color')) {
-                $cell.find('.item').updateClass('board', 'star');
+            if ($cell.getClass('-color')) {
+                $cell.find('.tile__item').updateClass('-item', 'star');
             }
         } else if (robozzle.designSelectionItem == 'erase') {
-            $cell.updateClass('board-color', null);
-            $cell.find('.item').updateClass('board', null);
+            $cell.updateClass('-color', null);
+            $cell.find('.tile__item').updateClass('-item', null);
         }
     }
     robozzle.updateDesignUrl();
@@ -1485,32 +1485,29 @@ robozzle.clickDesignSelection = function ($cell) {
 robozzle.displayDesignToolbar = function () {
     var $toolbar = $('#design-toolbar').empty();
     var makeColor = function (color, title) {
-        return $('<div/>')
+        return $('<div class="design-toolbar__tile tile"/>')
             .prop('title', title)
-            .addClass('board')
-            .updateClass('board-color', color)
+            .updateClass('-color', color)
             .click(function (e) {
                 robozzle.setDesignSelection(color, null, null);
                 e.stopPropagation();
             });
     }
     var makeItem = function (item, title) {
-        return $('<div/>')
+        return $('<div class="design-toolbar__tile tile"/>')
             .prop('title', title)
-            .addClass('board')
-            .addClass('board-icon')
-            .append($('<div/>').addClass('item').updateClass('board', item))
+            .updateClass('-color', 'icon')
+            .append($('<div class="tile__item"/>').updateClass('-item', item))
             .click(function (e) {
                 robozzle.setDesignSelection(null, item, null);
                 e.stopPropagation();
             });
     }
     var makeRobot = function (robot, title) {
-        return $('<div/>')
+        return $('<div class="design-toolbar__tile tile"/>')
             .prop('title', title)
-            .addClass('board')
-            .addClass('board-icon')
-            .append($('<div/>').addClass('robot').updateClass('robot', robot))
+            .updateClass('-color', 'icon')
+            .append($('<div class="tile__robot"/>').updateClass('-robot', robot))
             .click(function (e) {
                 robozzle.setDesignSelection(null, null, robot);
                 e.stopPropagation();
@@ -1728,15 +1725,15 @@ robozzle.readDesign = function () {
         for (i = 0; i < row.length; i++) {
             var $cell = row[i];
 
-            var color = $cell.getClass('board-color');
+            var color = $cell.getClass('-color');
             if (!color) {
                 colors += 'B';
                 items += '#';
             } else {
                 colors += color;
 
-                var $item = $cell.find('.item');
-                if ($item.hasClass('board-star')) {
+                var $item = $cell.find('.tile__item');
+                if ($item.getClass('-item') === 'star') {
                     items += '*';
                 } else {
                     items += '.';
@@ -1832,15 +1829,14 @@ robozzle.moveRobot = function () {
         robozzle.robotRow = row;
 
         var $cell = robozzle.board[row][col];
-        var color = $cell.getClass('board-color');
+        var color = $cell.getClass('-color');
         if (!color)
             crash = true;
 
-        var $item = $cell.find('.item');
-        if ($item.hasClass('board-star')) {
+        var $item = $cell.find('.tile__item');
+        if ($item.getClass('-item') === 'star') {
             $item.animate({ opacity: 0 }, robozzle.robotDelay)
-                .removeClass('board-star')
-                .addClass('board-star-fade');
+                .updateClass('-item', 'starfade');
             robozzle.stars--;
         }
     }
@@ -1942,7 +1938,7 @@ robozzle.stepExecute = function (calls) {
     var cond = $cmd.getClass('condition');
     var cmd = $cmd.find('.command').getClass('command');
     var $cell = robozzle.board[robozzle.robotRow][robozzle.robotCol];
-    var color = $cell.getClass('board-color');
+    var color = $cell.getClass('-color');
     robozzle.stack[0].cmd++;
     if (cond == 'any' || cond == color) {
         var highlightOffset = $cmd.offset();
@@ -1961,9 +1957,9 @@ robozzle.stepExecute = function (calls) {
         case '3': robozzle.callSub(calls, 2); break;
         case '4': robozzle.callSub(calls, 3); break;
         case '5': robozzle.callSub(calls, 4); break;
-        case 'R': $cell.updateClass('board-color', 'R'); robozzle.stepWait(); break;
-        case 'G': $cell.updateClass('board-color', 'G'); robozzle.stepWait(); break;
-        case 'B': $cell.updateClass('board-color', 'B'); robozzle.stepWait(); break;
+        case 'R': $cell.updateClass('-color', 'R'); robozzle.stepWait(); break;
+        case 'G': $cell.updateClass('-color', 'G'); robozzle.stepWait(); break;
+        case 'B': $cell.updateClass('-color', 'B'); robozzle.stepWait(); break;
         }
         $(robozzle.robotAnimation).queue(function () {
             $('#program-highlight').css('visibility', 'hidden');
