@@ -2736,6 +2736,9 @@ $(document).ready(function () {
     $(document).keydown(function(e) {
         if (e.keyCode == 27) {
             robozzle.cancelDialog();
+            robozzle.hideSelection();
+            robozzle.hideDesignSelection();
+            robozzle.stepReset();
         }
     });
 
