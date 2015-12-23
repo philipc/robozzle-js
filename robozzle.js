@@ -183,8 +183,12 @@ robozzle.encodeSOAP = function (SOAPObject, method, data) {
 };
 
 robozzle.service = function (method, data, success, error) {
+    var url = '/RobozzleService.svc';
+    if (document.domain === 'robozzle.com') {
+        url = '//www.robozzle.com/RobozzleService.svc';
+    }
     return $.soap({
-        url: '/RobozzleService.svc',
+        url: url,
         appendMethodToURL: false,
         namespaceURL: 'http://tempuri.org/',
         SOAPAction: 'http://tempuri.org/IRobozzleService/' + method,
