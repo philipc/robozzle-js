@@ -292,7 +292,7 @@ body {
     height: 100%;
     background-color: rgba(80,80,80,0.2);
 }
-#tutorial {
+.tutorial-dialog {
     z-index: 101;
     position: relative;
     width: 400px;
@@ -300,12 +300,14 @@ body {
     padding: 10px;
     border-radius: 4px;
     background-color: #707070;
-    color: white;
-}
-.tutorial-button {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
+    &__message {
+        color: white;
+    }
+    &__button-list {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
 }
 .tutorial-highlight {
     display: none;
@@ -316,10 +318,10 @@ body {
     right: 0;
     margin: -5px;
     border: 5px solid yellow;
+    &.-sublen2 {
+        right: 90px;
+    }
 }
-#tutorial-highlight-sub-f2 {
-    width: 60px;
-};
 #board {
     position: relative;
 }

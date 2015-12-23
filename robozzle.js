@@ -995,7 +995,7 @@ robozzle.displayProgram = function (level, commands) {
             continue;
         }
         var $subgrid = $('<div/>').addClass('sub-grid').addClass('table-column');
-        $subgrid.append($('<div id="tutorial-highlight-sub-f' + (j+1) + '" class="tutorial-highlight">'));
+        $subgrid.append($('<div id="tutorial-highlight-sub-f' + (j+1) + '" class="tutorial-highlight -sublen' + sublength + '">'));
         for (var i = 0; i < sublength; i++) {
             var $condition = $('<div/>')
                 .addClass('sub-cell')
