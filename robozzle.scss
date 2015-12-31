@@ -545,6 +545,7 @@ body {
 .program-list {
     display: table;
     border-spacing: 10px;
+    cursor: default;
 
     &__item {
         display: table-row;
@@ -702,9 +703,6 @@ body {
 }
 
 
-#program-container {
-    cursor: default;
-}
 #program {
     padding: 5px;
     margin: 5px;
