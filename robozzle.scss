@@ -467,6 +467,241 @@ body {
     }
 }
 
+@mixin command-f {
+    background: svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <path fill="#eeeeee" stroke="none" d="M14,25 16,25 16,9 19.5,15 21.5,15 16,5 14,5 8.5,15 10.5,15 14,9 z"/>\
+        </svg>');
+}
+@mixin command-turn {
+    background: svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+        <path fill="#eeeeee" stroke="none" d="M5,25 C5,14 11,11 22,11 L15,7 15,5 25,11 25,13 15,18 15,16 22,13 C12,13 7,15 7,25 z"/>\
+        </svg>');
+}
+@mixin command-sub($i) {
+    background: svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <text text-anchor="middle" x="15" y="22" font-size="18" font-family="Verdana, sans-serif" fill="#eeeeee" stroke="none">F' + $i + '</text>\
+        </svg>');
+}
+@mixin command-paint($color) {
+    background: svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <circle cx="15" cy="15" r="8.5" stroke="black" fill="' + $color + '"/>\
+        </svg>');
+}
+@mixin command-condition($color1, $color2) {
+    background: svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <defs>\
+                <linearGradient id="conditionfill" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="' + $color1 + '"/>\
+                    <stop offset="1" stop-color="' + $color2 + '"/>\
+                </linearGradient>\
+            </defs>\
+            <rect x="4.5" y="4.5" width="21" height="21" fill="url(#conditionfill)" stroke="black"/>\
+        </svg>');
+}
+@mixin condition($color1, $color2) {
+    background: svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <defs>\
+                <linearGradient id="conditionfill" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="' + $color1 + '"/>\
+                    <stop offset="1" stop-color="' + $color2 + '"/>\
+                </linearGradient>\
+            </defs>\
+            <rect x="0.5" y="0.5" width="29" height="29" fill="url(#conditionfill)" stroke="#404040"/>\
+        </svg>');
+}
+
+.command {
+    &.-command-f {
+        @include command-f;
+    }
+    &.-command-r, &.-command-l {
+        @include command-turn;
+    }
+    &.-command-l {
+        transform: scale(-1,1);
+    }
+    @for $i from 1 through 5 {
+        &.-command-#{$i} {
+            @include command-sub($i);
+        }
+    }
+    &.-command-R {
+        @include command-paint(#c53838);
+    }
+    &.-command-G {
+        @include command-paint(#339933);
+    }
+    &.-command-B {
+        @include command-paint(#3333cc);
+    }
+}
+
+.program-list {
+    display: table;
+    border-spacing: 10px;
+
+    &__item {
+        display: table-row;
+    }
+    &__label {
+        display: table-cell;
+        vertical-align: middle;
+        font-size: 14px;
+    }
+    &__grid {
+        display: table-cell;
+        vertical-align: top;
+        position: relative;
+        white-space: nowrap;
+    }
+    &__condition {
+        display: inline-block;
+        position: relative;
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        vertical-align: middle;
+        text-align: center;
+        color: #707070;
+        font-size: 12px;
+        @include condition(#c0c0c0, #dddddd);
+        &.-condition-any {
+            @include condition(#909090, #606060);
+        }
+        &.-condition-R {
+            @include condition(#ff6868, #c53838);
+        }
+        &.-condition-G {
+            @include condition(#63c963, #339933);
+        }
+        &.-condition-B {
+            @include condition(#6363ff, #3333cc);
+        }
+    }
+    &__command {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+@mixin program-icon {
+    background: svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <defs>\
+                <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>\
+                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
+                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>\
+                </linearGradient>\
+            </defs>\
+            <rect width="100%" height="100%" fill="#595959" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
+        </svg>');
+}
+@mixin program-icon-hover {
+    background: svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <defs>\
+                <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>\
+                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
+                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>\
+                </linearGradient>\
+                <linearGradient id="hovershinebrush" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.3"/>\
+                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
+                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
+                    <stop offset="0.856" stop-color="#ffffff" stop-opacity="0"/>\
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0.15"/>\
+                </linearGradient>\
+            </defs>\
+            <rect width="100%" height="100%" fill="#393939" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#hovershinebrush)" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
+        </svg>');
+}
+@mixin program-icon-hover-active {
+    background: svg(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
+            <defs>\
+                <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>\
+                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
+                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>\
+                </linearGradient>\
+                <linearGradient id="pressedbrush" x1="0" y1="0" x2="0" y2="1">\
+                    <stop offset="0" stop-color="#000000" stop-opacity="0.30"/>\
+                    <stop offset="0.467" stop-color="#000000" stop-opacity="0.30"/>\
+                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0.15"/>\
+                    <stop offset="1" stop-color="#ffffff" stop-opacity="0.15"/>\
+                </linearGradient>\
+            </defs>\
+            <rect width="100%" height="100%" fill="#595959" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#pressedbrush)" stroke="none"/>\
+            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
+        </svg>');
+}
+
+.program-toolbar {
+    background-color: #707070;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 4px;
+    &__icon-group {
+        position: relative;
+        padding: 5px;
+    }
+    &__icon {
+        position: relative;
+        display: block;
+        outline: none;
+        width: 32px;
+        height: 32px;
+        border-color: black;
+        border-style: solid;
+        border-width: 1px;
+        margin: -1px;
+        padding: 0;
+        &::-moz-focus-inner {
+            border: 0;
+            padding: 0;
+        }
+
+        @include program-icon;
+        &:hover {
+            @include program-icon-hover; }
+        &:hover:active {
+            @include program-icon-hover-active; }
+    }
+    &__command {
+        width: 100%;
+        height: 100%;
+        &.-condition-any {
+            @include command-condition(#909090, #606060);
+        }
+        &.-condition-R {
+            @include command-condition(#ff6868, #c53838);
+        }
+        &.-condition-G {
+            @include command-condition(#63c963, #339933);
+        }
+        &.-condition-B {
+            @include command-condition(#6363ff, #3333cc);
+        }
+    }
+}
+
+
 #program-container {
     cursor: default;
 }
@@ -503,12 +738,6 @@ body {
     //box-sizing: border-box;
     width: 100px; // box sizing isn't working on range input
 }
-#program-toolbar {
-    background-color: #707070;
-    padding: 5px;
-    margin: 5px;
-    border-radius: 4px;
-}
 #program-highlight {
     display: none;
     visibility: hidden;
@@ -525,6 +754,7 @@ body {
 .program-selection-highlight {
     border: 1px yellow solid;
 }
+
 #design-panel {
     padding: 5px;
     margin: 5px;
@@ -563,52 +793,7 @@ body {
 .design-selection-highlight {
     border: 2px yellow solid;
 }
-.icon-group {
-    position: relative;
-    padding: 5px;
-}
-.icon {
-    position: relative;
-    display: block;
-    outline: none;
-    width: 32px;
-    height: 32px;
-    border-color: black;
-    border-style: solid;
-    border-width: 1px;
-    margin: -1px;
-    padding: 0;
-}
-.icon::-moz-focus-inner {
-    border: 0;
-    padding: 0;
-}
-#sub-list {
-    display: table;
-    border-spacing: 10px;
-}
-div.sub {
-}
-div.sub-label {
-    vertical-align: middle;
-    font-size: 14px;
-}
-div.sub-grid {
-    position: relative;
-    white-space: nowrap;
-}
-.condition, .command {
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-}
-.command {
-    line-height: 30px;
-    text-align: center;
-    vertical-align: middle;
-    color: #707070;
-    font-size: 12px;
-}
+
 #menu-signout, #menu-user {
     display: none;
 }
@@ -751,136 +936,6 @@ div.sub-grid {
     display: none;
 }
 
-@mixin command-paint($color) {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
-            <circle cx="15" cy="15" r="8.5" stroke="black" fill="' + $color + '"/>\
-        </svg>');
-}
-.command-R {
-    @include command-paint(#c53838);
-}
-.command-G {
-    @include command-paint(#339933);
-}
-.command-B {
-    @include command-paint(#3333cc);
-}
-
-@mixin command-condition($color1, $color2) {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
-            <defs>\
-                <linearGradient id="conditionfill" x1="0" y1="0" x2="0" y2="1">\
-                    <stop offset="0" stop-color="' + $color1 + '"/>\
-                    <stop offset="1" stop-color="' + $color2 + '"/>\
-                </linearGradient>\
-            </defs>\
-            <rect x="4.5" y="4.5" width="21" height="21" fill="url(#conditionfill)" stroke="black"/>\
-        </svg>');
-}
-.command.condition-any {
-    @include command-condition(#909090, #606060);
-}
-.command.condition-R {
-    @include command-condition(#ff6868, #c53838);
-}
-.command.condition-G {
-    @include command-condition(#63c963, #339933);
-}
-.command.condition-B {
-    @include command-condition(#6363ff, #3333cc);
-}
-
-@mixin condition($color1, $color2) {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
-            <defs>\
-                <linearGradient id="conditionfill" x1="0" y1="0" x2="0" y2="1">\
-                    <stop offset="0" stop-color="' + $color1 + '"/>\
-                    <stop offset="1" stop-color="' + $color2 + '"/>\
-                </linearGradient>\
-            </defs>\
-            <rect x="0.5" y="0.5" width="29" height="29" fill="url(#conditionfill)" stroke="#404040"/>\
-        </svg>');
-}
-div.condition {
-    @include condition(#c0c0c0, #dddddd);
-}
-div.condition-any {
-    @include condition(#909090, #606060);
-}
-div.condition-R {
-    @include condition(#ff6868, #c53838);
-}
-div.condition-G {
-    @include condition(#63c963, #339933);
-}
-div.condition-B {
-    @include condition(#6363ff, #3333cc);
-}
-
-.icon {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
-            <defs>\
-                <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
-                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>\
-                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
-                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
-                    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>\
-                </linearGradient>\
-            </defs>\
-            <rect width="100%" height="100%" fill="#595959" stroke="none"/>\
-            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
-        </svg>');
-}
-.icon:hover {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
-            <defs>\
-                <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
-                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>\
-                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
-                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
-                    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>\
-                </linearGradient>\
-                <linearGradient id="hovershinebrush" x1="0" y1="0" x2="0" y2="1">\
-                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.3"/>\
-                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
-                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
-                    <stop offset="0.856" stop-color="#ffffff" stop-opacity="0"/>\
-                    <stop offset="1" stop-color="#ffffff" stop-opacity="0.15"/>\
-                </linearGradient>\
-            </defs>\
-            <rect width="100%" height="100%" fill="#393939" stroke="none"/>\
-            <rect width="100%" height="100%" fill="url(#hovershinebrush)" stroke="none"/>\
-            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
-        </svg>');
-}
-.icon:hover:active {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
-            <defs>\
-                <linearGradient id="shinebrush" x1="0" y1="0" x2="0" y2="1">\
-                    <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>\
-                    <stop offset="0.467" stop-color="#ffffff" stop-opacity="0.15"/>\
-                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0"/>\
-                    <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>\
-                </linearGradient>\
-                <linearGradient id="pressedbrush" x1="0" y1="0" x2="0" y2="1">\
-                    <stop offset="0" stop-color="#000000" stop-opacity="0.30"/>\
-                    <stop offset="0.467" stop-color="#000000" stop-opacity="0.30"/>\
-                    <stop offset="0.475" stop-color="#ffffff" stop-opacity="0.15"/>\
-                    <stop offset="1" stop-color="#ffffff" stop-opacity="0.15"/>\
-                </linearGradient>\
-            </defs>\
-            <rect width="100%" height="100%" fill="#595959" stroke="none"/>\
-            <rect width="100%" height="100%" fill="url(#pressedbrush)" stroke="none"/>\
-            <rect width="100%" height="100%" fill="url(#shinebrush)" stroke="none"/>\
-        </svg>');
-}
-
 // Others' difficulty vote average: display based on class
 @for $i from 0 through 10 {
     .difficulty-val-#{$i} {
@@ -933,30 +988,4 @@ label.difficulty-val-user {
         '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
             <rect x="2.5" y="2.5" width="11" height="11" fill="white" stroke="black"/>\
         </svg>');
-}
-
-.command-f {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
-            <path fill="#eeeeee" stroke="none" d="M14,25 16,25 16,9 19.5,15 21.5,15 16,5 14,5 8.5,15 10.5,15 14,9 z"/>\
-        </svg>');
-}
-
-.command-r, .command-l {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
-        <path fill="#eeeeee" stroke="none" d="M5,25 C5,14 11,11 22,11 L15,7 15,5 25,11 25,13 15,18 15,16 22,13 C12,13 7,15 7,25 z"/>\
-        </svg>');
-}
-.command-l {
-    transform: scale(-1,1);
-}
-
-@for $i from 1 through 5 {
-    .command-#{$i} {
-        background: svg(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">\
-                <text text-anchor="middle" x="15" y="22" font-size="18" font-family="Verdana, sans-serif" fill="#eeeeee" stroke="none">F' + $i + '</text>\
-            </svg>');
-    }
 }

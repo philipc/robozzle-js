@@ -767,8 +767,8 @@ robozzle.moveSelection = function ($src, x, y) {
         robozzle.selectionOffset = $('#program-container').offset();
     }
     $('#program-selection').filter(':visible').offset(robozzle.selectionOffset);
-    $('#program-selection').updateClass('condition', robozzle.selectionCondition || robozzle.hoverCondition || 'any');
-    $('#program-selection .command').updateClass('command', robozzle.selectionCommand || robozzle.hoverCommand || null);
+    $('#program-selection').updateClass('-condition', robozzle.selectionCondition || robozzle.hoverCondition || 'any');
+    $('#program-selection .command').updateClass('-command', robozzle.selectionCommand || robozzle.hoverCommand || null);
 };
 
 robozzle.setSelection = function (condition, command) {
@@ -870,8 +870,8 @@ robozzle.encodeProgram = function () {
         robozzle.encodeBits(encodeState, sub.length, 4);
         for (var i = 0; i < sub.length; i++) {
             var $cmd = sub[i];
-            var cond = $cmd.getClass('condition');
-            var cmd = $cmd.find('.command').getClass('command');
+            var cond = $cmd.getClass('-condition');
+            var cmd = $cmd.find('.command').getClass('-command');
             robozzle.encodeCommand(encodeState, cond, cmd);
         }
     }
@@ -986,7 +986,7 @@ robozzle.displayProgram = function (level, commands) {
         commands = [];
     }
     var program = [];
-    var $sublist = $('#sub-list').empty();
+    var $sublist = $('#program-list').empty();
     for (var j = 0; j < 5; j++) {
         var sub = [];
         var sublength = parseInt(level.SubLengths[j]);
@@ -994,29 +994,27 @@ robozzle.displayProgram = function (level, commands) {
             program.push(sub);
             continue;
         }
-        var $subgrid = $('<div/>').addClass('sub-grid').addClass('table-column');
+        var $subgrid = $('<div class="program-list__grid"/>');
         $subgrid.append($('<div id="tutorial-highlight-sub-f' + (j+1) + '" class="tutorial-highlight -sublen' + sublength + '">'));
         for (var i = 0; i < sublength; i++) {
-            var $condition = $('<div/>')
-                .addClass('sub-cell')
-                .addClass('condition')
+            var $condition = $('<div class="program-list__condition"/>')
                 .on('mousemove', function (e) {
-                    robozzle.hoverSelection($(this).getClass('condition'),
-                                            $(this).find('.command').getClass('command'));
+                    robozzle.hoverSelection($(this).getClass('-condition'),
+                                            $(this).find('.command').getClass('-command'));
                     robozzle.moveSelection($(this));
                     e.stopPropagation();
                 })
                 .click(function (e) {
-                    var condition = $(this).getClass('condition');
-                    var command = $(this).find('.command').getClass('command');
+                    var condition = $(this).getClass('-condition');
+                    var command = $(this).find('.command').getClass('-command');
                     if (robozzle.selection) {
                         if (robozzle.selectionCondition) {
-                            $(this).updateClass('condition', robozzle.selectionCondition);
-                        } else if (!$(this).getClass('condition')) {
-                            $(this).updateClass('condition', 'any');
+                            $(this).updateClass('-condition', robozzle.selectionCondition);
+                        } else if (!$(this).getClass('-condition')) {
+                            $(this).updateClass('-condition', 'any');
                         }
                         if (robozzle.selectionCommand) {
-                            $(this).find('.command').updateClass('command', robozzle.selectionCommand);
+                            $(this).find('.command').updateClass('-command', robozzle.selectionCommand);
                         }
                         $(this).find('span').hide();
                         robozzle.hideSelection();
@@ -1028,27 +1026,27 @@ robozzle.displayProgram = function (level, commands) {
                             robozzle.setSelection(condition, command);
                         }
                     } else {
-                        $(this).updateClass('condition', null);
-                        $(this).find('.command').updateClass('command', null);
+                        $(this).updateClass('-condition', null);
+                        $(this).find('.command').updateClass('-command', null);
                         $(this).find('span').show();
                         robozzle.setSelection(condition, command);
                     }
-                    robozzle.hoverSelection($(this).getClass('condition'),
-                                            $(this).find('.command').getClass('command'));
+                    robozzle.hoverSelection($(this).getClass('-condition'),
+                                            $(this).find('.command').getClass('-command'));
                     robozzle.updatePuzzleUrl();
                     e.stopPropagation();
                 });
-            var $command = $('<div/>').addClass('command');
+            var $command = $('<div class="program-list__command command"/>');
             var $label = $('<span/>').text(i);
             if (j < commands.length && i < commands[j].length) {
                 // TODO: validate commands
                 if (commands[j][i][0] != null) {
-                    $condition.updateClass('condition', commands[j][i][0]);
-                    $command.updateClass('command', commands[j][i][1]);
+                    $condition.updateClass('-condition', commands[j][i][0]);
+                    $command.updateClass('-command', commands[j][i][1]);
                     $label.hide();
                 } else if (commands[j][i][1] != null) {
-                    $condition.updateClass('condition', 'any');
-                    $command.updateClass('command', commands[j][i][1]);
+                    $condition.updateClass('-condition', 'any');
+                    $command.updateClass('-command', commands[j][i][1]);
                     $label.hide();
                 }
             }
@@ -1056,11 +1054,11 @@ robozzle.displayProgram = function (level, commands) {
                 $subgrid.append($('<br/>'));
             }
             sub.push($condition);
-            $subgrid.append($condition.append($command.append($label)));
+            $subgrid.append($condition.append($command).append($label));
         }
         program.push(sub);
-        var $sublabel = $('<div/>').addClass('sub-label').addClass('table-column').text('F' + (j + 1));
-        var $sub = $('<div/>').addClass('sub').addClass('table-row').append($sublabel).append($subgrid);
+        var $sublabel = $('<div class="program-list__label"/>').text('F' + (j + 1));
+        var $sub = $('<div class="program-list__item"/>').append($sublabel).append($subgrid);
         $sublist.append($sub);
     }
     robozzle.program = program;
@@ -1073,8 +1071,8 @@ robozzle.readProgram = function () {
         var sub = [];
         for (var i = 0; i < $sub.length; i++) {
             var $cmd = $sub[i];
-            var cond = $cmd.getClass('condition');
-            var cmd = $cmd.find('.command').getClass('command');
+            var cond = $cmd.getClass('-condition');
+            var cmd = $cmd.find('.command').getClass('-command');
             sub.push([cond, cmd]);
         }
         program.push(sub);
@@ -1089,7 +1087,7 @@ robozzle.encodeSolution = function () {
         var sub = robozzle.program[j];
         for (var i = 0; sub[i]; i++) {
             var $cmd = sub[i];
-            var cond = $cmd.getClass('condition');
+            var cond = $cmd.getClass('-condition');
             switch (cond) {
             case 'any': program += '_'; break;
             case 'R': program += 'r'; break;
@@ -1097,7 +1095,7 @@ robozzle.encodeSolution = function () {
             case 'B': program += 'b'; break;
             default: continue;
             }
-            var cmd = $cmd.find('.command').getClass('command');
+            var cmd = $cmd.find('.command').getClass('-command');
             switch (cmd) {
             case 'f': program += 'F'; break;
             case 'l': program += 'L'; break;
@@ -1175,10 +1173,9 @@ robozzle.submitLevelVote = function () {
 robozzle.displayProgramToolbar = function (level) {
     var $toolbar = $('#program-toolbar').empty();
     var makeCommand = function (command, title) {
-        var ret = $('<button/>')
+        var ret = $('<button class="program-toolbar__icon"/>')
             .prop('title', title)
-            .addClass('icon')
-            .append($('<div/>').addClass('command').updateClass('command', command))
+            .append($('<div class="program-toolbar__command command"/>').updateClass('-command', command))
             .click(function (e) {
                 robozzle.setSelection(null, command);
                 e.stopPropagation();
@@ -1189,10 +1186,9 @@ robozzle.displayProgramToolbar = function (level) {
         return ret;
     }
     var makeCondition = function (condition, title) {
-        var ret = $('<button/>')
+        var ret = $('<button class="program-toolbar__icon"/>')
             .prop('title', title)
-            .addClass('icon')
-            .append($('<div/>').addClass('command').updateClass('condition', condition))
+            .append($('<div class="program-toolbar__command command"/>').updateClass('-condition', condition))
             .click(function (e) {
                 robozzle.setSelection(condition, null);
                 e.stopPropagation();
@@ -1203,14 +1199,14 @@ robozzle.displayProgramToolbar = function (level) {
         return ret;
     }
     $toolbar.append(
-            $('<div/>').addClass('icon-group')
+            $('<div/>').addClass('program-toolbar__icon-group')
             .append(makeCommand('f', 'Move forward (w)'),
                     makeCommand('l', 'Turn left (q)'),
                     makeCommand('r', 'Turn right (e)'),
                     $('<div id="tutorial-highlight-move" class="tutorial-highlight">')));
 
     if (!level.DisallowSubs) {
-        var $group = $('<div/>').addClass('icon-group');
+        var $group = $('<div/>').addClass('program-toolbar__icon-group');
         for (var i = 0; i < 5; i++) {
             if (parseInt(level.SubLengths[i])) {
                 $group.append(makeCommand(i + 1, 'Call F' + (i + 1) + ' (' + (i + 1) + ')'));
@@ -1221,7 +1217,7 @@ robozzle.displayProgramToolbar = function (level) {
 
     var allowedCommands = parseInt(level.AllowedCommands);
     if (allowedCommands) {
-        var $group = $('<div/>').addClass('icon-group');
+        var $group = $('<div/>').addClass('program-toolbar__icon-group');
         if (allowedCommands & 1) {
             $group.append(makeCommand('R', 'Paint red (R)'));
         }
@@ -1236,7 +1232,7 @@ robozzle.displayProgramToolbar = function (level) {
 
     if (!level.DisallowColors) {
         $toolbar.append(
-                $('<div/>').addClass('icon-group')
+                $('<div/>').addClass('program-toolbar__icon-group')
                 .append(makeCondition('any', 'No condition (n)'),
                         makeCondition('R', 'Red condition (r)'),
                         makeCondition('G', 'Green condition (g)'),
@@ -1935,8 +1931,8 @@ robozzle.stepExecute = function (calls) {
         }
         return;
     }
-    var cond = $cmd.getClass('condition');
-    var cmd = $cmd.find('.command').getClass('command');
+    var cond = $cmd.getClass('-condition');
+    var cmd = $cmd.find('.command').getClass('-command');
     var $cell = robozzle.board[robozzle.robotRow][robozzle.robotCol];
     var color = $cell.getClass('-color');
     robozzle.stack[0].cmd++;
