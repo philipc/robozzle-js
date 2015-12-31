@@ -1710,7 +1710,7 @@ robozzle.defaultDesign = function () {
     level.RobotCol = 7;
     level.RobotRow = 6;
     level.AllowedCommands = 0;
-    level.SubLengths = [ 10, 10, 10, 10, 10 ];
+    level.SubLengths = [ 10, 0, 0, 0, 0 ];
     level.Title = '';
     level.About = '';
     return level;
