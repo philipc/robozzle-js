@@ -1302,7 +1302,9 @@ robozzle.displayGame = function (level, program) {
         return;
     }
 
-    robozzle.setPageTab(null);
+    if (level.Id) {
+        robozzle.setPageTab(null);
+    }
     $('#content-game').show();
     $('#content-game').children().hide();
     $('#board-container').show();
