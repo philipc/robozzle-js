@@ -2,6 +2,9 @@
     @return url('data:image/svg+xml;charset=utf-8;base64,' + base64Encode($svg));
 }
 
+#templates {
+    display: none;
+}
 body {
     background-color: #484848;
     font-family: Verdana, sans-serif;
@@ -798,6 +801,7 @@ body {
 #menu-signout, #menu-user {
     display: none;
 }
+
 #dialog-modal {
     display: none;
     z-index: 100;
@@ -862,6 +866,7 @@ body {
     box-sizing: border-box;
     width: 100%;
 }
+
 #dialog-message {
     width: 450px;
     margin: 250px auto 0;
@@ -886,37 +891,35 @@ body {
     width: 400px;
     margin: 250px auto 0;
 }
-.votes input {
-    position: absolute;
-    left: -999px;
-    clip: rect(0px, 0px, 0px, 0px);
-}
-.votes input + label {
-    display: inline-block;
-    width: 70px;
-    margin: 5px;
-    padding: 3px;
-    border: 1px solid rgba(0,0,0,0.2);
-    color: white;
-    -moz-user-select: none;
-}
-.votes input[name="like"]:checked + label {
-    background-color: #306030;
-}
-.votes input[name="dislike"]:checked + label {
-    background-color: #903030;
-}
+
 .votes {
     font-weight: bold;
-}
-.votes span.liked {
-    color: darkgreen;
-}
-.votes span.disliked {
-    color: darkred;
-}
-#templates {
-    display: none;
+    span.liked {
+        color: darkgreen;
+    }
+    span.disliked {
+        color: darkred;
+    }
+    input {
+        position: absolute;
+        left: -999px;
+        clip: rect(0px, 0px, 0px, 0px);
+    }
+    input + label {
+        display: inline-block;
+        width: 70px;
+        margin: 5px;
+        padding: 3px;
+        border: 1px solid rgba(0,0,0,0.2);
+        color: white;
+        -moz-user-select: none;
+    }
+    input[name="like"]:checked + label {
+        background-color: #306030;
+    }
+    input[name="dislike"]:checked + label {
+        background-color: #903030;
+    }
 }
 
 // Others' difficulty vote average: display based on class
