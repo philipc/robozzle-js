@@ -1,7 +1,7 @@
 JS = robozzle.js jquery.hotkeys.js jquery.soap.js sha1.js spin.min.js
 TARGETS = index.html robozzle.css $(JS)
 
-.phony: all
+.PHONY: all
 all: $(TARGETS)
 	mkdir -p install
 	cp -a $(TARGETS) install/
