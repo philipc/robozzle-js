@@ -886,24 +886,6 @@ body {
     width: 400px;
     margin: 250px auto 0;
 }
-.dialog .difficulty {
-    position: relative;
-    display: inline-block;
-}
-.dialog .difficulty input {
-    position: absolute;
-    left: -999px;
-    clip: rect(0px, 0px, 0px, 0px);
-}
-.dialog .difficulty label {
-    float: left;
-    margin: 0px;
-    width: 16px;
-    height: 16px;
-}
-.dialog .difficulty span {
-    display: none;
-}
 .votes input {
     position: absolute;
     left: -999px;
@@ -939,7 +921,7 @@ body {
 
 // Others' difficulty vote average: display based on class
 @for $i from 0 through 10 {
-    .difficulty-val-#{$i} {
+    .-difficulty-val-#{$i} {
         background: svg(
             '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
                 <defs>\
@@ -954,39 +936,60 @@ body {
     }
 }
 
-// User's vote: default to all colored
-label.difficulty-val-user {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
-            <defs>\
-                <linearGradient id="difficultyFill" x1="0" x2="0" y1="0" y2="1">\
-                    <stop offset="0" stop-color="#c04040"/>\
-                    <stop offset="1" stop-color="#903030"/>\
-                </linearGradient>\
-            </defs>\
-            <rect x="2.5" y="2.5" width="11" height="11" fill="url(#difficultyFill)" stroke="black"/>\
-        </svg>');
-}
+.difficulty-input {
+    position: relative;
+    display: inline-block;
+    input {
+        position: absolute;
+        left: -999px;
+        clip: rect(0px, 0px, 0px, 0px);
+    }
+    label {
+        float: left;
+        margin: 0px;
+        width: 16px;
+        height: 16px;
+    }
+    span {
+        display: none;
+    }
 
-// Hover vote: default to all colored
-// This must ensure it overrides the white squares for the user's vote when hovering
-.difficulty:hover label.difficulty-val, .difficulty:hover input:checked + label ~ label.difficulty-val-user {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
-            <defs>\
-                <linearGradient id="difficultyFillHover" x1="0" x2="0" y1="0" y2="1">\
-                    <stop offset="0" stop-color="#f08080"/>\
-                    <stop offset="1" stop-color="#c04040"/>\
-                </linearGradient>\
-            </defs>\
-            <rect x="2.5" y="2.5" width="11" height="11" fill="url(#difficultyFillHover)" stroke="black"/>\
-        </svg>');
-}
+    // User's vote: default to all colored
+    &__val.-difficulty-val-user {
+        background: svg(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
+                <defs>\
+                    <linearGradient id="difficultyFill" x1="0" x2="0" y1="0" y2="1">\
+                        <stop offset="0" stop-color="#c04040"/>\
+                        <stop offset="1" stop-color="#903030"/>\
+                    </linearGradient>\
+                </defs>\
+                <rect x="2.5" y="2.5" width="11" height="11" fill="url(#difficultyFill)" stroke="black"/>\
+            </svg>');
+    }
 
-// Set white squares for user's vote and hover vote
-.difficulty input:checked + label ~ label.difficulty-val-user, .difficulty:hover input + label:hover ~ label.difficulty-val {
-    background: svg(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
-            <rect x="2.5" y="2.5" width="11" height="11" fill="white" stroke="black"/>\
-        </svg>');
+    // Hover vote: default to all colored
+    // This needs higher specificity than "User's vote: white squares"
+    &:hover:hover:hover:hover &__val {
+        background: svg(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
+                <defs>\
+                    <linearGradient id="difficultyFillHover" x1="0" x2="0" y1="0" y2="1">\
+                        <stop offset="0" stop-color="#f08080"/>\
+                        <stop offset="1" stop-color="#c04040"/>\
+                    </linearGradient>\
+                </defs>\
+                <rect x="2.5" y="2.5" width="11" height="11" fill="url(#difficultyFillHover)" stroke="black"/>\
+            </svg>');
+    }
+
+    // User's vote: white squares
+    & input:checked + &__val ~ &__val.-difficulty-val-user,
+    // Hover vote: white squares
+    &:hover:hover:hover:hover &__val:hover ~ &__val {
+        background: svg(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">\
+                <rect x="2.5" y="2.5" width="11" height="11" fill="white" stroke="black"/>\
+            </svg>');
+    }
 }

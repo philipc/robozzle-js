@@ -229,11 +229,11 @@ robozzle.topSolvers = function () {
     });
 };
 
-robozzle.displayDifficulty = function (level, html) {
+robozzle.displayDifficulty = function (level, html, selector) {
     var difficultyAvg = 0;
     if (level.DifficultyVoteCount !== 0)
         difficultyAvg = Math.round(level.DifficultyVoteSum / level.DifficultyVoteCount * 10);
-    var $difficultyVal = html.find('.difficulty-val');
+    var $difficultyVal = html.find(selector);
     for (var i = 0; i < 5; i++) {
         var val = difficultyAvg - i * 10;
         if (val > 10) {
@@ -242,7 +242,7 @@ robozzle.displayDifficulty = function (level, html) {
         if (val < 0) {
             val = 0;
         }
-        $difficultyVal.eq(i).updateClass('difficulty-val', val);
+        $difficultyVal.eq(i).updateClass('-difficulty-val', val);
     }
 };
 
@@ -255,7 +255,7 @@ robozzle.displayLevelItem = function (level) {
         html.find('.level-item__level-details').hide();
         html.find('.level-item__level-votes').hide();
     } else {
-        robozzle.displayDifficulty(level, html);
+        robozzle.displayDifficulty(level, html, '.level-item__level-difficulty-val');
         html.find('.level-item__level-stats')
             .attr('href', '/puzzle.aspx?id=' + level.Id)
             .attr('target', '_blank');
@@ -2275,9 +2275,9 @@ robozzle.showSolved = function () {
         var $difficulty = $('#dialog-solved-difficulty');
         if (vote) {
             $difficulty.find('input[value="' + vote + '"]').prop('checked', true);
-            $difficulty.find('.difficulty-val').updateClass('difficulty-val', 'user');
+            $difficulty.find('.difficulty-input__val').updateClass('-difficulty-val', 'user');
         } else {
-            robozzle.displayDifficulty(robozzle.level, $difficulty);
+            robozzle.displayDifficulty(robozzle.level, $difficulty, '.difficulty-input__val');
         }
 
         $('#dialog-solved-like').prop('checked', false);
@@ -2329,7 +2329,7 @@ robozzle.initSolved = function () {
         robozzle.displaySolvedVote();
     });
     $('input[name="difficulty"]').change(function () {
-        $('#dialog-solved-difficulty').find('.difficulty-val').updateClass('difficulty-val', 'user');
+        $('#dialog-solved-difficulty').find('.difficulty-input__val').updateClass('-difficulty-val', 'user');
         robozzle.displaySolvedVote();
     });
     $('#dialog-solved-like').change(function () {
