@@ -81,18 +81,18 @@
                         </div>
                     </div>
                     <div id="program-container" class="content-game__program-panel">
-                        <div id="program">
+                        <div id="program" class="program">
                             <div id="program-list" class="program-list">
                             </div>
-                            <div id="program-control">
+                            <div class="program-control">
                                 <div>
-                                    <button id="program-go" class="button">Go!</button><button id="program-step" class="button">Step</button>
+                                    <button id="program-go" class="program-control__go">Go!</button><button id="program-step" class="program-control__step">Step</button>
                                 </div>
-                                <button id="program-edit" class="button">Edit Puzzle</button>
-                                <div id="program-speed-container" class="table-container">
-                                    <div class="table-column">Slow</div>
-                                    <div class="table-column"><input id="program-speed" type="range" min="0" max="10" value="5"></div>
-                                    <div class="table-column">Fast</div>
+                                <button id="program-edit" class="program-control__edit">Edit Puzzle</button>
+                                <div class="program-control__speed-container">
+                                    <div>Slow</div>
+                                    <div><input id="program-speed" class="program-control__speed" type="range" min="0" max="10" value="5"></div>
+                                    <div>Fast</div>
                                 </div>
                             </div>
                         </div>

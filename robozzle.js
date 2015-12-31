@@ -2609,7 +2609,7 @@ $(document).ready(function () {
     });
     // start/stop hotkey (x for execute)
     $(document).on('keydown', null, 'x', function () {
-        if ($('#program-control').is(':visible')) {
+        if ($('#program').is(':visible')) {
             if (robozzle.robotState == robozzle.robotStates.reset
                     || robozzle.robotState == robozzle.robotStates.stopped) {
                 robozzle.setRobotState(robozzle.robotStates.started);
@@ -2625,7 +2625,7 @@ $(document).ready(function () {
     });
     // step hotkey
     $(document).on('keydown', null, 's', function () {
-        if ($('#program-control').is(':visible')) {
+        if ($('#program').is(':visible')) {
             if (robozzle.robotState == robozzle.robotStates.reset
                     || robozzle.robotState == robozzle.robotStates.stopped) {
                 robozzle.setRobotState(robozzle.robotStates.stepping);

@@ -702,8 +702,7 @@ body {
     }
 }
 
-
-#program {
+.program {
     padding: 5px;
     margin: 5px;
     width: 200px;
@@ -711,31 +710,34 @@ body {
     background-color: #707070;
     color: white;
 }
-#program-control {
+.program-control {
     white-space: nowrap;
+    &__go {
+        box-sizing: border-box;
+        width: 65%;
+    }
+    &__step {
+        box-sizing: border-box;
+        width: 35%;
+    }
+    &__edit {
+        box-sizing: border-box;
+        width: 100%;
+    }
+    &__speed-container {
+        display: table;
+        margin: 0 auto;
+        > div {
+            display: table-cell;
+            vertical-align: middle;
+        }
+    }
+    &__speed {
+        //box-sizing: border-box;
+        width: 100px; // box sizing isn't working on range input
+    }
 }
-#program-control .table-column {
-    vertical-align: middle;
-}
-#program-go {
-    box-sizing: border-box;
-    width: 65%;
-}
-#program-step {
-    box-sizing: border-box;
-    width: 35%;
-}
-#program-edit {
-    box-sizing: border-box;
-    width: 100%;
-}
-#program-speed-container {
-    margin: 0 auto;
-}
-#program-speed {
-    //box-sizing: border-box;
-    width: 100px; // box sizing isn't working on range input
-}
+
 #program-highlight {
     display: none;
     visibility: hidden;
