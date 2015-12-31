@@ -738,6 +738,36 @@ body {
     }
 }
 
+.design-panel {
+    padding: 5px;
+    margin: 5px;
+    width: 190px;
+    border-radius: 4px;
+    background-color: #707070;
+    color: white;
+    > p, > fieldset > p {
+        margin: 0;
+        padding: 0;
+    }
+    &__input {
+        box-sizing: border-box;
+        width: 100%;
+    }
+    &__sub-label {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 50%;
+    }
+    &__sub {
+        box-sizing: border-box;
+        width: 50%;
+    }
+    &__solve {
+        box-sizing: border-box;
+        width: 100%;
+    }
+}
+
 #program-highlight {
     display: none;
     visibility: hidden;
@@ -746,6 +776,7 @@ body {
     height: 30px;
     border: 1px yellow solid;
 }
+
 #program-selection {
     display: none;
     visibility: hidden;
@@ -755,36 +786,6 @@ body {
     border: 1px yellow solid;
 }
 
-#design-panel {
-    padding: 5px;
-    margin: 5px;
-    width: 190px;
-    border-radius: 4px;
-    background-color: #707070;
-    color: white;
-}
-#design-panel ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-#design-panel label.label-number {
-    display: inline-block;
-    box-sizing: border-box;
-    width: 50%;
-}
-#design-panel input[type="text"] {
-    box-sizing: border-box;
-    width: 100%;
-}
-#design-panel input[type="number"] {
-    box-sizing: border-box;
-    width: 50%;
-}
-#design-panel button {
-    box-sizing: border-box;
-    width: 100%;
-}
 #design-selection {
     display: none;
     visibility: hidden;

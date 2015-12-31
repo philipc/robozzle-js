@@ -106,25 +106,21 @@
                         </div>
                     </div>
                     <div id="design-panel-container" class="content-game__design-panel">
-                        <div id="design-panel">
-                            <ul>
-                                <li><label for="design-title">Title:</label><input type="text" id="design-title"></li>
-                                <li><label for="design-about">Description:</label><input type="text" id="design-about"></li>
-                                <li><label class="label-number" for="design-f1">F1 commands:</label><input type="number" min="1" max="10" id="design-f1"></li>
-                                <li><label class="label-number" for="design-f2">F2 commands:</label><input type="number" min="0" max="10" id="design-f2"></li>
-                                <li><label class="label-number" for="design-f3">F3 commands:</label><input type="number" min="0" max="10" id="design-f3"></li>
-                                <li><label class="label-number" for="design-f4">F4 commands:</label><input type="number" min="0" max="10" id="design-f4"></li>
-                                <li><label class="label-number" for="design-f5">F5 commands:</label><input type="number" min="0" max="10" id="design-f5"></li>
-                            </ul>
+                        <div class="design-panel">
+                            <p><label for="design-title">Title:</label><input class="design-panel__input" type="text" id="design-title"></p>
+                            <p><label for="design-about">Description:</label><input class="design-panel__input" type="text" id="design-about"></p>
+                            <p><label class="design-panel__sub-label" for="design-f1">F1 commands:</label><input class="design-panel__sub" type="number" min="1" max="10" id="design-f1"></p>
+                            <p><label class="design-panel__sub-label" for="design-f2">F2 commands:</label><input class="design-panel__sub" type="number" min="0" max="10" id="design-f2"></p>
+                            <p><label class="design-panel__sub-label" for="design-f3">F3 commands:</label><input class="design-panel__sub" type="number" min="0" max="10" id="design-f3"></p>
+                            <p><label class="design-panel__sub-label" for="design-f4">F4 commands:</label><input class="design-panel__sub" type="number" min="0" max="10" id="design-f4"></p>
+                            <p><label class="design-panel__sub-label" for="design-f5">F5 commands:</label><input class="design-panel__sub" type="number" min="0" max="10" id="design-f5"></p>
                             <fieldset>
                                 <legend>Allow special commands</legend>
-                                <ul>
-                                    <li><input type="checkbox" id="design-red"><label for="design-red">Paint tile red</label></li>
-                                    <li><input type="checkbox" id="design-green"><label for="design-green">Paint tile green</label></li>
-                                    <li><input type="checkbox" id="design-blue"><label for="design-blue">Paint tile blue</label></li>
-                                </ul>
+                                <p><input type="checkbox" id="design-red"><label for="design-red">Paint tile red</label></p>
+                                <p><input type="checkbox" id="design-green"><label for="design-green">Paint tile green</label></p>
+                                <p><input type="checkbox" id="design-blue"><label for="design-blue">Paint tile blue</label></p>
                             </fieldset>
-                            <button id="design-solve" class="button">Provide Solution</button>
+                            <button id="design-solve" class="design-panel__solve">Provide Solution</button>
                         </div>
                     </div>
                     <div id="program-highlight">
