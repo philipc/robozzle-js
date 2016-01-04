@@ -1300,7 +1300,6 @@ robozzle.displayGame = function (level, program) {
     $('#program-container').show();
     $('#program-toolbar-container').show();
     $('#program-selection').show();
-    $('#program-highlight').show();
     $('#program-edit').hide();
 
     robozzle.level = level;
@@ -1864,7 +1863,7 @@ robozzle.callSub = function (calls, sub) {
 robozzle.stepReset = function () {
     if (robozzle.robotState != robozzle.robotStates.reset) {
         $(robozzle.robotAnimation).stop(true, false);
-        $('#program-highlight').css('visibility', 'hidden');
+        $('.-program-highlight').removeClass('-program-highlight');
         robozzle.displayBoard(robozzle.level, false);
     }
 };
@@ -1927,11 +1926,9 @@ robozzle.stepExecute = function (calls) {
     var color = $cell.getClass('-color');
     robozzle.stack[0].cmd++;
     if (cond == 'any' || cond == color) {
-        var highlightOffset = $cmd.offset();
-        highlightOffset.left--;
-        highlightOffset.top--;
         $(robozzle.robotAnimation).queue(function () {
-            $('#program-highlight').offset(highlightOffset).css('visibility', 'visible');
+            $('.-program-highlight').removeClass('-program-highlight');
+            $cmd.addClass('-program-highlight');
             $(this).dequeue();
         });
         switch (cmd) {
@@ -1948,7 +1945,7 @@ robozzle.stepExecute = function (calls) {
         case 'B': $cell.updateClass('-color', 'B'); robozzle.stepWait(); break;
         }
         $(robozzle.robotAnimation).queue(function () {
-            $('#program-highlight').css('visibility', 'hidden');
+            $('.-program-highlight').removeClass('-program-highlight');
             $(this).dequeue();
         });
     } else {
