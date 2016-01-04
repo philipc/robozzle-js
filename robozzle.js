@@ -994,8 +994,7 @@ robozzle.displayProgram = function (level, commands) {
             program.push(sub);
             continue;
         }
-        var $subgrid = $('<div class="program-list__grid"/>');
-        $subgrid.append($('<div id="tutorial-highlight-sub-f' + (j+1) + '" class="tutorial-highlight -sublen' + sublength + '">'));
+        var $subgrid = $('<div id="program-list-sub-f' + (j+1) + '" class="program-list__grid -sublen' + sublength + '"/>');
         for (var i = 0; i < sublength; i++) {
             var $condition = $('<div class="program-list__condition"/>')
                 .on('mousemove', function (e) {
@@ -1173,37 +1172,30 @@ robozzle.submitLevelVote = function () {
 robozzle.displayProgramToolbar = function (level) {
     var $toolbar = $('#program-toolbar').empty();
     var makeCommand = function (command, title) {
-        var ret = $('<button class="program-toolbar__icon"/>')
+        var ret = $('<button id="program-toolbar-command-' + command + '" class="program-toolbar__icon"/>')
             .prop('title', title)
             .append($('<div class="program-toolbar__command command"/>').updateClass('-command', command))
             .click(function (e) {
                 robozzle.setSelection(null, command);
                 e.stopPropagation();
             });
-        if (command === 2) {
-            ret.append($('<div id="tutorial-highlight-command-2" class="tutorial-highlight">'));
-        }
         return ret;
     }
     var makeCondition = function (condition, title) {
-        var ret = $('<button class="program-toolbar__icon"/>')
+        var ret = $('<button id="program-toolbar-command-' + condition + '" class="program-toolbar__icon"/>')
             .prop('title', title)
             .append($('<div class="program-toolbar__command command"/>').updateClass('-condition', condition))
             .click(function (e) {
                 robozzle.setSelection(condition, null);
                 e.stopPropagation();
             });
-        if (condition === 'B') {
-            ret.append($('<div id="tutorial-highlight-command-B" class="tutorial-highlight">'));
-        }
         return ret;
     }
     $toolbar.append(
-            $('<div/>').addClass('program-toolbar__icon-group')
+            $('<div id="program-toolbar-move"/>').addClass('program-toolbar__icon-group')
             .append(makeCommand('f', 'Move forward (w)'),
                     makeCommand('l', 'Turn left (q)'),
-                    makeCommand('r', 'Turn right (e)'),
-                    $('<div id="tutorial-highlight-move" class="tutorial-highlight">')));
+                    makeCommand('r', 'Turn right (e)')));
 
     if (!level.DisallowSubs) {
         var $group = $('<div/>').addClass('program-toolbar__icon-group');
@@ -1251,11 +1243,7 @@ robozzle.tutorialContinue = function () {
 };
 
 robozzle.displayTutorial = function (level) {
-    $('#tutorial-highlight-move').hide();
-    $('#tutorial-highlight-command-2').hide();
-    $('#tutorial-highlight-command-B').hide();
-    $('#tutorial-highlight-sub-f1').hide();
-    $('#tutorial-highlight-sub-f2').hide();
+    $('.-tutorial-highlight').removeClass('-tutorial-highlight');
 
     if (!level || !robozzle.isTutorialLevel(level.Id)) {
         $('#tutorial-modal').hide();
@@ -1280,19 +1268,19 @@ robozzle.displayTutorial = function (level) {
         $('#tutorial-modal').show();
     }
     if (level.Id == -1 && robozzle.tutorialStage == 1) {
-        $('#tutorial-highlight-move').show();
+        $('#program-toolbar-move').addClass('-tutorial-highlight');
     }
     if (level.Id == -1 && robozzle.tutorialStage == 2) {
-        $('#tutorial-highlight-sub-f1').show();
+        $('#program-list-sub-f1').addClass('-tutorial-highlight');
     }
     if (level.Id == -2 && robozzle.tutorialStage == 1) {
-        $('#tutorial-highlight-command-2').show();
+        $('#program-toolbar-command-2').addClass('-tutorial-highlight');
     }
     if (level.Id == -2 && robozzle.tutorialStage == 0) {
-        $('#tutorial-highlight-sub-f2').show();
+        $('#program-list-sub-f2').addClass('-tutorial-highlight');
     }
     if (level.Id == -4 && robozzle.tutorialStage == 1) {
-        $('#tutorial-highlight-command-B').show();
+        $('#program-toolbar-command-B').addClass('-tutorial-highlight');
     }
 };
 
