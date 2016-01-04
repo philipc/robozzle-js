@@ -8,3 +8,5 @@ all: $(TARGETS)
 
 robozzle.css: robozzle.scss
 	scss -r ./base64-encode.rb $(^) $(@)
+
+.DELETE_ON_ERROR:
