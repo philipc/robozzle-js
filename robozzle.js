@@ -89,7 +89,7 @@ $.fn.pointerEventsNone = function () {
     var fixTarget = function (oldTarget, e) {
         oldTarget.hide();
         e.target = document.elementFromPoint(e.clientX, e.clientY);
-        if ($(e.target).hasClass('pointer-events-none')) {
+        if ($(e.target).closest('.pointer-events-none').length) {
             fixTarget($(e.target), e);
         }
         oldTarget.show();
