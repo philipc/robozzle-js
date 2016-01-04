@@ -996,7 +996,7 @@ robozzle.displayProgram = function (level, commands) {
         }
         var $subgrid = $('<div id="program-list-sub-f' + (j+1) + '" class="program-list__grid -sublen' + sublength + '"/>');
         for (var i = 0; i < sublength; i++) {
-            var $condition = $('<div class="program-list__condition"/>')
+            var $condition = $('<div class="program-list__condition condition"/>')
                 .on('mousemove', function (e) {
                     robozzle.hoverSelection($(this).getClass('-condition'),
                                             $(this).find('.command').getClass('-command'));
