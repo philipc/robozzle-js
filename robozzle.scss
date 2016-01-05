@@ -90,7 +90,6 @@ body {
     }
 }
 .content-game {
-    display: table;
     &__board-panel {
         display: table-cell;
     }
@@ -116,6 +115,9 @@ body {
         display: table-cell;
         vertical-align: bottom;
         padding-left: 5px;
+    }
+    &__program-stack {
+        margin-top: 5px;
     }
 }
 .level-sort {
@@ -547,6 +549,7 @@ body {
 }
 
 .condition {
+    transform-origin: 0% 0%;
     width: 30px;
     height: 30px;
     line-height: 30px;
@@ -771,6 +774,23 @@ body {
         //box-sizing: border-box;
         width: 100px; // box sizing isn't working on range input
     }
+}
+
+.program-stack-container {
+    position: relative;
+    box-sizing: border-box;
+    padding: 5px;
+    height: 40px;
+    width: 100%;
+    border-radius: 4px;
+    background-color: #707070;
+    overflow: hidden;
+}
+
+.program-stack {
+    position: relative;
+    height: 100%;
+    width: 200%;
 }
 
 .design-panel {

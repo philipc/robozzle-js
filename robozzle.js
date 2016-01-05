@@ -448,6 +448,9 @@ robozzle.displayRobot = function () {
         .css('left', state.left + 'px')
         .css('top', state.top + 'px')
         .css('transform', 'rotate(' + (((state.deg % 360) + 360) % 360) + 'deg) scale(' + state.scale + ')');
+    $('#program-stack>').slice(0, state.stackCount)
+        .css('transform', 'scaleX(' + state.stack + ')')
+        .css('margin-right', Math.round((state.stack - 1.0) * 30) + 'px');
 };
 
 robozzle.animateRobot = function (props) {
@@ -703,11 +706,33 @@ robozzle.displayBoard = function (level, design) {
         left: robozzle.robotCol * 40,
         top: robozzle.robotRow * 40,
         deg: robozzle.robotDeg,
-        scale: 1.0
+        scale: 1.0,
+        stack: 1.0,
+        stackCount: 1
     };
     robozzle.boardBreakpoint = null;
     robozzle.displayRobot();
     robozzle.setRobotState(robozzle.robotStates.reset);
+};
+
+robozzle.displayStack = function () {
+    var stack = $('#program-stack');
+    stack.empty();
+    var count = 0;
+    for (var i = 0; i < robozzle.stack.length; i++) {
+        var sub = robozzle.program[robozzle.stack[i].sub];
+        for (var j = robozzle.stack[i].cmd; j < sub.length && count < 41; j++) {
+            var cond = sub[j].getClass('-condition');
+            var cmd = sub[j].find('.command').getClass('-command');
+            if (cmd) {
+                stack.append(sub[j].clone().removeClass('-program-highlight'));
+                count++;
+            }
+        }
+    }
+
+    robozzle.robotAnimation.stack = 1.0;
+    robozzle.robotAnimation.stackCount = 1;
 };
 
 robozzle.allowedCommand = function (command) {
@@ -1299,6 +1324,7 @@ robozzle.displayGame = function (level, program) {
     $('#board-status').show();
     $('#program-container').show();
     $('#program-toolbar-container').show();
+    $('#program-stack-container').show();
     $('#program-selection').show();
     $('#program-edit').hide();
 
@@ -1450,7 +1476,9 @@ robozzle.clickDesignSelection = function ($cell) {
                 left: robozzle.robotCol * 40,
                 top: robozzle.robotRow * 40,
                 deg: robozzle.robotDeg,
-                scale: 1.0
+                scale: 1.0,
+                stack: 1.0,
+                stackCount: 1
             };
             robozzle.displayRobot();
         }
@@ -1825,7 +1853,7 @@ robozzle.moveRobot = function () {
             robozzle.stars--;
         }
     }
-    robozzle.animateRobot({ left: col * 40, top: row * 40 });
+    robozzle.animateRobot({ left: col * 40, top: row * 40, stack: 0.0 });
     if (crash) {
         robozzle.animateRobot({ scale: 0.0 });
         robozzle.setRobotState(robozzle.robotStates.finished);
@@ -1847,7 +1875,7 @@ robozzle.turnRobot = function (right) {
         robozzle.robotDeg -= 90;
     }
     robozzle.robotDir = (dir + 4) % 4;
-    robozzle.animateRobot({ deg: robozzle.robotDeg });
+    robozzle.animateRobot({ deg: robozzle.robotDeg, stack: 0.0 });
     robozzle.stepWait();
 };
 
@@ -1856,21 +1884,64 @@ robozzle.paintTile = function ($cell, color) {
     robozzle.stepWait();
 };
 
-robozzle.callSub = function (calls, sub) {
-    if (calls & (1 << sub)) {
+robozzle.callSub = function (calls, index) {
+    if (calls & (1 << index)) {
         // Infinite loop
         robozzle.setRobotState(robozzle.robotStates.finished);
         return;
     }
-    calls |= 1 << sub;
-    robozzle.stack.unshift({ sub: sub, cmd: 0 });
-    robozzle.stepNext(calls);
+    calls |= 1 << index;
+
+    // Don't animate the stack when not stepping
+    if (robozzle.robotState != robozzle.robotStates.stepping) {
+        robozzle.stack.unshift({ sub: index, cmd: 0 });
+        robozzle.stepNext(0);
+        return;
+    }
+
+    // Animate the stack; does the same as the above if statement,
+    // but with animation
+
+    var count = 0;
+    var sub = robozzle.program[index];
+    for (var j = 0; j < sub.length; j++) {
+        var cond = sub[j].getClass('-condition');
+        var cmd = sub[j].find('.command').getClass('-command');
+        if (cmd) {
+            count++;
+        }
+    }
+
+    if (count) {
+        $(robozzle.robotAnimation).queue(function () {
+            $(this).dequeue();
+            robozzle.stack.unshift({ sub: index, cmd: 0 });
+            robozzle.displayStack();
+            robozzle.robotAnimation.stack = 1.0 / count;
+            robozzle.robotAnimation.stackCount = count;
+            robozzle.displayRobot();
+        });
+        robozzle.animateRobot({ stack: 1.0 });
+        $(robozzle.robotAnimation).queue(function () {
+            $(this).dequeue();
+            robozzle.robotAnimation.stackCount = 1;
+            robozzle.stepNext(0);
+        });
+    } else {
+        robozzle.animateRobot({ stack: 0.0 });
+        $(robozzle.robotAnimation).queue(function () {
+            $(this).dequeue();
+            robozzle.stack.unshift({ sub: index, cmd: 0 });
+            robozzle.stepNext(0);
+        });
+    }
 };
 
 robozzle.stepReset = function () {
     if (robozzle.robotState != robozzle.robotStates.reset) {
         $(robozzle.robotAnimation).stop(true, false);
         $('.-program-highlight').removeClass('-program-highlight');
+        $('#program-stack').empty();
         robozzle.displayBoard(robozzle.level, false);
     }
 };
@@ -1928,6 +1999,7 @@ robozzle.stepExecute = function (next, calls) {
     // Clear highlight on previous command
     $(robozzle.robotAnimation).queue(function () {
         $('.-program-highlight').removeClass('-program-highlight');
+        robozzle.displayStack();
         $(this).dequeue();
     });
 
@@ -1975,7 +2047,15 @@ robozzle.stepExecute = function (next, calls) {
         case 'B': robozzle.paintTile($cell, 'B'); break;
         }
     } else {
-        robozzle.stepNext(calls);
+        if (robozzle.robotState == robozzle.robotStates.stepping) {
+            robozzle.animateRobot({ stack: 0.0 });
+            $(robozzle.robotAnimation).queue(function () {
+                $(this).dequeue();
+                robozzle.stepNext(0);
+            });
+        } else {
+            robozzle.stepNext(calls);
+        }
     }
 };
 
