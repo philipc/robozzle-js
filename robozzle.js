@@ -2441,7 +2441,7 @@ robozzle.showSolved = function () {
     $solved.find('a.comments')
         .attr('href', '/forums/thread.aspx?puzzle=' + robozzle.level.Id)
         .attr('target', '_blank');
-    robozzle.showDialog($solved, $('#dialog-design-solved-edit'));
+    robozzle.showDialog($solved, $('#dialog-solved-replay'));
 };
 
 robozzle.submitSolved = function (event) {
