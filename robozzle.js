@@ -1834,6 +1834,7 @@ robozzle.moveRobot = function () {
             && robozzle.robotRow === robozzle.boardBreakpoint.row) {
         robozzle.setRobotState(robozzle.robotStates.stepping);
     }
+    robozzle.stepWait();
 };
 
 robozzle.turnRobot = function (right) {
@@ -1847,6 +1848,12 @@ robozzle.turnRobot = function (right) {
     }
     robozzle.robotDir = (dir + 4) % 4;
     robozzle.animateRobot({ deg: robozzle.robotDeg });
+    robozzle.stepWait();
+};
+
+robozzle.paintTile = function ($cell, color) {
+    $cell.updateClass('-color', color);
+    robozzle.stepWait();
 };
 
 robozzle.callSub = function (calls, sub) {
@@ -1857,7 +1864,7 @@ robozzle.callSub = function (calls, sub) {
     }
     calls |= 1 << sub;
     robozzle.stack.unshift({ sub: sub, cmd: 0 });
-    robozzle.stepExecute(calls);
+    robozzle.stepNext(calls);
 };
 
 robozzle.stepReset = function () {
@@ -1901,56 +1908,83 @@ robozzle.stepWait = function () {
     }
     $(robozzle.robotAnimation).queue(function () {
         $(this).dequeue();
-        if (robozzle.robotState == robozzle.robotStates.started) {
-            robozzle.stepExecute(0);
-        } else if (robozzle.robotState == robozzle.robotStates.stepping) {
-            robozzle.setRobotState(robozzle.robotStates.stopped);
-        }
+        robozzle.stepNext(0);
     });
 };
 
-robozzle.stepExecute = function (calls) {
+robozzle.currentCommand = function () {
+    if (!robozzle.stack.length) {
+        return null;
+    }
     var $cmd = robozzle.program[robozzle.stack[0].sub][robozzle.stack[0].cmd];
+    if ($cmd != null) {
+        return $cmd;
+    }
+    robozzle.stack.shift();
+    return robozzle.currentCommand();
+};
+
+robozzle.stepExecute = function (next, calls) {
+    // Clear highlight on previous command
+    $(robozzle.robotAnimation).queue(function () {
+        $('.-program-highlight').removeClass('-program-highlight');
+        $(this).dequeue();
+    });
+
+    // Get the current command, if none then we're finished
+    var $cmd = robozzle.currentCommand();
     if (!$cmd) {
-        robozzle.stack.shift();
-        if (robozzle.stack.length) {
-            robozzle.stepExecute(calls);
-        } else {
-            robozzle.setRobotState(robozzle.robotStates.finished);
-        }
+        robozzle.setRobotState(robozzle.robotStates.finished);
         return;
     }
+
+    // Highlight the current command
+    $(robozzle.robotAnimation).queue(function () {
+        $cmd.addClass('-program-highlight');
+        $(this).dequeue();
+    });
+
+    // Check if we're still running
+    if (robozzle.robotState == robozzle.robotStates.stepping) {
+        // Stop on the next command in single step mode
+        if (next) {
+            robozzle.setRobotState(robozzle.robotStates.stopped);
+            return;
+        }
+    } else if (robozzle.robotState != robozzle.robotStates.started) {
+        return;
+    }
+
     var cond = $cmd.getClass('-condition');
     var cmd = $cmd.find('.command').getClass('-command');
     var $cell = robozzle.board[robozzle.robotRow][robozzle.robotCol];
     var color = $cell.getClass('-color');
     robozzle.stack[0].cmd++;
     if (cond == 'any' || cond == color) {
-        $(robozzle.robotAnimation).queue(function () {
-            $('.-program-highlight').removeClass('-program-highlight');
-            $cmd.addClass('-program-highlight');
-            $(this).dequeue();
-        });
         switch (cmd) {
-        case 'f': robozzle.moveRobot(); robozzle.stepWait(); break;
-        case 'l': robozzle.turnRobot(false); robozzle.stepWait(); break;
-        case 'r': robozzle.turnRobot(true); robozzle.stepWait(); break;
+        case 'f': robozzle.moveRobot(); break;
+        case 'l': robozzle.turnRobot(false); break;
+        case 'r': robozzle.turnRobot(true); break;
         case '1': robozzle.callSub(calls, 0); break;
         case '2': robozzle.callSub(calls, 1); break;
         case '3': robozzle.callSub(calls, 2); break;
         case '4': robozzle.callSub(calls, 3); break;
         case '5': robozzle.callSub(calls, 4); break;
-        case 'R': $cell.updateClass('-color', 'R'); robozzle.stepWait(); break;
-        case 'G': $cell.updateClass('-color', 'G'); robozzle.stepWait(); break;
-        case 'B': $cell.updateClass('-color', 'B'); robozzle.stepWait(); break;
+        case 'R': robozzle.paintTile($cell, 'R'); break;
+        case 'G': robozzle.paintTile($cell, 'G'); break;
+        case 'B': robozzle.paintTile($cell, 'B'); break;
         }
-        $(robozzle.robotAnimation).queue(function () {
-            $('.-program-highlight').removeClass('-program-highlight');
-            $(this).dequeue();
-        });
     } else {
-        robozzle.stepExecute(calls);
+        robozzle.stepNext(calls);
     }
+};
+
+robozzle.stepStart = function () {
+    robozzle.stepExecute(false, 0);
+};
+
+robozzle.stepNext = function (calls) {
+    robozzle.stepExecute(true, calls);
 };
 
 robozzle.setBoardBreakpoint = function (row, col) {
@@ -1958,7 +1992,7 @@ robozzle.setBoardBreakpoint = function (row, col) {
     if (robozzle.robotState == robozzle.robotStates.reset
             || robozzle.robotState == robozzle.robotStates.stopped) {
         robozzle.setRobotState(robozzle.robotStates.started);
-        robozzle.stepExecute(0);
+        robozzle.stepStart();
     }
 };
 
@@ -2577,7 +2611,7 @@ $(document).ready(function () {
         if (robozzle.robotState == robozzle.robotStates.reset
                 || robozzle.robotState == robozzle.robotStates.stopped) {
             robozzle.setRobotState(robozzle.robotStates.started);
-            robozzle.stepExecute(0);
+            robozzle.stepStart();
         } else if (robozzle.robotState == robozzle.robotStates.stepping) {
             robozzle.setRobotState(robozzle.robotStates.started);
         } else {
@@ -2589,7 +2623,7 @@ $(document).ready(function () {
         if (robozzle.robotState == robozzle.robotStates.reset
                 || robozzle.robotState == robozzle.robotStates.stopped) {
             robozzle.setRobotState(robozzle.robotStates.stepping);
-            robozzle.stepExecute(0);
+            robozzle.stepStart();
         } else if (robozzle.robotState == robozzle.robotStates.started) {
             robozzle.robotState = robozzle.robotStates.stepping;
         }
@@ -2600,7 +2634,7 @@ $(document).ready(function () {
             if (robozzle.robotState == robozzle.robotStates.reset
                     || robozzle.robotState == robozzle.robotStates.stopped) {
                 robozzle.setRobotState(robozzle.robotStates.started);
-                robozzle.stepExecute(0);
+                robozzle.stepStart();
             } else if (robozzle.robotState == robozzle.robotStates.stepping) {
                 robozzle.setRobotState(robozzle.robotStates.started);
             } else if (robozzle.robotState == robozzle.robotStates.started) {
@@ -2616,7 +2650,7 @@ $(document).ready(function () {
             if (robozzle.robotState == robozzle.robotStates.reset
                     || robozzle.robotState == robozzle.robotStates.stopped) {
                 robozzle.setRobotState(robozzle.robotStates.stepping);
-                robozzle.stepExecute(0);
+                robozzle.stepStart();
             } else if (robozzle.robotState == robozzle.robotStates.started) {
                 robozzle.robotState = robozzle.robotStates.stepping;
             }
