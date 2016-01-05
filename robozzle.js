@@ -698,6 +698,7 @@ robozzle.displayBoard = function (level, design) {
     robozzle.stars = stars;
     robozzle.steps = 0;
     robozzle.stack = [ { sub: 0, cmd: 0 } ];
+    robozzle.stackBreakpoint = null;
     robozzle.robotDir = parseInt(level.RobotDir);
     robozzle.robotDeg = parseInt(level.RobotDir) * 90;
     robozzle.robotCol = parseInt(level.RobotCol);
@@ -725,7 +726,15 @@ robozzle.displayStack = function () {
             var cond = sub[j].getClass('-condition');
             var cmd = sub[j].find('.command').getClass('-command');
             if (cmd) {
-                stack.append(sub[j].clone().removeClass('-program-highlight'));
+                var stackCmd = sub[j].clone().removeClass('-program-highlight');
+                if (count != 0) {
+                    (function (index) {
+                        stackCmd.on('click', function (e) {
+                            robozzle.setStackBreakpoint(index);
+                        });
+                    })(count);
+                }
+                stack.append(stackCmd);
                 count++;
             }
         }
@@ -1857,10 +1866,6 @@ robozzle.moveRobot = function () {
     if (crash) {
         robozzle.animateRobot({ scale: 0.0 });
         robozzle.setRobotState(robozzle.robotStates.finished);
-    } else if (robozzle.boardBreakpoint
-            && robozzle.robotCol === robozzle.boardBreakpoint.col
-            && robozzle.robotRow === robozzle.boardBreakpoint.row) {
-        robozzle.setRobotState(robozzle.robotStates.stepping);
     }
     robozzle.stepWait();
 };
@@ -1892,16 +1897,6 @@ robozzle.callSub = function (calls, index) {
     }
     calls |= 1 << index;
 
-    // Don't animate the stack when not stepping
-    if (robozzle.robotState != robozzle.robotStates.stepping) {
-        robozzle.stack.unshift({ sub: index, cmd: 0 });
-        robozzle.stepNext(0);
-        return;
-    }
-
-    // Animate the stack; does the same as the above if statement,
-    // but with animation
-
     var count = 0;
     var sub = robozzle.program[index];
     for (var j = 0; j < sub.length; j++) {
@@ -1911,6 +1906,20 @@ robozzle.callSub = function (calls, index) {
             count++;
         }
     }
+
+    if (robozzle.stackBreakpoint) {
+        robozzle.stackBreakpoint.index += count;
+    }
+
+    // Don't animate the stack when not stepping
+    if (robozzle.robotState != robozzle.robotStates.stepping) {
+        robozzle.stack.unshift({ sub: index, cmd: 0 });
+        robozzle.stepNext(0);
+        return;
+    }
+
+    // Animate the stack; does the same as the above if statement,
+    // but with animation
 
     if (count) {
         $(robozzle.robotAnimation).queue(function () {
@@ -2016,6 +2025,21 @@ robozzle.stepExecute = function (next, calls) {
         $(this).dequeue();
     });
 
+    // Check if we hit a breakpoint on the previous command
+    if (next) {
+        if (robozzle.boardBreakpoint
+                && robozzle.robotCol === robozzle.boardBreakpoint.col
+                && robozzle.robotRow === robozzle.boardBreakpoint.row) {
+            robozzle.setRobotState(robozzle.robotStates.stepping);
+            robozzle.boardBreakpoint = null;
+        }
+        if (robozzle.stackBreakpoint
+                && robozzle.stackBreakpoint.index == 0) {
+            robozzle.setRobotState(robozzle.robotStates.stepping);
+            robozzle.stackBreakpoint = null;
+        }
+    }
+
     // Check if we're still running
     if (robozzle.robotState == robozzle.robotStates.stepping) {
         // Stop on the next command in single step mode
@@ -2032,6 +2056,9 @@ robozzle.stepExecute = function (next, calls) {
     var $cell = robozzle.board[robozzle.robotRow][robozzle.robotCol];
     var color = $cell.getClass('-color');
     robozzle.stack[0].cmd++;
+    if (robozzle.stackBreakpoint) {
+        robozzle.stackBreakpoint.index--;
+    }
     if (cond == 'any' || cond == color) {
         switch (cmd) {
         case 'f': robozzle.moveRobot(); break;
@@ -2069,6 +2096,15 @@ robozzle.stepNext = function (calls) {
 
 robozzle.setBoardBreakpoint = function (row, col) {
     robozzle.boardBreakpoint = { row: row, col: col };
+    if (robozzle.robotState == robozzle.robotStates.reset
+            || robozzle.robotState == robozzle.robotStates.stopped) {
+        robozzle.setRobotState(robozzle.robotStates.started);
+        robozzle.stepStart();
+    }
+};
+
+robozzle.setStackBreakpoint = function (index) {
+    robozzle.stackBreakpoint = { index: index};
     if (robozzle.robotState == robozzle.robotStates.reset
             || robozzle.robotState == robozzle.robotStates.stopped) {
         robozzle.setRobotState(robozzle.robotStates.started);
